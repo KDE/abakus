@@ -1,0 +1,463 @@
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
+  <!ENTITY abakus "<application>abakus</application>">
+  <!ENTITY kappname "&abakus;">
+  <!ENTITY % addindex "IGNORE">
+  <!ENTITY % English "INCLUDE">
+]>
+
+<book lang="&language;">
+
+<bookinfo>
+<title>The &abakus; handbook</title>
+
+<authorgroup>
+<author>
+<firstname>Michael</firstname>
+<surname>Pyne</surname>
+<email>michael.pyne@kdemail.net</email>
+</author>
+<author>&J.Hall; &J.Hall.mail;</author>
+<!-- TRANS:ROLES_OF_TRANSLATORS -->
+</authorgroup>
+
+<legalnotice>&FDLNotice;</legalnotice>
+
+<date>2005-07-06</date>
+<releaseinfo>0.90</releaseinfo>
+
+<abstract>
+<para>&abakus; is a calculator designed with computer usability in mind</para>
+<para>Please contact <email>michael.pyne@kdemail.net</email> for bug reports and feature requests</para>
+</abstract>
+
+<keywordset>
+<keyword>KDE</keyword>
+<keyword>Calculator</keyword>
+</keywordset>
+
+</bookinfo>
+
+<chapter id="introduction">
+<title>What is abakus?</title>
+<para>&abakus; is a calculator designed with computer usability in mind, as opposed to just being a clone of your desktop calculator. Instead of using your powerful computer to put a limited simulation of a calculator on-screen, &abakus; instead allows you to use your computer to its greater potential.</para>
+
+<para>Enough of the metaphysics, how about an example of what I'm talking about? Let's use&kcalc;, the normal &kde; calculator program as an example, trying to calculate 3 multiplied by the sine of 50 degrees. First you would do something like the following:</para>
+
+<para>1. Make sure you're in Degrees mode:</para>
+<para><inlinemediaobject>
+<imageobject>
+<imagedata fileref="kcalc-degrees-mode.png" format="PNG"/></imageobject>
+</inlinemediaobject></para>
+
+<para>2. Then, click on the <guibutton>5</guibutton> and the <guibutton>0</guibutton> buttons:</para>
+<para><inlinemediaobject>
+<imageobject>
+<imagedata fileref="kcalc-fifty.png" format="PNG"/></imageobject>
+</inlinemediaobject></para>
+
+<para>3. You would then search for the <guibutton>Sin</guibutton> button and click it, which would immediately calculate a result:</para>
+<para><inlinemediaobject>
+<imageobject>
+<imagedata fileref="kcalc-sine.png" format="PNG"/></imageobject>
+</inlinemediaobject></para>
+
+<para>4. Then, click the <guibutton>X</guibutton> button, and notice that there is no user feedback whatsoever. Even real calculators temporarily blank the display:</para>
+<para>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="kcalc-sine.png" format="PNG"/></imageobject>
+</inlinemediaobject></para>
+
+<para>5. Then, we click the <guibutton>3</guibutton> button and watch as our previous result suddenly disappears. This isn't &kcalc;s fault: It has nowhere else to display the <guilabel>3</guilabel>:</para>
+<para><inlinemediaobject>
+<imageobject>
+<imagedata fileref="kcalc-three.png" format="PNG"/></imageobject>
+</inlinemediaobject></para>
+
+<para>6. Proceeding boldly forward with the faith that our previous result wasn't lost, we click the <guibutton>=</guibutton> button to perform the multiplication:</para>
+<para><inlinemediaobject>
+<imageobject>
+<imagedata fileref="kcalc-result.png" format="PNG"/></imageobject>
+</inlinemediaobject></para>
+
+<para>Although we did get the result, this is unsatisfactory for several reasons. A computer monitor has plenty of room to display text, there's no reason why you should ever be confused about what step your calculator is about to make, or whether it remembered an intermediate result. Computers are also much more powerful than your $10 desktop calculator, so there's no reason that you should be forced to type your expression in a form suitable for your calculator. Roberto Alsina picked up on this in a rant he published, <ulink url="http://www.pycs.net/lateral/stories/33.html">A Modest Usability Improvement
+</ulink></para>
+
+<para>Now let's try the same thing in &abakus;, which is designed to help you with your calculating, instead of bending you to its will. As with &kcalc;, extraneous portions of the GUI have been hidden.</para>
+
+<para>1. We still need to make sure we're in <guilabel>Degrees</guilabel> mode:</para>
+<para><inlinemediaobject>
+<imageobject>
+<imagedata fileref="abakus-degrees-mode.png" format="PNG"/></imageobject>
+</inlinemediaobject></para>
+
+<para>
+2. Now we can type <quote>3sin 50</quote>, just as we'd write it on paper. Sometimes it's better to clarify things, both for reading and to clarify your intentions to &abakus;. So you can also use the parentheses to group operations like you would on paper, and the '*' operator to explicitly multiply, like this: "3 * sin (50)":</para>
+<para><inlinemediaobject>
+<imageobject>
+<imagedata fileref="abakus-result.png" format="PNG"/></imageobject>
+</inlinemediaobject></para>
+
+<para> And we're all done! We even typed in the same expression two different ways to demonstrate how &abakus; will try very hard to guess what you're trying to calculate. You'll notice that &kcalc; and &abakus; both agree on the answer.</para>
+
+<para>If you're still reading you've probably been sold by Roberto's argument, just as I was when I started writing &abakus;. So read on, if you want to find out all that &abakus; can do for you.</para>
+
+</chapter>
+<chapter id="abakus-usage">
+<title>How to use &abakus;</title>
+
+<sect1 id="basics">
+<title>Basic usage</title>
+<para>The basic synposis is: Type your expression, and hit Enter. &abakus; will calculate the value of what you typed and display it on the screen. You can use many functions from mathematics, and even define your own functions. You can also define and use variables.</para>
+
+<para>You can define your own functions in abakus. To do so, at the expression prompt, you would type something like: <userinput>set funcname(var) = expr</userinput> and hit Enter. If all went well &abakus; will simply output <guilabel>OK</guilabel>, and you'll see your function appear in the user-defined function list. Now you can use your function as normal. If you'd like to remove your function, you can either right-click on it in the user function list and select <guilabel>Remove Function</guilabel>, or enter <userinput>remove funcname()</userinput> in the expression prompt and hit Enter. Note that you don't enter the variable name in the parentheses since only the function name is needed. (The reason you still need the parentheses is because your variables can have the same name as a function).</para>
+
+<para>You can also define your own variables. &abakus; comes with the basic mathematical constants pi (&pi;) and e (Euler's Constant) defined by default. To define your own variable, at the expression prompt you would type: <userinput><replaceable>name</replaceable> = <replaceable>value</replaceable></userinput>, or <userinput>set <replaceable>name</replaceable> = <replaceable>value</replaceable></userinput>. You will then see your variable in the list of variables. To remove your variable, either right-click on it in the list and select <guilabel>Remove Variable</guilabel>, or enter <userinput>remove varname</userinput> in the expression prompt. Notice that there are no parentheses this time. ;-)</para>
+
+<sect2 id="variables">
+<title>Placeholder Variables</title>
+
+<para>You may have noticed that when you type in expressions, &abakus; will show a value beginning with $ (such as $0) after the result. This is a placeholder variable. What happens is that the most recent result is always $0. The result directly before is $1, and so on. You may use the placeholder values in your expression to avoid having to re-type it or use the drag-and-drop. Note that there is a special variable defined called ans, which is the same as $0. In other words, whenever you want to reference the last expression's result, you can use $0 or ans.</para>
+
+</sect2>
+
+<sect2 id="precision">
+<title>Decimal Precision</title>
+
+<para>&abakus; supports high-precision arithmetic using Ariya Hidayat's hmath code from his excellent calculator <ulink url="http://speedcrunch.berlios.de/">SpeedCrunch</ulink>. You can change the displayed precision by using the <guilabel>View Menu</guilabel>, where you can select between <guilabel>Automatic precision</guilabel>, or some pre-defined precision levels. You can also select <guilabel>Custom precision</guilabel> to select your own precision (between 0-75 digits).</para>
+</sect2>
+
+<sect2>
+<title>Operators</title>
+<para>&abakus; supports all the standard operators like -, +, *, and /. It also supports both the ^ and ** symbols to mean exponentiation. Exponentiation is right-associative in &abakus;, meaning that 2^3^2 will return 512 instead of 64. (2^(3^2)). Operator precedence is performed as in mathematics as well (e.g. 2 + 3 * 2 and 3 * 2 + 2 both return the same answer). &abakus; also supports parentheses to group expressions for when the default operator precedence is invalid.</para>
+</sect2>
+
+<sect2>
+<title>Functions</title>
+<para>&abakus; has quite a few functions built-in:</para>
+<itemizedlist>
+<listitem><para>sin, cos, tan: Trigonometric functions. Supports Degrees and Radians mode.</para></listitem>
+<listitem><para>asin, acos, atan: Inverse trigonometric functions. Supports Degrees and Radians mode.</para></listitem>
+<listitem><para>abs: The absolute value of a number.</para></listitem>
+<listitem><para>sqrt: Square root of a number.</para></listitem>
+<listitem><para>ln / log: Logarithms. ln uses the "natural base", e, which log uses base 10.</para></listitem>
+<listitem><para>exp: Exponential. Returns e to the given power. exp(x) is equivalent to e^x.</para></listitem>
+<listitem><para>round, ceil, floor, int: Converts an answer to an integer. ceil rounds to the next highest integer, while floor rounds to the next lower. int simply drops the fractional part. round rounds to the nearest integer.</para></listitem>
+<listitem><para>frac: Returns the fractional part of a number.</para></listitem>
+<listitem><para>sinh, cosh, tanh: Hyperbolic trigonometric functions.</para></listitem>
+<listitem><para>deriv: Returns the numerical derivative of the given expression. The graphical interpretation of a derivative is the slope of the given function, at the given point. It is used like this: deriv(exp, pt). Note that since deriv takes two arguments that the parentheses are required to avoid ambiguity. For most functions, the value that deriv returns will be exact (at least within the bounds allowed by the underlying decimal representation).</para></listitem>
+</itemizedlist>
+
+</sect2>
+</sect1>
+
+</chapter>
+
+<chapter id="abakus-advanced">
+<title>Advanced Features</title>
+
+<para>&abakus; supports some features not typically seen in computer
+calculators.</para>
+
+<sect1 id="advanced-rpn-mode">
+<title>RPN Mode</title>
+<para>RPN Mode is a different input method for &abakus;, designed to emulate the
+input style of various old calculators which are still popular.  If you do not
+already know what RPN Mode is, &abakus; is not the best way to find out.
+However, I will give a brief description of it.
+</para>
+
+<para>In RPN Mode, the calculator operates from what is called the <interface>stack</interface>.
+Number are always added to the end of the <interface>stack</interface>, and operators always work from 
+the end of the <interface>stack</interface>.  One nice thing about RPN (and the
+reason it was developed in the first place) is that RPN expressions don't
+require parentheses, since the order of operations is completely unambiguous.
+</para>
+
+<para>So the way things work is that in RPN mode, you type in numbers and operators separated by
+spaces.  For each number you type, &abakus; will add to the end of the stack.
+Every time &abakus; encounters an operator, &abakus; will remove the appropriate
+number of values from the end of the stack, apply the operator, and then place
+the result back on the end of the stack.  &abakus; continues in this fashion
+until it reaches the end of your expression, and then returns whatever value
+is left at the top of the stack as its result.</para>
+
+<para>Let's see how this works with an example:</para>
+
+<informalexample>
+
+<para>
+<userinput>2 3 4 * + 2 /</userinput> would return
+<computeroutput>7</computeroutput>
+</para>
+
+<para>The way that this works is that first <userinput>2</userinput>, and then
+<userinput>3</userinput> are added to the end of the
+<interface>stack</interface>.  <userinput>4</userinput> is read and is also
+added to the end.  So at this point there are 3 numbers on the
+<interface>stack</interface>.  When &abakus; reads the operator
+<userinput>*</userinput>, it removes 3 and 4 from the end of the <interface>stack</interface> and
+multiplies them, resulting in 12.  12 is then added to the end of the <interface>stack</interface>, and
+the <interface>stack</interface> has 2 numbers (2 and 12).
+</para>
+
+<para>&abakus; then reads the <userinput>+</userinput> and performs the same
+process, adding 12 and 2, and replacing them in the <interface>stack</interface> with 14.
+<userinput>2</userinput> is then added to the end, and then &abakus; performs
+the division of 14 by 2, leaving 7 on the <interface>stack</interface>, which becomes the final
+result.
+</para>
+
+</informalexample>
+
+<para>You can also use functions in place of operators.  For example,
+<userinput>pi 2 / sin</userinput> would calculate the value of sin(pi / 2).
+</para>
+
+<para>If the <interface>stack</interface> has more than one element by the end
+of the expression, &abakus; will only remove the value at the end.  The values
+left in the <interface>stack</interface> will be retained for later
+calculations.  You can see how many values are on the
+<interface>stack</interface> using the special variable
+<guilabel>stackCount</guilabel> which appears in the
+<interface>Variable List</interface> while in RPN mode.
+</para>
+
+<para>&abakus; supports a few special commands while in RPN mode, that affect
+the <interface>stack</interface> as follows:
+
+<itemizedlist>
+
+<listitem><para><userinput>pop</userinput>, which removes the value on the end
+of the <interface>stack</interface>.</para></listitem>
+
+<listitem><para><userinput>clear</userinput>, which clears the
+<interface>stack</interface> completely.  </para></listitem>
+
+</itemizedlist>
+</para>
+
+<para>The <userinput>set</userinput> and <userinput>remove</userinput> commands
+are currently unsupported in RPN Mode.</para>
+
+</sect1>
+
+<sect1 id="advanced-dnd">
+<title>Drag and Drop</title>
+
+<para>You can drag and drop results to other applications.  When doing so,
+&abakus; will construct an image for the mouse cursor which includes the text
+you are dragging so that you always can tell exactly what you're about to drop
+into an application.</para>
+
+<screenshot>
+<screeninfo>Demonstration of &abakus; drag and drop</screeninfo>
+<mediaobject>
+<imageobject>
+<imagedata fileref="abakus-dnd.png" format="PNG" />
+</imageobject>
+<textobject>
+<phrase>Demonstration of &abakus; drag and drop</phrase>
+</textobject>
+</mediaobject>
+</screenshot>
+</sect1>
+
+</chapter>
+
+<chapter id="command-reference">
+<title>Command Reference</title>
+
+<para>Here is a brief description of the commands in the &abakus; interface.</para>
+
+<sect1 id="command-menu">
+
+<title>Menu Commands</title>
+
+<variablelist>
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Ctrl;<keycap>Q</keycap></keycombo></shortcut>
+<guimenu>File</guimenu><guimenuitem>Quit</guimenuitem>
+</menuchoice></term>
+<listitem><para>Quit &abakus;</para></listitem>
+</varlistentry>
+</variablelist>
+
+<variablelist>
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Alt;&Shift;<keycap>H</keycap></keycombo></shortcut>
+<guimenu>View</guimenu><guimenuitem>Show History List</guimenuitem>
+</menuchoice></term>
+<listitem><para>If checked, &abakus; will show the list of previous results.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Alt;&Shift;<keycap>V</keycap></keycombo></shortcut>
+<guimenu>View</guimenu><guimenuitem>Show Variable List</guimenuitem>
+</menuchoice></term>
+<listitem><para>If checked, &abakus; will show the list of variables.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Alt;&Shift;<keycap>F</keycap></keycombo></shortcut>
+<guimenu>View</guimenu><guimenuitem>Show Function List</guimenuitem>
+</menuchoice></term>
+<listitem><para>If checked, &abakus; will show the list of functions.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>View</guimenu><guimenuitem>Automatic Precision</guimenuitem>
+</menuchoice></term>
+<listitem><para>If checked, &abakus; will select a precision automatically.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>View</guimenu><guimenuitem>3 Decimal Digits</guimenuitem>
+</menuchoice></term>
+<listitem><para>If checked, &abakus; will 8 decimal digits of precision (e.g.
+1 / 3 = 0.333).
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>View</guimenu><guimenuitem>8 Decimal Digits</guimenuitem>
+</menuchoice></term>
+<listitem><para>If checked, &abakus; will show 8 decimal digits of precision (e.g.
+1 / 3 = 0.33333333).
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>View</guimenu><guimenuitem>15 Decimal Digits</guimenuitem>
+</menuchoice></term>
+<listitem><para>If checked, &abakus; will show 15 decimal digits of precision.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>View</guimenu><guimenuitem>50 Decimal Digits</guimenuitem>
+</menuchoice></term>
+<listitem><para>If checked, &abakus; will show 50 decimal digits of precision.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>View</guimenu><guimenuitem>Custom Precision...</guimenuitem>
+</menuchoice></term>
+<listitem><para>This command will bring open a dialog allowing you to enter a
+custom precision level.  &abakus; supports precision levels from 0 to 75
+decimal digits.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Alt;&Shift;<keycap>C</keycap></keycombo></shortcut>
+<guimenu>View</guimenu><guimenuitem>Activate Compact Mode</guimenuitem>
+</menuchoice></term>
+<listitem><para>This command is a shortcut to disable the Result, Function,
+and Variable views, so that &abakus; shows just the input line.  In this mode,
+the answer is given in the input line instead of the Result list.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Alt;&Shift;<keycap>L</keycap></keycombo></shortcut>
+<guimenu>View</guimenu><guimenuitem>Clear History</guimenuitem>
+</menuchoice></term>
+<listitem><para>This command clears the Result view.
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+<variablelist>
+
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Alt;&Shift;<keycap>D</keycap></keycombo></shortcut>
+<guimenu>Mode</guimenu><guimenuitem>Degrees</guimenuitem>
+</menuchoice></term>
+<listitem><para>This command causes &abakus; to treat values for the
+trigonometric functions as angles measured in degrees (360 degrees make up a
+full circle).
+<important><para>The <userinput>deriv()</userinput> function will not return correct
+results for trigonometric functions in this mode.</para></important>
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Alt;&Shift;<keycap>R</keycap></keycombo></shortcut>
+<guimenu>Mode</guimenu><guimenuitem>Radians</guimenuitem>
+</menuchoice></term>
+<listitem><para>This command causes &abakus; to treat values for the
+trigonometric functions as angles measured in radians (2 * &pi; radians make up
+a full circle).
+<important><para>The <userinput>deriv()</userinput> function only returns correct
+results for trigonometric functions when in this mode.</para></important>
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<shortcut><keycombo action="simul">&Alt;&Shift;<keycap>P</keycap></keycombo></shortcut>
+<guimenu>Mode</guimenu><guimenuitem>Use RPN Mode</guimenuitem>
+</menuchoice></term>
+<listitem><para>This command enables <link linkend="advanced-rpn-mode">RPN Mode</link>.
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect1>
+
+</chapter>
+
+<chapter id="limitations">
+<title>Limitations</title>
+
+<para>There are many cool things yet to add to &abakus;. Here's a partial list of things that &abakus; doesn't support:</para>
+
+<itemizedlist>
+<listitem><para>Complex numbers.</para></listitem>
+<listitem><para>User-defined functions of more than one variable.</para></listitem>
+<listitem><para>Unit analysis (for example: 3 A / 1.5 ohm -> 1.5 V)</para></listitem>
+<listitem><para>Advanced input as in SpeedCrunch.</para></listitem>
+<listitem><para>Numerical integration (finding the area under a given curve).</para></listitem>
+<listitem><para>Graphing (? - I'll admit I'm not sure if this would be a great fit for &abakus;)</para></listitem>
+<listitem><para>Matrices</para></listitem>
+<listitem><para>Functions on lists (e.g. sin {0, pi / 2} -> {0, 1})</para></listitem>
+<listitem><para>Session export/import (the session is still saved/loaded automatically).</para></listitem>
+<listitem><para>More functions. Although many functions that aren't built-in can be simulated. For instance, to take the logarithm of x to a different base (b), you could do (ln x / ln b). And the x<superscript>th</superscript> root of a number is just that number raised to the (1 / x) power.</para></listitem>
+
+</itemizedlist>
+</chapter>
+
+<chapter id="credits">
+<title>Credits and License</title>
+
+<para>&abakus;</para>
+<para>Program copyright 2005 Michael Pyne</para>
+<para>Original documentation copyright 2005 Michael Pyne</para>
+<para>Docbook conversion by &J.Hall; &J.Hall.mail;</para>
+
+&underFDL;               <!-- FDL: do not remove -->
+</chapter>
+</book>

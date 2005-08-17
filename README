@@ -1,0 +1,174 @@
+abakus, by Michael Pyne <michael.pyne@kdemail.net>
+Version: 0.90
+
+This is my attempt at creating a light-calculator based on Roberto Alsina's
+initial usability suggestions, and based on the ideas of a few other KDE
+hackers.
+
+This software is distributed under the terms of the GNU GPL v2.
+
+Synopsis:
+ $ tar xvjf abakus-0.90.tar.bz2
+ $ cd abakus-0.90
+ $ ./configure && make && make install
+ $ abakus
+
+Type away, and press Enter to see the result.
+
+Changes since 0.85:
+* You now have the option of using the GNU Multiple Precision library for
+  high-precision mathematics.  It requires the MPFR library to also be
+  installed (normally comes with GNU MP 4.x).  It is used automatically if
+  detected.
+* Jes Hall has contributed DocBook documentation to make Abakus integrate into
+  KDE even more tightly.  Thanks, Jes!
+* User defined functions can now be defined over.
+* Error handling with deriv() function improved.
+* Ariya Hidayat's name was misspelled everywhere in Abakus.  Sorry, Ariya. :(
+* Speaking of Ariya, Abakus now uses the impressive user interface code from
+  his SpeedCrunch calculator (http://speedcrunch.berlios.de/).  This includes
+  the Calc-as-you-Type tooltip, the function and variable dropdown, and
+  syntax highlighting.  It's not configurable at this point, expect that in
+  the next release.
+* You can use the F6 key to select the expression editor if you're a big fan
+  of the keyboard.
+* Raising negative numbers to integral powers should work with the internal
+  high-precision library now.
+* You can no longer deselect the current precision menu item.
+* Fix crash bug when a user-defined function refers to another user-defined
+  function, and then you remove or edit the function it referred to.
+* Add exact numerical derivatives for all functions supported.
+* Added the asinh, acosh, and atanh functions.
+* Fixed bug with loading of prior compact mode status.
+* Fixed bug where result text had wrong precision when you changed the
+  precision and tried drag-and-drop.
+* Drag-and-drop improvements.
+* Fixed bug where Custom Precision menu entry was checked even if you canceled
+  the dialog.
+* Made hyperbolic functions consistently ignore trigonometric mode.  (Both
+  Degrees and Radians make no sense for hyperbolic trig).
+* Whew! :)
+
+v0.85 adds a lot:
+* Improvements to the configure script.  Since I didn't end up using libCLN it
+  was mostly for naught, but the changes will be useful for the future.
+* abakus now uses the high-precision math routines from Ariya Hidayat's
+  SpeedCrunch program.  Thanks, Ariya!
+* High precision arithmetic can have between 0 and 75 digits of precision.
+* Support for approximate derivatives.  For most functions the derivatives will
+  be numerically accurate.  For those functions where I didn't feel like typing
+  in the exact form of the derivative an approximation is used instead.
+* Implicit multiplication has been added to the parser.  That means you can
+  type stuff like "3 sin pi" without having to manually add the * in between
+  3 and sin.  This also works with numbers and variables, and numbers and
+  parenthesized expressions.
+* GUI changes.  The main result view now uses KListView, so it gains tooltip
+  support for long answers for free, along with a bevy of other improvements.
+* You can right-click on an answer and copy it to the clipboard.
+* Corrected information in the about box.
+* Restarting abakus with compact mode enabled should is much improved.
+
+v0.80.2 fixed an issue with the configure script for people who don't have
+exactly the same version of Python I do, and forcibly prevents flex/bison
+errors.
+
+v0.80.1 fixed an issue with the configure script for people who don't already
+have scons installed.
+
+Major changes since 0.76:
+* There is no more C code to interface between the parser and program.
+* RPN mode is improved.  Now the stack is retained between calls, and there
+  are a few commands only in RPN mode:
+    1. pop   - Return the top of the stack.
+    2. clear - Clear the stack.
+* bksys is used instead of the custom Makefiles.
+* Lots of code cleanups, including license headers.
+* The nifty drag-and-drop image looks more rectangular, and is used with the
+  two listviews on the right as well.
+* Improved error checking, with messages that should hopefully be more
+  descriptive.
+
+Major changes since 0.75:
+* Reorder internal macro so that functions are declared *before* they're
+  referenced, which helps build the program on systems with math.h files that
+  don't export the long double version of their math functions.
+* Hitting a number or letter key right after evaluating an expression in RPN
+  mode automatically prepends the 'ans' variable, which was a feature of the
+  Normal mode.
+
+Major changes since 0.70:
+* Build system switched (somehow) to using qmake.  The parser and lexer are
+  still included, so bison and flex are still not required.  Hopefully this
+  will improve the ease of building.  Of course, this means no more colored
+  make output.
+* Changed most of the keyboard shortcuts to use Shift + Alt + foo instead of
+  Alt + foo since that was interfering with the menu bar.
+* RPN mode!!  If you enable RPN mode, then your expressions will be evaluated
+  using the Reverse Polish Notation popular with users of HP calculators.  Note
+  that although you can use values and functions while in RPN mode, you cannot
+  set or remove them from the expression editor like you can in normal mode.
+* abakus will display a small token starting with a dollar sign ($) in italics
+  next to results.  You can use these tokens to quickly reference a result in
+  your expression.  The most recent result is always $0, with the number
+  increasing from most recent to least recent result.  For example, typing
+  2 <Enter> 3 <Enter> $0 ^ $1 <Enter> would give a result of 9.
+* You can right click on functions and values in the list views to remove them
+  from the GUI.
+* Changed the result items to use word wrapping when needed to fit all the
+  text.
+* Very small DCOP interface.
+* More code cleanup.
+* Added a .desktop file.
+* Test client removed again.
+* Double-clicking on an error message (or OK message) no longer inserts them
+  into the edit box.
+
+Major changes since 0.61:
+* User defined Functions.
+* Save state of program between runs.
+* Miscellaneous fun stuff.
+
+Currently implemented features:
+* Parser built using flex and bison.  The generated files are included so it
+  should compile fine for you.
+* Fully C++.  The parser and lexer code require C++ to compile.
+* Supports several built-in functions:
+   - sin, cos, tan, sinh, cosh, tanh, asin, acos, atan in either radian or
+         degree mode.
+     abs, exp (e raised to the given power), ln, log (base 10),
+     sqrt, ceil, floor
+* Supported operators: +, -, *, /, ^ (or **).
+* Includes a window showing the values and user-defined functions you have.
+* Predefined constants: pi, and e (Euler' constant).
+* You can assign to variables by using an expression of the form:
+  identifier = expression.  You can then reuse these variables later.
+* You can create user-defined functions of one variable using the syntax
+  set foo(var) = <expr>, where <expr> calculates the value in terms of var.
+* You can delete user-defined variables by doing: remove var
+* You can delete user-defined functions by doing: remove foo().  Notice that
+  the variable is NOT included in that expression.
+* Functions and variables are saved on exit, and then loaded when abakus is
+  started again.
+* The ans variable contains the result of the last computation.
+* Pressing +, -, *, or / immediately after your last computation automatically
+  inserts ans for you, saving you typing.
+* A compact mode for the program.
+* Operator precedence should be correct, including the right association of
+  the power operator.  So, 2 ^ 3 ^ 2 == 512, just as it does when you write
+  it out.  You can use parentheses to force precedence.
+* Parentheses are not required around functions.  So, sin 3 is a valid
+  expression.  Note that sin 3 + cos 4 translates internally as (sin 3) + 
+  (cos 4), not as sin (3 + cos (4)).
+* I took some pains to try to make things like 3 + -2 work right.
+* inf and nan are accepted as numeric input for completeness.
+* abakus will automatically add ) characters to the end of the expression as
+  needed to balance your expression.  This means that expressions like
+  sin (cos (2 + 3 will evaluate with no error.
+* A rudimentary RPN mode is included.  Most everything works, except for
+  derivatives and creating functions or new variables.
+
+Bugs:
+* More functions would be nice.
+* The lexer assumes that the decimal marker is a period. (.)  I'm not exactly
+  sure how to cleanly solve this problem with flex. :-(
+* Documentation could be better.

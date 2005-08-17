@@ -1,0 +1,14 @@
+# KDE Config File  
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+X-KDE-StartupNotify=true
+Exec=abakus -caption "%c" %i %m  
+Icon=abakus
+Comment=
+Comment[xx]=xxxx
+Terminal=0
+Name=Abakus
+Name[xx]=xxAbakusxx
+GenericName=Calculator
+Categories=Qt;KDE;Utility
