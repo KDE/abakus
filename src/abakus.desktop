@@ -9,4 +9,7 @@ Comment=
 Terminal=0
 Name=Abakus
 GenericName=Calculator
+GenericName[br]=Jederez
+GenericName[cy]=Cyfrifiannell
+GenericName[ga]=Áireamhán
 Categories=Qt;KDE;Utility
