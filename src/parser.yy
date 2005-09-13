@@ -21,6 +21,7 @@
 /* Add necessary includes here. */
 #include <kdebug.h>
 #include <klocale.h>
+#include <kglobal.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -314,6 +315,16 @@ TERM: VALUE { $$ = $1; }
 VALUE: NUMBER { $$ = $1; }
 
 NUMBER: NUM {
+    KLocale *locale = KGlobal::locale();
+    QChar decimal = locale->decimalSymbol()[0];
+
+    // Replace current decimal separator with US Decimal separator to be
+    // evil.
+    unsigned len = strlen(yytext);
+    for(unsigned i = 0; i < len; ++i)
+	if(yytext[i] == decimal)
+	    yytext[i] = '.';
+
     Abakus::number_t value(yytext);
 
     $$ = new NumericValue(value);

@@ -506,6 +506,9 @@ inline number<mpfr_ptr> operator/(const number<mpfr_ptr> &l, const number<mpfr_p
 
 #else
 
+// Defined in numerictypes.cpp for ease of reimplementation.
+QString convertToString(const HNumber &num);
+
 /**
  * Specialization for internal HMath library, used if MPFR isn't usable.
  *
@@ -663,21 +666,7 @@ public:
 
     QString toString() const
     {
-        QString str = HMath::formatGenString(m_t, m_prec);
-	QStringList parts = QStringList::split("e", str);
-	QRegExp zeroKiller("(\\.\\d*[1-9])0*$"); // Remove trailing zeroes.
-	QRegExp zeroKiller2("(\\.)0*$");
-
-	str = parts[0];
-	str.replace(zeroKiller, "\\1");
-	str.replace(zeroKiller2, "\\1");
-	if(str.endsWith("."))
-	    str.truncate(str.length() - 1); // Remove trailing period.
-
-	if(parts.count() > 1 && parts[1] != "0")
-	    str += QString("e%1").arg(parts[1]);
-
-        return str;
+        return convertToString(m_t);
     }
 
     static number<HNumber> nan()

@@ -21,6 +21,8 @@
 #include "hmath.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
+#include <klocale.h>
 
 Abakus::TrigMode Abakus::m_trigMode = Abakus::Degrees;
 int Abakus::m_prec = -1;
@@ -36,6 +38,7 @@ QString convertToString(const mpfr_ptr &number)
     QRegExp zeroKiller ("0*$");
     mp_exp_t exp;
     int desiredPrecision = Abakus::m_prec;
+    QString decimalSymbol = KGlobal::locale()->decimalSymbol();
 
     if(desiredPrecision < 0)
         desiredPrecision = 8;
@@ -77,7 +80,7 @@ QString convertToString(const mpfr_ptr &number)
 
         r.append(QString("e%1").arg(exp - 1));
 
-        return sign + l + "." + r;
+        return sign + l + decimalSymbol + r;
     }
     else
     {
@@ -131,7 +134,7 @@ QString convertToString(const mpfr_ptr &number)
     if(r.isEmpty())
         return sign + l;
 
-    return sign + l + "." + r;
+    return sign + l + decimalSymbol + r;
 }
 
 } // namespace Abakus
@@ -163,6 +166,36 @@ const Abakus::number_t::value_type Abakus::number_t::PI = setupPi();
 const Abakus::number_t::value_type Abakus::number_t::E = setupExponential();
 
 #else
+
+// Converts hmath number to a string.
+
+namespace Abakus
+{
+
+QString convertToString(const HNumber &num)
+{
+    QString str = HMath::formatGenString(num, m_prec);
+    QString decimalSymbol = KGlobal::locale()->decimalSymbol();
+    str.replace('.', decimalSymbol);
+
+    QStringList parts = QStringList::split("e", str);
+    QRegExp zeroKiller("(" + QRegExp::escape(decimalSymbol) +
+                       "\\d*[1-9])0*$"); // Remove trailing zeroes.
+    QRegExp zeroKiller2("(" + QRegExp::escape(decimalSymbol) + ")0*$");
+
+    str = parts[0];
+    str.replace(zeroKiller, "\\1");
+    str.replace(zeroKiller2, "\\1");
+    if(str.endsWith(decimalSymbol))
+        str.truncate(str.length() - 1); // Remove trailing period.
+
+    if(parts.count() > 1 && parts[1] != "0")
+        str += QString("e%1").arg(parts[1]);
+
+    return str;
+}
+
+} // namespace Abakus.
 
 const Abakus::number_t::value_type Abakus::number_t::PI = HMath::pi();
 const Abakus::number_t::value_type Abakus::number_t::E = HMath::exp(1);

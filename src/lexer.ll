@@ -75,7 +75,7 @@ HEX [0-9A-Fa-f]+
  * digits, such as .32, -234.45, .0, etc.  Numbers are only read in the BEGIN
  * state.
  */
-{DIGITS}*(\.{DIGITS}+)(e[-+]?{DIGITS}+)? {
+{DIGITS}*([\.,]{DIGITS}+)(e[-+]?{DIGITS}+)? {
     yyCurTokenPos += yyThisTokenLength;
     yyThisTokenLength = yyleng;
     return NUM;
@@ -91,7 +91,7 @@ HEX [0-9A-Fa-f]+
  /* Read numbers with at least the integral part, such as +4234, -34e8, etc.
  * Numbers are only read in the BEGIN state.
  */
-{DIGITS}+(\.{DIGITS}*)?(e[-+]?{DIGITS}+)? {
+{DIGITS}+([\.,]{DIGITS}*)?(e[-+]?{DIGITS}+)? {
     yyCurTokenPos += yyThisTokenLength;
     yyThisTokenLength = yyleng;
     return NUM;
