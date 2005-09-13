@@ -108,8 +108,8 @@ is not required, you may use $foo=no on the command line to go without it.""".re
         opts = Options(cachefile, env['ARGS'])
 
     opts.AddOptions(
-        PackageOption('bison', fixup('use the Bison parser generator'), 'no'),
-        PackageOption('flex', fixup('use the Flex scanner generator'), 'no'),
+        PackageOption('bison', fixup('use the Bison parser generator'), 'yes'),
+        PackageOption('flex', fixup('use the Flex scanner generator'), 'yes'),
         EnumOption ('mpfr', 'use the MPFR high-precision library', 'check',
                     allowed_values=('yes', 'no', 'check'), map={}, ignorecase=1),
         ('ABAKUS_CONFIGURED', '', 0),

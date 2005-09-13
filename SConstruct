@@ -6,7 +6,7 @@
 
 ## Load the builders in config
 tools    = [ 'default', 'help', 'generic', 'kde', 'abakus' ]
-toolpath = [ './', './admin' ]
+toolpath = [ './', './bksys' ]
 
 # Required as part of SCons
 env = Environment(tools = tools, toolpath = toolpath)
@@ -33,3 +33,4 @@ Export('env')
 env.subdirs('src')
 
 env.docfolder('doc/en', 'en', 'abakus/')
+env.SConscript('doc/en/SConscript')
