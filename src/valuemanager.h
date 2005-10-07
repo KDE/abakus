@@ -54,6 +54,9 @@ class ValueManager : public QObject
     void signalValueRemoved(const QString &name);
     void signalValueChanged(const QString &name, Abakus::number_t newValue);
 
+    public slots:
+    void slotRemoveUserVariables();
+
     private:
     ValueManager(QObject *parent = 0, const char *name = "value manager");
 

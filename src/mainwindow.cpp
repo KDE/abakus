@@ -121,17 +121,13 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     connect(m_edit, SIGNAL(textChanged()), SLOT(slotTextChanged()));
 
     m_listSplitter = new QSplitter(Vertical, m_mainSplitter);
-    m_fnList = new ListView(m_listSplitter);
+    m_fnList = new FunctionListView(m_listSplitter);
     m_fnList->addColumn("Functions");
     m_fnList->addColumn("Value");
-    connect(m_fnList, SIGNAL(contextMenuRequested(QListViewItem *, const QPoint &, int)),
-                      SLOT(slotFnRightClick(QListViewItem *, const QPoint &)));
 
-    m_varList = new ListView(m_listSplitter);
+    m_varList = new VariableListView(m_listSplitter);
     m_varList->addColumn("Variables");
     m_varList->addColumn("Value");
-    connect(m_varList, SIGNAL(contextMenuRequested(QListViewItem *, const QPoint &, int)),
-                      SLOT(slotVarRightClick(QListViewItem *, const QPoint &)));
 
     connect(FunctionManager::instance(), SIGNAL(signalFunctionAdded(const QString &)),
             this, SLOT(slotNewFunction(const QString &)));
@@ -726,53 +722,6 @@ QString MainWindow::interpolateExpression(const QString &text, ResultListViewTex
     }
 
     return str;
-}
-
-void MainWindow::slotFnRightClick(QListViewItem *item, const QPoint &point)
-{
-    if(!item)
-        return;
-
-    static KPopupMenu *menu = 0;
-    if(!menu) {
-        menu = new KPopupMenu(this);
-        menu->insertItem(i18n("Remove &function"), this, SLOT(slotRemoveSelectedFn()));
-    }
-
-    menu->popup(point);
-}
-
-void MainWindow::slotVarRightClick(QListViewItem *item, const QPoint &point)
-{
-    if(!item)
-        return;
-
-    static KPopupMenu *menu = 0;
-    static int enableMenuId = -1;
-
-    if(!menu) {
-        menu = new KPopupMenu(this);
-        enableMenuId = menu->insertItem(i18n("Remove &variable"), this, SLOT(slotRemoveSelectedVar()));
-    }
-
-    menu->setItemEnabled(enableMenuId, !ValueManager::instance()->isValueReadOnly(item->text(0)));
-    menu->popup(point);
-}
-
-void MainWindow::slotRemoveSelectedFn()
-{
-    // Use section to get the beginning of the string up to (and not
-    // including) the first (
-    QString name = m_fnList->selectedItem()->text(0).section('(', 0, 0);
-
-    FunctionManager::instance()->removeFunction(name);
-}
-
-void MainWindow::slotRemoveSelectedVar()
-{
-    QString name = m_varList->selectedItem()->text(0);
-
-    ValueManager::instance()->removeValue(name);
 }
 
 void MainWindow::slotPrecisionAuto()

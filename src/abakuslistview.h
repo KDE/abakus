@@ -23,13 +23,70 @@
 
 #include "numerictypes.h"
 
+class KPopupMenu;
+
 class ListView : public KListView
 {
+    Q_OBJECT
+
     public:
     ListView(QWidget *parent, const char *name = 0);
 
     protected:
     virtual QDragObject *dragObject();
+
+    /**
+     * Used to enable fancy popup handling support in subclasses.  Subclasses
+     * also need to reimplement a few functions if they want to use this.
+     *
+     * This should be called in the subclass's constructor.
+     */
+    void enablePopupHandler(bool enable);
+
+    /**
+     * If using the popup menu handling, the subclass needs to return a
+     * translated string of the form "Remove selected <itemtype>".
+     */
+    virtual QString removeItemString() const;
+
+    /**
+     * If using the popup menu handling, the subclass needs to return a
+     * translated string of the form "Remove all <itemtype>s."  I recommend
+     * also appending a " (%n <itemtype>s), which you can use the @p count
+     * parameter for.
+     */
+    virtual QString removeAllItemsString(unsigned count) const;
+
+    protected slots:
+    /**
+     * If using the popup menu handing, the subclass needs to reimplement this
+     * function to remove the selected item, which is passed in as a
+     * parameter.
+     */
+    virtual void removeSelectedItem(QListViewItem *item);
+
+    /**
+     * If using the popup menu handling, the subclass needs to reimplement this
+     * function to remove all items.
+     */
+    virtual void removeAllItems();
+
+    /**
+     * If using the popup menu handling, this function may be called to
+     * determine whether the selected item given by @p item is removable.
+     */
+    virtual bool isItemRemovable(QListViewItem *item) const;
+
+    private slots:
+    void rightClicked(QListViewItem *item, const QPoint &pt);
+    void removeSelected();
+
+    private:
+    KPopupMenu *m_menu;
+    bool m_usePopup;
+
+    int m_removeSingleId;
+    int m_removeAllId;
 };
 
 class ValueListViewItem : public KListViewItem
@@ -39,11 +96,52 @@ class ValueListViewItem : public KListViewItem
 
     // Will cause the list item to rethink the text.
     void valueChanged();
+    void valueChanged(const Abakus::number_t &newValue);
 
-    void valueChanged(const Abakus::number_t &newValue) { m_value = newValue; valueChanged(); }
+    Abakus::number_t itemValue() const;
 
     private:
     Abakus::number_t m_value;
+};
+
+/**
+ * Subclass used for the list of variables.
+ */
+class VariableListView : public ListView
+{
+    Q_OBJECT
+    public:
+
+    VariableListView(QWidget *parent, const char *name = 0);
+
+    protected:
+    virtual QString removeItemString() const;
+    virtual QString removeAllItemsString(unsigned count) const;
+    virtual bool isItemRemovable(QListViewItem *item) const;
+
+    protected slots:
+    virtual void removeSelectedItem(QListViewItem *item);
+    virtual void removeAllItems();
+};
+
+/**
+ * Subclass used for the list of functions.
+ */
+class FunctionListView : public ListView
+{
+    Q_OBJECT
+    public:
+
+    FunctionListView(QWidget *parent, const char *name = 0);
+
+    protected:
+    virtual QString removeItemString() const;
+    virtual QString removeAllItemsString(unsigned count) const;
+    virtual bool isItemRemovable(QListViewItem *item) const;
+
+    protected slots:
+    virtual void removeSelectedItem(QListViewItem *item);
+    virtual void removeAllItems();
 };
 
 #endif

@@ -91,12 +91,6 @@ class MainWindow : public KMainWindow
     void slotNewFunction(const QString &name);
     void slotRemoveFunction(const QString &name);
 
-    void slotFnRightClick(QListViewItem *item, const QPoint &point);
-    void slotVarRightClick(QListViewItem *item, const QPoint &point);
-
-    void slotRemoveSelectedFn();
-    void slotRemoveSelectedVar();
-
     private:
     int getParenthesesLevel(const QString &str);
 

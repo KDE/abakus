@@ -76,6 +76,15 @@ void ValueManager::removeValue(const QString &name)
     m_values.remove(name);
 }
 
+void ValueManager::slotRemoveUserVariables()
+{
+    QStringList vars = valueNames();
+
+    for(QStringList::ConstIterator var = vars.constBegin(); var != vars.constEnd(); ++var)
+        if(!isValueReadOnly(*var))
+            removeValue(*var);
+}
+
 QStringList ValueManager::valueNames() const
 {
     return m_values.keys();
