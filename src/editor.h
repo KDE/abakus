@@ -85,9 +85,12 @@ class Editor : public QTextEdit
     void checkMatching();
     void doMatchingLeft();
     void doMatchingRight();
+    void historyBack();
+    void historyForward();
     
   protected:
     void keyPressEvent( QKeyEvent* );
+    void wheelEvent( QWheelEvent* );
     QString formatNumber( const Abakus::number_t &value ) const;
     
   private:

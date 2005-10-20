@@ -647,37 +647,49 @@ QString Editor::formatNumber( const Abakus::number_t &value ) const
   return value.toString();
 }
 
+void Editor::historyBack()
+{
+  if( d->history.isEmpty() )
+    return;
+
+  d->index--;
+
+  if( d->index < 0 )
+    d->index = 0;
+
+  setText( d->history[ d->index ] );
+  setCursorPosition( 0, text().length() );
+  ensureCursorVisible();
+}
+
+void Editor::historyForward()
+{
+  if( d->history.isEmpty() )
+    return;
+
+  d->index++;
+
+  if( d->index >= (int) d->history.count() )
+    d->index = d->history.count() - 1;
+
+  setText( d->history[ d->index ] );
+  setCursorPosition( 0, text().length() );
+  ensureCursorVisible();
+}
+
 void Editor::keyPressEvent( QKeyEvent* e )
 {
-  if( e->key() == Key_Up && d->history.count() )
+  if( e->key() == Key_Up )
   {
-    d->index--;
-
-    if( d->index < 0 )
-      d->index = 0;
-
-    setText( d->history[ d->index ] );
-    setCursorPosition( 0, text().length() );
-    ensureCursorVisible();
-
+    historyBack();
     e->accept();
-
     return;
   }
     
-  if( e->key() == Key_Down && d->history.count() )
+  if( e->key() == Key_Down )
   {
-    d->index++;
-
-    if( d->index >= (int) d->history.count() )
-      d->index = d->history.count() - 1;
-
-    setText( d->history[ d->index ] );
-    setCursorPosition( 0, text().length() );
-    ensureCursorVisible();
-
+    historyForward();
     e->accept();
-
     return;
   }
     
@@ -696,6 +708,16 @@ void Editor::keyPressEvent( QKeyEvent* e )
   }
     
   QTextEdit::keyPressEvent( e );
+}
+
+void Editor::wheelEvent( QWheelEvent *e )
+{
+  if( e->delta() > 0 )
+    historyBack();
+  else if( e->delta() < 0 )
+    historyForward();
+
+  e->accept();
 }
 
 void Editor::setSyntaxHighlight( bool enable )
@@ -865,3 +887,5 @@ void EditorCompletion::moveCompletionPopup()
 }
 
 #include "editor.moc"
+
+// vim: set et sw=2 ts=8:
