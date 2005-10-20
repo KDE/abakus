@@ -369,6 +369,12 @@ HNumber::HNumber( const char* str )
     d->num = h_str2num( s );
     delete [] s;
 
+    if( expd >= HMATH_MAX_PREC || // too large
+        expd <= -HMATH_MAX_PREC ) // too small
+    {
+      d->nan = true;
+    }
+
     if( expd != 0 )
     {
       bc_num factor = h_raise10( expd );
@@ -1362,6 +1368,10 @@ void test_create()
   CHECK( HNumber("1.0"), "1" );
   CHECK( HNumber("2.0"), "2" );
   CHECK( HNumber("1e-3"), "0.001" );
+
+  // too large or small
+  CHECK( HNumber("1e200"), "NaN" );
+  CHECK( HNumber("1e-200"), "NaN" );
 }
 
 void test_format()
