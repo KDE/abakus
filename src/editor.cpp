@@ -70,9 +70,9 @@ class EditorHighlighter : public QSyntaxHighlighter
 public:
   EditorHighlighter( Editor* );
   int highlightParagraph ( const QString & text, int );
-  
-private:  
-  Editor* editor;  
+
+private:
+  Editor* editor;
 };
 
 class Editor::Private
@@ -143,13 +143,13 @@ void ChoiceItem::paint( QPainter* painter )
   QFontMetrics fm = painter->fontMetrics();
   int yPos = ( ( itemHeight - fm.height() ) / 2 ) + fm.ascent();
   painter->drawText( 3, yPos, item );
-  
+
   //int xPos = fm.width( item );
   int xPos = QMAX(fm.width(item), minNameWidth);
   if( !isSelected() )
     painter->setPen( listBox()->palette().disabled().text().dark() );
   painter->drawText( 10 + xPos, yPos, desc );
-}  
+}
 
 EditorHighlighter::EditorHighlighter( Editor* e ):
   QSyntaxHighlighter( e )
@@ -180,7 +180,7 @@ int EditorHighlighter::highlightParagraph ( const QString & text, int )
       case Token::Number:
         color = editor->highlightColor( Editor::Number );
         break;
-        
+
       case Token::Identifier:
         {
           color = editor->highlightColor( Editor::Variable );
@@ -189,10 +189,10 @@ int EditorHighlighter::highlightParagraph ( const QString & text, int )
 	  }
         }
         break;
-          
+
       case Token::Operator:
         break;
-        
+
       default: break;
     };
     if( token.pos() >= 0 ) {
@@ -223,27 +223,27 @@ Editor::Editor( QWidget* parent, const char* name ):
   setWordWrap( NoWrap );
   setHScrollBarMode( AlwaysOff );
   setVScrollBarMode( AlwaysOff );
-  setTextFormat( PlainText ); 
+  setTextFormat( PlainText );
   setAutoFormatting( AutoNone );
   setTabChangesFocus( true );
   setLinkUnderline( false );
-  
+
   connect( d->completion, SIGNAL( selectedCompletion( const QString& ) ),
     SLOT( autoComplete( const QString& ) ) );
-  connect( this, SIGNAL( textChanged() ), SLOT( checkAutoComplete() ) );    
+  connect( this, SIGNAL( textChanged() ), SLOT( checkAutoComplete() ) );
   connect( d->completionTimer, SIGNAL( timeout() ), SLOT( triggerAutoComplete() ) );
-  
-  connect( this, SIGNAL( textChanged() ), SLOT( checkMatching() ) );    
+
+  connect( this, SIGNAL( textChanged() ), SLOT( checkMatching() ) );
   connect( d->matchingTimer, SIGNAL( timeout() ), SLOT( doMatchingLeft() ) );
-  connect( d->matchingTimer, SIGNAL( timeout() ), SLOT( doMatchingRight() ) );  
-  connect( this, SIGNAL( textChanged() ), SLOT( checkAutoCalc() ) );    
+  connect( d->matchingTimer, SIGNAL( timeout() ), SLOT( doMatchingRight() ) );
+  connect( this, SIGNAL( textChanged() ), SLOT( checkAutoCalc() ) );
   connect( d->autoCalcTimer, SIGNAL( timeout() ), SLOT( autoCalc() ) );
-  d->autoCalcLabel = new CalcResultLabel( 0, "autocalc", WStyle_StaysOnTop | 
+  d->autoCalcLabel = new CalcResultLabel( 0, "autocalc", WStyle_StaysOnTop |
     WStyle_Customize | WStyle_NoBorder | WStyle_Tool |  WX11BypassWM );
   d->autoCalcLabel->setFrameStyle( QFrame::Plain | QFrame::Box );
   d->autoCalcLabel->setPalette( QToolTip::palette() );
   d->autoCalcLabel->hide();
-  
+
   setHighlightColor( Number, QColor(0,0,127) );
   setHighlightColor( FunctionName, QColor(85,0,0) );
   setHighlightColor( Variable, QColor(0,85,0) );
@@ -312,12 +312,12 @@ void Editor::setDecimalDigits( int digits )
 void Editor::appendHistory( const QString& text )
 {
   if( text.isEmpty() ) return;
-  
+
   QString lastText;
   if( d->history.count() )
     lastText = d->history[ d->history.count()-1 ];
-  if( text == lastText ) return;  
-    
+  if( text == lastText ) return;
+
   d->history.append( text );
   d->index = d->history.count()-1;
 }
@@ -340,9 +340,9 @@ void Editor::setText(const QString &txt)
 }
 
 void Editor::checkAutoComplete()
-{  
+{
   if( !d->autoCompleteEnabled ) return;
-  
+
   d->completionTimer->stop();
   d->completionTimer->start( 500, true );
 }
@@ -350,7 +350,7 @@ void Editor::checkAutoComplete()
 void Editor::checkMatching()
 {
   if( !d->syntaxHighlightEnabled ) return;
-  
+
   d->matchingTimer->stop();
   d->matchingTimer->start( 200, true );
 }
@@ -359,10 +359,10 @@ void Editor::checkAutoCalc()
 {
   // Calc-As-You-Type
   if( !d->autoCalcEnabled ) return;
-  
+
   d->autoCalcTimer->stop();
   d->autoCalcTimer->start( 1000, true );
-  d->autoCalcLabel->hide();  
+  d->autoCalcLabel->hide();
 }
 
 void Editor::doMatchingLeft()
@@ -372,7 +372,7 @@ void Editor::doMatchingLeft()
   // tokenize the expression
   int para = 0, curPos = 0;
   getCursorPosition( &para, &curPos );
-  
+
   // check for right par
   QString subtext = text().left( curPos );
   Tokens tokens = Evaluator::scan( subtext );
@@ -390,7 +390,7 @@ void Editor::doMatchingLeft()
     int k = 0;
     Token matchToken;
     int matchPos = -1;
-    
+
     for( k = tokens.count()-2; k >= 0; k-- )
     {
       if( par < 1 ) break;
@@ -404,16 +404,16 @@ void Editor::doMatchingLeft()
         if( par == 0 ) matchPos = matchToken.pos();
       }
     }
-    
+
     if( matchPos >= 0 )
     {
       setSelection( 0, matchPos, 0, matchPos+1, 2 );
       setSelection( 0, lastToken.pos(), 0, lastToken.pos()+1, 1 );
       setCursorPosition( para, curPos );
-    }    
+    }
   }
 }
-  
+
 void Editor::doMatchingRight()
 {
   if( !d->syntaxHighlightEnabled ) return;
@@ -421,14 +421,14 @@ void Editor::doMatchingRight()
   // tokenize the expression
   int para = 0, curPos = 0;
   getCursorPosition( &para, &curPos );
-  
+
   // check for left par
   QString subtext = text().right( text().length() - curPos );
   Tokens tokens = Evaluator::scan( subtext );
   if( !tokens.valid() ) return;
   if( tokens.count()<1 ) return;
   Token firstToken = tokens[ 0 ];
-  
+
   // left par ?
   if( firstToken.isOperator() )
   if( firstToken.asOperator() == Token::LeftPar )
@@ -439,7 +439,7 @@ void Editor::doMatchingRight()
     unsigned int k = 0;
     Token matchToken;
     int matchPos = -1;
-    
+
     for( k = 1; k < tokens.count(); k++ )
     {
       if( par < 1 ) break;
@@ -453,21 +453,21 @@ void Editor::doMatchingRight()
         if( par == 0 ) matchPos = matchToken.pos();
       }
     }
-    
+
     if( matchPos >= 0 )
     {
       setSelection( 0, curPos+matchPos, 0, curPos+matchPos+1, 2 );
       setSelection( 0, curPos+firstToken.pos(), 0, curPos+firstToken.pos()+1, 1 );
       setCursorPosition( para, curPos );
-    }    
+    }
   }
-  
+
 }
 
 void Editor::triggerAutoComplete()
-{  
+{
   if( !d->autoCompleteEnabled ) return;
-  
+
   // tokenize the expression (don't worry, this is very fast)
   // faster now that it uses flex. ;)
   int para = 0, curPos = 0;
@@ -482,18 +482,18 @@ void Editor::triggerAutoComplete()
 
   if(tokens.isEmpty() || subtext.endsWith(" "))
     return;
-  
+
   Token lastToken = tokens[ tokens.count()-1 ];
-  
-  // last token must be an identifier  
+
+  // last token must be an identifier
   if( !lastToken.isIdentifier() )
     return;
 
   QString id = lastToken.text();
   if( id.isEmpty() )
     return;
-  
-  // find matches in function names  
+
+  // find matches in function names
   QStringList fnames = FunctionManager::instance()->functionList(FunctionManager::All);
   QStringList choices;
 
@@ -505,13 +505,13 @@ void Editor::triggerAutoComplete()
       ::Function* f = FunctionManager::instance()->function( str );
       if( f && !f->description.isEmpty() )
         str.append( ':' ).append( f->description );
-      
+
       choices.append( str );
     }
 
-  choices.sort();    
+  choices.sort();
 
-  // find matches in variables names    
+  // find matches in variables names
   QStringList vchoices;
   QStringList values = ValueManager::instance()->valueNames();
 
@@ -527,18 +527,19 @@ void Editor::triggerAutoComplete()
 
   vchoices.sort();
   choices += vchoices;
-  
+
   // no match, don't bother with completion
   if( !choices.count() ) return;
-  
-  // single perfect match, no need to give choices
-  if( choices.count()==1 && choices[0].lower() == id.lower() )
-    return;
-      
-  // one match, complete it for the user    
+
+  // one match, complete it for the user
   if( choices.count()==1 )
   {
     QString str = QStringList::split( ':', choices[0] )[0];
+
+    // single perfect match, no need to give choices.
+    if(str == id.lower())
+      return;
+
     str = str.remove( 0, id.length() );
     int para = 0, curPos = 0;
     getCursorPosition( &para, &curPos );
@@ -548,7 +549,7 @@ void Editor::triggerAutoComplete()
     blockSignals( false );
     return;
   }
-  
+
   // present the user with completion choices
   d->completion->showCompletion( choices );
 }
@@ -557,7 +558,7 @@ void Editor::autoComplete( const QString& item )
 {
   if( !d->autoCompleteEnabled || item.isEmpty() )
     return;
-  
+
   int para = 0, curPos = 0;
   getCursorPosition( &para, &curPos );
 
@@ -566,11 +567,11 @@ void Editor::autoComplete( const QString& item )
 
   if( !tokens.valid() || tokens.count() < 1 )
     return;
-  
+
   Token lastToken = tokens[ tokens.count()-1 ];
   if( !lastToken.isIdentifier() )
     return;
-  
+
   QStringList str = QStringList::split( ':', item );
 
   blockSignals( true );
@@ -587,11 +588,11 @@ void Editor::autoCalc()
   QString str = Evaluator::autoFix( text() );
   if( str.isEmpty() )
     return;
-  
+
   // too short? do not bother...
   Tokens tokens = Evaluator::scan( str );
   if( tokens.count() < 2 )
-    return;  
+    return;
 
   // If we're using set for a function don't try.
   QRegExp setFn("\\s*set.*\\(.*=");
@@ -599,7 +600,7 @@ void Editor::autoCalc()
     return;
 
   // strip off assignment operator, e.g. "x=1+2" becomes "1+2" only
-  // the reason is that we want only to evaluate (on the fly) the expression, 
+  // the reason is that we want only to evaluate (on the fly) the expression,
   // not to update (put the result in) the variable
   if( tokens.count() > 2 && tokens[0].isIdentifier() &&
       tokens[1].asOperator() == Token::Equal )
@@ -617,25 +618,25 @@ void Editor::autoCalc()
       ++it;
     }
   }
-    
+
   Abakus::number_t result = parseString(str.latin1());
   if( Result::lastResult()->type() == Result::Value )
   {
     QString ss = QString("Result: <b>%2</b>").arg(result.toString());
     d->autoCalcLabel->setText( ss );
     d->autoCalcLabel->adjustSize();
-    
+
     // reposition nicely
-    QPoint pos = mapToGlobal( QPoint( 0, 0 ) ); 
+    QPoint pos = mapToGlobal( QPoint( 0, 0 ) );
     pos.setY( pos.y() - d->autoCalcLabel->height() - 1 );
     d->autoCalcLabel->move( pos );
     d->autoCalcLabel->show();
     d->autoCalcLabel->raise();
-    
+
     // do not show it forever
     QTimer::singleShot( 5000, d->autoCalcLabel, SLOT( hide()) );
   }
-  else  
+  else
   {
     // invalid expression
     d->autoCalcLabel->hide();
@@ -685,20 +686,20 @@ void Editor::keyPressEvent( QKeyEvent* e )
     e->accept();
     return;
   }
-    
+
   if( e->key() == Key_Down )
   {
     historyForward();
     e->accept();
     return;
   }
-    
+
   if( e->key() == Key_Enter || e->key() == Key_Return )
   {
     emit returnPressed();
     return;
   }
-  
+
   if( e->key() == Key_Left ||
       e->key() == Key_Right ||
       e->key() == Key_Home ||
@@ -706,7 +707,7 @@ void Editor::keyPressEvent( QKeyEvent* e )
   {
     checkMatching();
   }
-    
+
   QTextEdit::keyPressEvent( e );
 }
 
@@ -734,10 +735,10 @@ bool Editor::isSyntaxHighlightEnabled() const
 void Editor::setHighlightColor( ColorType type, QColor color )
 {
   d->highlightColors[ type ] = color;
-  
-  setSelectionAttributes( 1, highlightColor( Editor::MatchedPar ), false );  
-  setSelectionAttributes( 2, highlightColor( Editor::MatchedPar ), false );  
-  
+
+  setSelectionAttributes( 1, highlightColor( Editor::MatchedPar ), false );
+  setSelectionAttributes( 2, highlightColor( Editor::MatchedPar ), false );
+
   d->highlighter->rehighlight();
 }
 
@@ -751,13 +752,13 @@ EditorCompletion::EditorCompletion( Editor* editor ): QObject( editor )
 {
   d = new Private;
   d->editor = editor;
-  
+
   d->completionPopup = new QVBox( editor->topLevelWidget(), 0, WType_Popup );
   d->completionPopup->setFrameStyle( QFrame::Box | QFrame::Plain );
   d->completionPopup->setLineWidth( 1 );
   d->completionPopup->installEventFilter( this );
   d->completionPopup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum);
-  
+
   d->completionListBox = new QListBox( d->completionPopup );
   d->completionPopup->setFocusProxy( d->completionListBox );
   d->completionListBox->setFrameStyle( QFrame::NoFrame );
@@ -772,9 +773,9 @@ EditorCompletion::~EditorCompletion()
 
 bool EditorCompletion::eventFilter( QObject *obj, QEvent *ev )
 {
-  if ( obj == d->completionPopup || obj == d->completionListBox ) 
+  if ( obj == d->completionPopup || obj == d->completionListBox )
   {
-  
+
     if ( ev->type() == QEvent::KeyPress )
     {
       QKeyEvent *ke = (QKeyEvent*)ev;
@@ -786,23 +787,23 @@ bool EditorCompletion::eventFilter( QObject *obj, QEvent *ev )
       else if ( ke->key() == Key_Left || ke->key() == Key_Right ||
       ke->key() == Key_Up || ke->key() == Key_Down ||
       ke->key() == Key_Home || ke->key() == Key_End ||
-      ke->key() == Key_Prior || ke->key() == Key_Next ) 
+      ke->key() == Key_Prior || ke->key() == Key_Next )
         return false;
-          
+
       d->completionPopup->close();
       d->editor->setFocus();
       QApplication::sendEvent( d->editor, ev );
       return true;
     }
-    
+
     if ( ev->type() == QEvent::MouseButtonDblClick )
     {
       doneCompletion();
       return true;
     }
-    
+
   }
-  
+
   return false;
 }
 
@@ -817,7 +818,7 @@ void EditorCompletion::showCompletion( const QStringList &choices )
 {
   static bool shown = false;
   if( !choices.count() ) return;
-  
+
   d->completionListBox->clear();
   int maxWidth = 0;
   for( unsigned i = 0; i < choices.count(); i++ ) {
@@ -834,7 +835,7 @@ void EditorCompletion::showCompletion( const QStringList &choices )
   }
 
   d->completionListBox->setCurrentItem( 0 );
-  
+
   // size of the pop-up
   d->completionPopup->setMaximumHeight( 120 );
   d->completionPopup->resize( d->completionListBox->sizeHint() +
@@ -866,7 +867,7 @@ void EditorCompletion::moveCompletionPopup()
 
   int pixelsOffset = fm.width( d->editor->text(), curPos );
   pixelsOffset -= d->editor->contentsX();
-  QPoint pos = d->editor->mapToGlobal( QPoint( pixelsOffset, d->editor->height() ) ); 
+  QPoint pos = d->editor->mapToGlobal( QPoint( pixelsOffset, d->editor->height() ) );
 
   // if popup is partially invisible, move to other position
   NETRootInfo info(d->completionPopup->x11Display(),
@@ -881,8 +882,8 @@ void EditorCompletion::moveCompletionPopup()
     pos.setY( pos.y() - h - d->editor->height() );
   if( pos.x() + w > area.x() + area.width() )
     pos.setX( area.x() + area.width() - w );
-        
-  d->completionPopup->move( pos );    
+
+  d->completionPopup->move( pos );
   d->completionListBox->setFocus();
 }
 
