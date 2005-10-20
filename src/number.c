@@ -1442,7 +1442,7 @@ void
 bc_out_long (val, size, space, out_char)
      long val;
      int size, space;
-#ifdef __STDC__
+#ifdef NUMBER__STDC__
      void (*out_char)(int);
 #else
      void (*out_char)();
@@ -1470,7 +1470,7 @@ void
 bc_out_num (num, o_base, out_char, leading_zero)
      bc_num num;
      int o_base;
-#ifdef __STDC__
+#ifdef NUMBER__STDC__
      void (*out_char)(int);
 #else
      void (*out_char)();

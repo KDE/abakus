@@ -38,8 +38,8 @@ extern "C" {
 
 #undef _PROTOTYPE
 
-#ifndef __STDC__
-#define __STDC__
+#ifndef NUMBER__STDC__
+#define NUMBER__STDC__
 #endif
 
 typedef enum {PLUS, MINUS} sign;
@@ -102,7 +102,7 @@ extern bc_num _two_;
 /* Define the _PROTOTYPE macro if it is needed. */
 
 #ifndef _PROTOTYPE
-#ifdef __STDC__
+#ifdef NUMBER__STDC__
 #define _PROTOTYPE(func, args) func args
 #else
 #define _PROTOTYPE(func, args) func()
