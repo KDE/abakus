@@ -49,7 +49,7 @@ ResultListView::ResultListView(QWidget *parent, const char *name) :
 
     setDragEnabled(true);
     setItemMargin(2);
-    setColumnAlignment(ResultColumn, AlignRight);
+    setColumnAlignment(ResultColumn, AlignLeft);
     setColumnAlignment(ShortcutColumn, AlignHCenter);
     setColumnWidthMode(ResultColumn, Maximum);
     setSortColumn(-1);
