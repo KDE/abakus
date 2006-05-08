@@ -1,5 +1,5 @@
 abakus, by Michael Pyne <michael.pyne@kdemail.net>
-Version: 0.90
+Version: 0.91
 
 This is my attempt at creating a light-calculator based on Roberto Alsina's
 initial usability suggestions, and based on the ideas of a few other KDE
@@ -8,12 +8,21 @@ hackers.
 This software is distributed under the terms of the GNU GPL v2.
 
 Synopsis:
- $ tar xvjf abakus-0.90.tar.bz2
- $ cd abakus-0.90
+ $ tar xvjf abakus-0.91.tar.bz2
+ $ cd abakus-0.91
  $ ./configure && make && make install
  $ abakus
 
 Type away, and press Enter to see the result.
+
+Changes since 0.90:
+* Add ability to remove all functions and variables to the context menus of
+  their respective list boxes.
+* Convert out-of-range numbers to NaN.
+* Accept "," as a decimal separator for the benefit of European users.
+* Use correct decimal separator (per KLocale settings) in output.
+* For long results, show the beginning instead of the end of the result,
+  since the beginning is the most significant part of the result.
 
 Changes since 0.85:
 * You now have the option of using the GNU Multiple Precision library for
