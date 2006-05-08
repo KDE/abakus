@@ -29,7 +29,7 @@
 
 #include "mainwindow.h"
 
-const char *const version = "0.91-rc1";
+const char *const version = "0.91";
 
 int main(int argc, char **argv)
 {
