@@ -45,11 +45,6 @@
 
 #include <kdebug.h>
 
-#include <algorithm>
-
-// XXX: QT 4: Replace this with qBinaryFind().
-using std::binary_search;
-
 class CalcResultLabel : public QLabel
 {
 public:
@@ -184,9 +179,12 @@ int EditorHighlighter::highlightParagraph ( const QString & text, int )
       case Token::Identifier:
         {
           color = editor->highlightColor( Editor::Variable );
-	  if( binary_search( fnames.constBegin(), fnames.constEnd(), text) ) {
-	    color = editor->highlightColor( Editor::FunctionName );
-	  }
+
+// XXX: QT 4: Replace this with qBinaryFind().
+
+          if( fnames.contains( text ) ) {
+            color = editor->highlightColor( Editor::FunctionName );
+          }
         }
         break;
 
