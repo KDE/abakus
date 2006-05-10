@@ -21,10 +21,13 @@
 
 #include <klistview.h>
 #include "numerictypes.h"
+//Added by qt3to4:
+#include <QContextMenuEvent>
+#include <QLabel>
 
 class KPopupMenu;
 class QLabel;
-class QDragObject;
+class Q3DragObject;
 class ResultListViewText;
 
 namespace ResultList {
@@ -44,14 +47,14 @@ class ResultListView : public KListView
 
     protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
-    virtual QDragObject *dragObject();
+    virtual Q3DragObject *dragObject();
 
     signals:
     void signalEntrySelected(const QString &text);
     void signalResultSelected(const QString &text);
 
     private slots:
-    void slotDoubleClicked(QListViewItem *item, const QPoint & /* Ignored */, int c);
+    void slotDoubleClicked(Q3ListViewItem *item, const QPoint & /* Ignored */, int c);
     void slotCopyResult();
 
     private:

@@ -22,13 +22,16 @@
 #include <kmainwindow.h>
 
 #include "numerictypes.h"
+//Added by qt3to4:
+#include <QContextMenuEvent>
+#include <QEvent>
 
 class QPoint;
-class QVBox;
+class Q3VBox;
 class QCheckBox;
 class QRadioButton;
-class QBoxLayout;
-class QListViewItem;
+class Q3BoxLayout;
+class Q3ListViewItem;
 class QSplitter;
 class QTimer;
 
@@ -112,14 +115,14 @@ class MainWindow : public KMainWindow
     }
 
     private:
-    QVBox *m_history;
+    Q3VBox *m_history;
     QRadioButton *m_degrees;
     QRadioButton *m_radians;
     Editor *m_edit;
     KPopupMenu *m_popup;
     ResultListView *m_result;
     QString m_lastError;
-    QBoxLayout *m_layout;
+    Q3BoxLayout *m_layout;
     KListView *m_fnList, *m_varList;
     QSplitter *m_mainSplitter, *m_listSplitter;
     QSize m_newSize, m_oldSize;

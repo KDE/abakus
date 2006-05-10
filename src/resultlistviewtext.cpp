@@ -105,7 +105,7 @@ void ResultListViewText::paintCell(QPainter *p, const QColorGroup &cg, int colum
     KListViewItem::paintCell(p, group, column, width, align);
 }
 
-int ResultListViewText::width(const QFontMetrics &fm, const QListView *lv, int c) const
+int ResultListViewText::width(const QFontMetrics &fm, const Q3ListView *lv, int c) const
 {
     // Simulate painting the text to get accurate results.
     if(c == ResultColumn) {

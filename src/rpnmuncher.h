@@ -22,8 +22,8 @@
 class QString;
 class Operand;
 
-template<class T> class QValueStack;
-typedef QValueStack<Operand> OperandStack;
+template<class T> class Q3ValueStack;
+typedef Q3ValueStack<Operand> OperandStack;
 
 #include "numerictypes.h"
 

@@ -23,7 +23,7 @@
 #define ABAKUS_EVALUATOR_H
 
 #include <qstring.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 #include "numerictypes.h"
 
@@ -80,10 +80,10 @@ protected:
 };
 
 
-class Tokens: public QValueVector<Token>
+class Tokens: public Q3ValueVector<Token>
 {
 public:
-    Tokens(): QValueVector<Token>(), m_valid(true) {};
+    Tokens(): Q3ValueVector<Token>(), m_valid(true) {};
 
     bool valid() const { return m_valid; }
     void setValid( bool v ) { m_valid = v; }

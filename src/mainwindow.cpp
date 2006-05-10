@@ -32,11 +32,17 @@
 #include <kinputdialog.h>
 
 #include <qlayout.h>
-#include <qvbox.h>
-#include <qhbox.h>
+#include <q3vbox.h>
+#include <q3hbox.h>
 #include <qradiobutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qsplitter.h>
+//Added by qt3to4:
+#include <QEvent>
+#include <QLabel>
+#include <Q3HBoxLayout>
+#include <QContextMenuEvent>
+#include <Q3VBoxLayout>
 
 #include "editor.h"
 #include "evaluator.h"
@@ -54,7 +60,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
 {
     m_mainSplitter = new QSplitter(this);
     QWidget *box = new QWidget(m_mainSplitter);
-    QVBoxLayout *layout = new QVBoxLayout(box);
+    Q3VBoxLayout *layout = new Q3VBoxLayout(box);
     m_layout = layout;
     layout->setSpacing(6);
     layout->setMargin(6);
@@ -62,18 +68,18 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     QWidget *configBox = new QWidget(box);
     layout->addWidget(configBox);
 
-    QHBoxLayout *configLayout = new QHBoxLayout(configBox);
+    Q3HBoxLayout *configLayout = new Q3HBoxLayout(configBox);
 
     configLayout->addWidget(new QWidget(configBox));
 
     QLabel *label = new QLabel(i18n("History: "), configBox);
-    label->setAlignment(AlignCenter);
+    label->setAlignment(Qt::AlignCenter);
     configLayout->addWidget(label);
 
-    QButtonGroup *buttonGroup = new QButtonGroup(0);
+    Q3ButtonGroup *buttonGroup = new Q3ButtonGroup(0);
 
     QWidget *buttonGroupBox = new QWidget(configBox);
-    QHBoxLayout *buttonGroupLayout = new QHBoxLayout(buttonGroupBox);
+    Q3HBoxLayout *buttonGroupLayout = new Q3HBoxLayout(buttonGroupBox);
     buttonGroupLayout->addStretch(0);
 
     configLayout->addWidget(buttonGroupBox);
@@ -89,13 +95,13 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     buttonGroupLayout->addWidget(m_radians);
     connect(m_radians, SIGNAL(clicked()), SLOT(slotRadians()));
 
-    m_history = new QVBox(box);
+    m_history = new Q3VBox(box);
     layout->addWidget(m_history);
     m_history->setSpacing(6);
     m_history->setMargin(0);
 
     m_result = new ResultListView(m_history);
-    m_result->setSelectionMode(QListView::NoSelection);
+    m_result->setSelectionMode(Q3ListView::NoSelection);
     m_result->setHScrollBarMode(ResultListView::AlwaysOff);
     connect(m_result, SIGNAL(signalEntrySelected(const QString &)),
                       SLOT(slotEntrySelected(const QString &)));
@@ -105,7 +111,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     m_history->setStretchFactor(m_result, 1);
     layout->setStretchFactor(m_history, 1);
 
-    QHBox *editBox = new QHBox(box);
+    Q3HBox *editBox = new Q3HBox(box);
     layout->addWidget(editBox);
     editBox->setSpacing(6);
 
@@ -120,7 +126,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     connect(m_edit, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
     connect(m_edit, SIGNAL(textChanged()), SLOT(slotTextChanged()));
 
-    m_listSplitter = new QSplitter(Vertical, m_mainSplitter);
+    m_listSplitter = new QSplitter(Qt::Vertical, m_mainSplitter);
     m_fnList = new FunctionListView(m_listSplitter);
     m_fnList->addColumn("Functions");
     m_fnList->addColumn("Value");
@@ -303,7 +309,7 @@ void MainWindow::slotTextChanged()
 
         if(str.find(QRegExp("^[-+*/^]")) != -1) {
             m_edit->setText("ans " + str + " ");
-            m_edit->moveCursor(QTextEdit::MoveEnd, false);
+            m_edit->moveCursor(Q3TextEdit::MoveEnd, false);
         }
     }
 }
@@ -506,27 +512,27 @@ void MainWindow::setupLayout()
     KStdAction::quit(kapp, SLOT(quit()), ac);
     KStdAction::showMenubar(this, SLOT(slotToggleMenuBar()), ac);
 
-    KToggleAction *ta = new KToggleAction(i18n("&Degrees"), SHIFT + ALT + Key_D, this, SLOT(slotDegrees()), ac, "setDegreesMode");
+    KToggleAction *ta = new KToggleAction(i18n("&Degrees"), Qt::SHIFT + Qt::ALT + Qt::Key_D, this, SLOT(slotDegrees()), ac, "setDegreesMode");
     ta->setExclusiveGroup("TrigMode");
     ta->setChecked(trigMode() == Abakus::Degrees);
 
-    ta = new KToggleAction(i18n("&Radians"), SHIFT + ALT + Key_R, this, SLOT(slotRadians()), ac, "setRadiansMode");
+    ta = new KToggleAction(i18n("&Radians"), Qt::SHIFT + Qt::ALT + Qt::Key_R, this, SLOT(slotRadians()), ac, "setRadiansMode");
     ta->setExclusiveGroup("TrigMode");
     ta->setChecked(trigMode() == Abakus::Radians);
 
-    ta = new KToggleAction(i18n("Show &History List"), SHIFT + ALT + Key_H, this, SLOT(slotToggleHistoryList()), ac, "toggleHistoryList");
+    ta = new KToggleAction(i18n("Show &History List"), Qt::SHIFT + Qt::ALT + Qt::Key_H, this, SLOT(slotToggleHistoryList()), ac, "toggleHistoryList");
     ta->setChecked(true);
 
-    ta = new KToggleAction(i18n("Show &Variables"), SHIFT + ALT + Key_V, this, SLOT(slotToggleVariableList()), ac, "toggleVariableList");
+    ta = new KToggleAction(i18n("Show &Variables"), Qt::SHIFT + Qt::ALT + Qt::Key_V, this, SLOT(slotToggleVariableList()), ac, "toggleVariableList");
     ta->setChecked(true);
 
-    ta = new KToggleAction(i18n("Show &Functions"), SHIFT + ALT + Key_F, this, SLOT(slotToggleFunctionList()), ac, "toggleFunctionList");
+    ta = new KToggleAction(i18n("Show &Functions"), Qt::SHIFT + Qt::ALT + Qt::Key_F, this, SLOT(slotToggleFunctionList()), ac, "toggleFunctionList");
     ta->setChecked(true);
 
-    ta = new KToggleAction(i18n("Activate &Compact Mode"), SHIFT + ALT + Key_C, this, SLOT(slotToggleCompactMode()), ac, "toggleCompactMode");
+    ta = new KToggleAction(i18n("Activate &Compact Mode"), Qt::SHIFT + Qt::ALT + Qt::Key_C, this, SLOT(slotToggleCompactMode()), ac, "toggleCompactMode");
     ta->setChecked(false);
 
-    ta = new KToggleAction(i18n("Use R&PN Mode"), SHIFT + ALT + Key_P, this, SLOT(slotToggleExpressionMode()), ac, "toggleExpressionMode");
+    ta = new KToggleAction(i18n("Use R&PN Mode"), Qt::SHIFT + Qt::ALT + Qt::Key_P, this, SLOT(slotToggleExpressionMode()), ac, "toggleExpressionMode");
     ta->setChecked(false);
 
     // Precision actions.
@@ -554,9 +560,9 @@ void MainWindow::setupLayout()
     ta->setExclusiveGroup("Precision");
     ta->setChecked(false);
 
-    new KAction(i18n("Clear &History"), "editclear", SHIFT + ALT + Key_L, m_result, SLOT(clear()), ac, "clearHistory");
+    new KAction(i18n("Clear &History"), "editclear", Qt::SHIFT + Qt::ALT + Qt::Key_L, m_result, SLOT(clear()), ac, "clearHistory");
 
-    new KAction(i18n("Select Editor"), "goto", Key_F6, m_edit, SLOT(setFocus()), ac, "select_edit");
+    new KAction(i18n("Select Editor"), "goto", Qt::Key_F6, m_edit, SLOT(setFocus()), ac, "select_edit");
 }
 
 void MainWindow::populateListViews()
@@ -578,7 +584,7 @@ KAction *MainWindow::action(const char *key) const
 void MainWindow::slotEntrySelected(const QString &text)
 {
     m_edit->setText(text);
-    m_edit->moveCursor(QTextEdit::MoveEnd, false);
+    m_edit->moveCursor(Q3TextEdit::MoveEnd, false);
 }
 
 void MainWindow::slotResultSelected(const QString &text)
@@ -642,7 +648,7 @@ void MainWindow::slotRemoveFunction(const QString &name)
     UserFunction *userFn = FunctionManager::instance()->function(name)->userFn;
     QString fnName = QString("%1(%2)").arg(name, userFn->varName);
 
-    QListViewItem *item = 0;
+    Q3ListViewItem *item = 0;
     while((item = m_fnList->findItem(fnName, 0)) != 0)
         delete item;
 }
@@ -770,14 +776,14 @@ void MainWindow::slotPrecisionCustom()
 
 void MainWindow::redrawResults()
 {
-    QListViewItemIterator it(m_result);
+    Q3ListViewItemIterator it(m_result);
 
     while(it.current()) {
         static_cast<ResultListViewText *>(it.current())->precisionChanged();
         ++it;
     }
 
-    it = QListViewItemIterator (m_varList);
+    it = Q3ListViewItemIterator (m_varList);
 
     while(it.current()) {
         static_cast<ValueListViewItem *>(it.current())->valueChanged();

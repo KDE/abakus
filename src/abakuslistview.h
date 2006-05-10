@@ -33,7 +33,7 @@ class ListView : public KListView
     ListView(QWidget *parent, const char *name = 0);
 
     protected:
-    virtual QDragObject *dragObject();
+    virtual Q3DragObject *dragObject();
 
     /**
      * Used to enable fancy popup handling support in subclasses.  Subclasses
@@ -63,7 +63,7 @@ class ListView : public KListView
      * function to remove the selected item, which is passed in as a
      * parameter.
      */
-    virtual void removeSelectedItem(QListViewItem *item);
+    virtual void removeSelectedItem(Q3ListViewItem *item);
 
     /**
      * If using the popup menu handling, the subclass needs to reimplement this
@@ -75,10 +75,10 @@ class ListView : public KListView
      * If using the popup menu handling, this function may be called to
      * determine whether the selected item given by @p item is removable.
      */
-    virtual bool isItemRemovable(QListViewItem *item) const;
+    virtual bool isItemRemovable(Q3ListViewItem *item) const;
 
     private slots:
-    void rightClicked(QListViewItem *item, const QPoint &pt);
+    void rightClicked(Q3ListViewItem *item, const QPoint &pt);
     void removeSelected();
 
     private:
@@ -92,7 +92,7 @@ class ListView : public KListView
 class ValueListViewItem : public KListViewItem
 {
     public:
-    ValueListViewItem (QListView *listView, const QString &name, const Abakus::number_t &value);
+    ValueListViewItem (Q3ListView *listView, const QString &name, const Abakus::number_t &value);
 
     // Will cause the list item to rethink the text.
     void valueChanged();
@@ -117,10 +117,10 @@ class VariableListView : public ListView
     protected:
     virtual QString removeItemString() const;
     virtual QString removeAllItemsString(unsigned count) const;
-    virtual bool isItemRemovable(QListViewItem *item) const;
+    virtual bool isItemRemovable(Q3ListViewItem *item) const;
 
     protected slots:
-    virtual void removeSelectedItem(QListViewItem *item);
+    virtual void removeSelectedItem(Q3ListViewItem *item);
     virtual void removeAllItems();
 };
 
@@ -137,10 +137,10 @@ class FunctionListView : public ListView
     protected:
     virtual QString removeItemString() const;
     virtual QString removeAllItemsString(unsigned count) const;
-    virtual bool isItemRemovable(QListViewItem *item) const;
+    virtual bool isItemRemovable(Q3ListViewItem *item) const;
 
     protected slots:
-    virtual void removeSelectedItem(QListViewItem *item);
+    virtual void removeSelectedItem(Q3ListViewItem *item);
     virtual void removeAllItems();
 };
 

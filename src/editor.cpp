@@ -28,16 +28,21 @@
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qlineedit.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qpainter.h>
 #include <qregexp.h>
 #include <qstringlist.h>
 #include <qstyle.h>
-#include <qsyntaxhighlighter.h>
+#include <q3syntaxhighlighter.h>
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <qmessagebox.h>
-#include <qvbox.h>
+#include <q3vbox.h>
+//Added by qt3to4:
+#include <QWheelEvent>
+#include <QKeyEvent>
+#include <Q3Frame>
+#include <QMouseEvent>
 
 #include <netwm.h>
 #include <fixx11h.h>  // netwm.h includes X11 headers which conflict with qevent
@@ -49,7 +54,7 @@ class CalcResultLabel : public QLabel
 {
 public:
   CalcResultLabel(QWidget *parent, const char *name, int WFlags) :
-    QLabel(parent, name, WFlags)
+    QLabel(parent, name, Qt::WFlags)
   {
   }
 
@@ -60,7 +65,7 @@ protected:
   }
 };
 
-class EditorHighlighter : public QSyntaxHighlighter
+class EditorHighlighter : public Q3SyntaxHighlighter
 {
 public:
   EditorHighlighter( Editor* );
@@ -94,14 +99,14 @@ class EditorCompletion::Private
 {
 public:
   Editor* editor;
-  QVBox *completionPopup;
-  QListBox *completionListBox;
+  Q3VBox *completionPopup;
+  Q3ListBox *completionListBox;
 };
 
-class ChoiceItem: public QListBoxText
+class ChoiceItem: public Q3ListBoxText
 {
   public:
-    ChoiceItem( QListBox*, const QString& );
+    ChoiceItem( Q3ListBox*, const QString& );
     void setMinNameWidth (int w) { minNameWidth = w; }
     int nameWidth() const;
 
@@ -114,8 +119,8 @@ class ChoiceItem: public QListBoxText
     int minNameWidth;
 };
 
-ChoiceItem::ChoiceItem( QListBox* listBox, const QString& text ):
-  QListBoxText( listBox, text ), minNameWidth(0)
+ChoiceItem::ChoiceItem( Q3ListBox* listBox, const QString& text ):
+  Q3ListBoxText( listBox, text ), minNameWidth(0)
 {
   QStringList list = QStringList::split( ':', text );
   if( list.count() )  item = list[0];
@@ -147,7 +152,7 @@ void ChoiceItem::paint( QPainter* painter )
 }
 
 EditorHighlighter::EditorHighlighter( Editor* e ):
-  QSyntaxHighlighter( e )
+  Q3SyntaxHighlighter( e )
 {
   editor = e;
 }
@@ -203,7 +208,7 @@ int EditorHighlighter::highlightParagraph ( const QString & text, int )
 
 
 Editor::Editor( QWidget* parent, const char* name ):
-  QTextEdit( parent, name )
+  Q3TextEdit( parent, name )
 {
   d = new Private;
   d->eval = 0;
@@ -221,7 +226,7 @@ Editor::Editor( QWidget* parent, const char* name ):
   setWordWrap( NoWrap );
   setHScrollBarMode( AlwaysOff );
   setVScrollBarMode( AlwaysOff );
-  setTextFormat( PlainText );
+  setTextFormat( Qt::PlainText );
   setAutoFormatting( AutoNone );
   setTabChangesFocus( true );
   setLinkUnderline( false );
@@ -236,9 +241,9 @@ Editor::Editor( QWidget* parent, const char* name ):
   connect( d->matchingTimer, SIGNAL( timeout() ), SLOT( doMatchingRight() ) );
   connect( this, SIGNAL( textChanged() ), SLOT( checkAutoCalc() ) );
   connect( d->autoCalcTimer, SIGNAL( timeout() ), SLOT( autoCalc() ) );
-  d->autoCalcLabel = new CalcResultLabel( 0, "autocalc", WStyle_StaysOnTop |
-    WStyle_Customize | WStyle_NoBorder | WStyle_Tool |  WX11BypassWM );
-  d->autoCalcLabel->setFrameStyle( QFrame::Plain | QFrame::Box );
+  d->autoCalcLabel = new CalcResultLabel( 0, "autocalc", Qt::WStyle_StaysOnTop |
+    Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_Tool |  Qt::WX11BypassWM );
+  d->autoCalcLabel->setFrameStyle( Q3Frame::Plain | Q3Frame::Box );
   d->autoCalcLabel->setPalette( QToolTip::palette() );
   d->autoCalcLabel->hide();
 
@@ -333,7 +338,7 @@ void Editor::squelchNextAutoCalc()
 
 void Editor::setText(const QString &txt)
 {
-  QTextEdit::setText(txt);
+  Q3TextEdit::setText(txt);
   squelchNextAutoCalc();
 }
 
@@ -678,35 +683,35 @@ void Editor::historyForward()
 
 void Editor::keyPressEvent( QKeyEvent* e )
 {
-  if( e->key() == Key_Up )
+  if( e->key() == Qt::Key_Up )
   {
     historyBack();
     e->accept();
     return;
   }
 
-  if( e->key() == Key_Down )
+  if( e->key() == Qt::Key_Down )
   {
     historyForward();
     e->accept();
     return;
   }
 
-  if( e->key() == Key_Enter || e->key() == Key_Return )
+  if( e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return )
   {
     emit returnPressed();
     return;
   }
 
-  if( e->key() == Key_Left ||
-      e->key() == Key_Right ||
-      e->key() == Key_Home ||
-      e->key() == Key_End )
+  if( e->key() == Qt::Key_Left ||
+      e->key() == Qt::Key_Right ||
+      e->key() == Qt::Key_Home ||
+      e->key() == Qt::Key_End )
   {
     checkMatching();
   }
 
-  QTextEdit::keyPressEvent( e );
+  Q3TextEdit::keyPressEvent( e );
 }
 
 void Editor::wheelEvent( QWheelEvent *e )
@@ -751,15 +756,15 @@ EditorCompletion::EditorCompletion( Editor* editor ): QObject( editor )
   d = new Private;
   d->editor = editor;
 
-  d->completionPopup = new QVBox( editor->topLevelWidget(), 0, WType_Popup );
-  d->completionPopup->setFrameStyle( QFrame::Box | QFrame::Plain );
+  d->completionPopup = new Q3VBox( editor->topLevelWidget(), 0, Qt::WType_Popup );
+  d->completionPopup->setFrameStyle( Q3Frame::Box | Q3Frame::Plain );
   d->completionPopup->setLineWidth( 1 );
   d->completionPopup->installEventFilter( this );
   d->completionPopup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-  d->completionListBox = new QListBox( d->completionPopup );
+  d->completionListBox = new Q3ListBox( d->completionPopup );
   d->completionPopup->setFocusProxy( d->completionListBox );
-  d->completionListBox->setFrameStyle( QFrame::NoFrame );
+  d->completionListBox->setFrameStyle( Q3Frame::NoFrame );
   d->completionListBox->setVariableWidth( true );
   d->completionListBox->installEventFilter( this );
 }
@@ -777,15 +782,15 @@ bool EditorCompletion::eventFilter( QObject *obj, QEvent *ev )
     if ( ev->type() == QEvent::KeyPress )
     {
       QKeyEvent *ke = (QKeyEvent*)ev;
-      if ( ke->key() == Key_Enter || ke->key() == Key_Return  )
+      if ( ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return  )
       {
         doneCompletion();
         return true;
       }
-      else if ( ke->key() == Key_Left || ke->key() == Key_Right ||
-      ke->key() == Key_Up || ke->key() == Key_Down ||
-      ke->key() == Key_Home || ke->key() == Key_End ||
-      ke->key() == Key_Prior || ke->key() == Key_Next )
+      else if ( ke->key() == Qt::Key_Left || ke->key() == Qt::Key_Right ||
+      ke->key() == Qt::Key_Up || ke->key() == Qt::Key_Down ||
+      ke->key() == Qt::Key_Home || ke->key() == Qt::Key_End ||
+      ke->key() == Qt::Key_PageUp || ke->key() == Qt::Key_PageDown )
         return false;
 
       d->completionPopup->close();

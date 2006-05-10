@@ -21,7 +21,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 #include <qregexp.h>
 #include <qstring.h>
 #include <qstringlist.h>

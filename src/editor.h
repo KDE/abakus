@@ -25,7 +25,11 @@
 
 #include <qobject.h>
 #include <qstringlist.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
+//Added by qt3to4:
+#include <QWheelEvent>
+#include <QKeyEvent>
+#include <QEvent>
 
 #include "hmath.h"
 
@@ -34,7 +38,7 @@ class QKeyEvent;
 class QWidget;
 class Evaluator;
 
-class Editor : public QTextEdit
+class Editor : public Q3TextEdit
 {
   Q_OBJECT
   

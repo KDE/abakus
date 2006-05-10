@@ -1,3 +1,5 @@
+//Added by qt3to4:
+#include <QPixmap>
 #ifndef ABAKUS_DRAGSUPPORT_H
 #define ABAKUS_DRAGSUPPORT_H
 /*

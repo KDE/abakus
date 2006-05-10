@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 #include <qstring.h>
 #include <qmap.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 
 
@@ -65,7 +65,7 @@ class FunctionManager : public QObject
 {
     Q_OBJECT
     public:
-    typedef QDict<Function> functionDict;
+    typedef Q3Dict<Function> functionDict;
 
     static FunctionManager *instance();
 

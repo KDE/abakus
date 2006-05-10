@@ -20,9 +20,9 @@
 #include <kpopupmenu.h>
 #include <kdebug.h>
 
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qcursor.h>
-#include <qheader.h>
+#include <q3header.h>
 
 #include "dragsupport.h"
 #include "abakuslistview.h"
@@ -36,14 +36,14 @@ ListView::ListView(QWidget *parent, const char *name) :
     setResizeMode(LastColumn);
     setDragEnabled(true);
 
-    connect(this, SIGNAL(contextMenuRequested(QListViewItem *, const QPoint &, int)),
-	          SLOT(rightClicked(QListViewItem *, const QPoint &)));
+    connect(this, SIGNAL(contextMenuRequested(Q3ListViewItem *, const QPoint &, int)),
+	          SLOT(rightClicked(Q3ListViewItem *, const QPoint &)));
 }
 
-QDragObject *ListView::dragObject()
+Q3DragObject *ListView::dragObject()
 {
     QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
-    QListViewItem *item = itemAt(viewportPos);
+    Q3ListViewItem *item = itemAt(viewportPos);
 
     if(!item)
 	return 0;
@@ -51,7 +51,7 @@ QDragObject *ListView::dragObject()
     int column = header()->sectionAt(viewportPos.x());
     QString dragText = item->text(column);
 
-    QDragObject *drag = new QTextDrag(dragText, this, "list item drag");
+    Q3DragObject *drag = new Q3TextDrag(dragText, this, "list item drag");
     drag->setPixmap(DragSupport::makePixmap(dragText, font()));
 
     return drag;
@@ -91,7 +91,7 @@ QString ListView::removeAllItemsString(unsigned count) const
     return QString();
 }
 
-void ListView::removeSelectedItem(QListViewItem *item)
+void ListView::removeSelectedItem(Q3ListViewItem *item)
 {
     Q_UNUSED(item);
 }
@@ -100,14 +100,14 @@ void ListView::removeAllItems()
 {
 }
 
-bool ListView::isItemRemovable(QListViewItem *item) const
+bool ListView::isItemRemovable(Q3ListViewItem *item) const
 {
     Q_UNUSED(item);
 
     return false;
 }
 
-void ListView::rightClicked(QListViewItem *item, const QPoint &pt)
+void ListView::rightClicked(Q3ListViewItem *item, const QPoint &pt)
 {
     if(!m_usePopup)
 	return;
@@ -122,7 +122,7 @@ void ListView::removeSelected()
     removeSelectedItem(selectedItem());
 }
 
-ValueListViewItem::ValueListViewItem(QListView *listView, const QString &name,
+ValueListViewItem::ValueListViewItem(Q3ListView *listView, const QString &name,
 	const Abakus::number_t &value) :
     KListViewItem(listView, name), m_value(value)
 {
@@ -174,12 +174,12 @@ QString VariableListView::removeAllItemsString(unsigned count) const
 		count);
 }
 
-bool VariableListView::isItemRemovable(QListViewItem *item) const
+bool VariableListView::isItemRemovable(Q3ListViewItem *item) const
 {
     return !ValueManager::instance()->isValueReadOnly(item->text(0));
 }
 
-void VariableListView::removeSelectedItem(QListViewItem *item)
+void VariableListView::removeSelectedItem(Q3ListViewItem *item)
 {
     ValueManager::instance()->removeValue(item->text(0));
 }
@@ -207,12 +207,12 @@ QString FunctionListView::removeAllItemsString(unsigned count) const
 		count);
 }
 
-bool FunctionListView::isItemRemovable(QListViewItem *item) const
+bool FunctionListView::isItemRemovable(Q3ListViewItem *item) const
 {
     return true;
 }
 
-void FunctionListView::removeSelectedItem(QListViewItem *item)
+void FunctionListView::removeSelectedItem(Q3ListViewItem *item)
 {
     // Use section to get the beginning of the string up to (and not
     // including) the first (

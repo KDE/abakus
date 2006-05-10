@@ -20,7 +20,7 @@
 
 #include <kdebug.h>
 
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 #include <qstring.h>
 #include <qregexp.h>
 
@@ -205,7 +205,7 @@ void FunctionManager::removeFunction(const QString &name)
 	fn->userFn = 0;
 	m_dict.remove(name);
 
-	QDictIterator<Function> it(m_dict);
+	Q3DictIterator<Function> it(m_dict);
 	for (; it.current(); ++it) {
 	    UserFunction *userFn = it.current()->userDefined ? it.current()->userFn : 0;
 	    if(userFn && userFn->sequenceNumber > savedSeqNum)
@@ -216,7 +216,7 @@ void FunctionManager::removeFunction(const QString &name)
 
 QStringList FunctionManager::functionList(FunctionManager::FunctionType type)
 {
-    QDictIterator<Function> it(m_dict);
+    Q3DictIterator<Function> it(m_dict);
     QStringList functions;
 
     switch(type) {
@@ -230,8 +230,8 @@ QStringList FunctionManager::functionList(FunctionManager::FunctionType type)
 	    // We want to return the function names in the order they were
 	    // added.
 	    {
-		QValueVector<Function *> fnTable(m_dict.count(), 0);
-		QValueVector<int> sequenceNumberTable(m_dict.count(), -1);
+		Q3ValueVector<Function *> fnTable(m_dict.count(), 0);
+		Q3ValueVector<int> sequenceNumberTable(m_dict.count(), -1);
 
 		// First find out what sequence numbers we have.
 		for(; it.current(); ++it)

@@ -24,8 +24,10 @@
 #include <qapplication.h>
 #include <qevent.h>
 #include <qcursor.h>
-#include <qdragobject.h>
-#include <qheader.h>
+#include <q3dragobject.h>
+#include <q3header.h>
+//Added by qt3to4:
+#include <QContextMenuEvent>
 
 #include "resultlistview.h"
 #include "resultlistviewtext.h"
@@ -37,8 +39,8 @@ using namespace ResultList;
 ResultListView::ResultListView(QWidget *parent, const char *name) :
     KListView(parent, name), m_itemRightClicked(0)
 {
-    connect(this, SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),
-                  SLOT(slotDoubleClicked(QListViewItem *, const QPoint &, int)));
+    connect(this, SIGNAL(doubleClicked(Q3ListViewItem *, const QPoint &, int)),
+                  SLOT(slotDoubleClicked(Q3ListViewItem *, const QPoint &, int)));
 
     addColumn(i18n("Expression"));
     addColumn(i18n("Result"));
@@ -49,15 +51,15 @@ ResultListView::ResultListView(QWidget *parent, const char *name) :
 
     setDragEnabled(true);
     setItemMargin(2);
-    setColumnAlignment(ResultColumn, AlignLeft);
-    setColumnAlignment(ShortcutColumn, AlignHCenter);
+    setColumnAlignment(ResultColumn, Qt::AlignLeft);
+    setColumnAlignment(ShortcutColumn, Qt::AlignHCenter);
     setColumnWidthMode(ResultColumn, Maximum);
     setSortColumn(-1);
 }
 
 bool ResultListView::getStackValue(unsigned stackPosition, Abakus::number_t &result)
 {
-    QListViewItem *it = firstChild();
+    Q3ListViewItem *it = firstChild();
     for(; it; it = it->itemBelow()) {
 	ResultListViewText *resultItem = dynamic_cast<ResultListViewText *>(it);
 	if(!resultItem->wasError() && resultItem->stackPosition() == stackPosition) {
@@ -69,7 +71,7 @@ bool ResultListView::getStackValue(unsigned stackPosition, Abakus::number_t &res
     return false;
 }
 
-QDragObject *ResultListView::dragObject()
+Q3DragObject *ResultListView::dragObject()
 {
     QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
     ResultListViewText *item = itemUnderCursor();
@@ -82,7 +84,7 @@ QDragObject *ResultListView::dragObject()
 	if(column == ExpressionColumn)
 	    text = item->expressionText();
 
-	QDragObject *drag = new QTextDrag(text, this);
+	Q3DragObject *drag = new Q3TextDrag(text, this);
 	drag->setPixmap(makePixmap(text, font()));
 
 	return drag;
@@ -99,7 +101,7 @@ void ResultListView::contextMenuEvent(QContextMenuEvent *e)
     menu->popup(e->globalPos());
 }
 
-void ResultListView::slotDoubleClicked(QListViewItem *item, const QPoint &, int c)
+void ResultListView::slotDoubleClicked(Q3ListViewItem *item, const QPoint &, int c)
 {
     ResultListViewText *textItem = dynamic_cast<ResultListViewText *>(item);
     if(!textItem)
@@ -115,7 +117,7 @@ KPopupMenu *ResultListView::constructPopupMenu(const ResultListViewText *item)
 {
     KPopupMenu *menu = new KPopupMenu(this, "list view context menu");
 
-    menu->insertItem(i18n("Clear &History"), this, SLOT(clear()), ALT+Key_R);
+    menu->insertItem(i18n("Clear &History"), this, SLOT(clear()), Qt::ALT+Qt::Key_R);
 
     int id = menu->insertItem(i18n("Copy Result to Clipboard"), this, SLOT(slotCopyResult()));
     if(!item || item->wasError())
@@ -142,7 +144,7 @@ ResultListViewText *ResultListView::lastItem() const
 ResultListViewText *ResultListView::itemUnderCursor() const
 {
     QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
-    QListViewItem *underCursor = itemAt(viewportPos);
+    Q3ListViewItem *underCursor = itemAt(viewportPos);
     return static_cast<ResultListViewText *>(underCursor);
 }
 

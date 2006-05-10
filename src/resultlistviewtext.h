@@ -55,7 +55,7 @@ class ResultListViewText : public KListViewItem
 
     // Reimplemented from KListViewItem
     virtual void paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int align);
-    virtual int width(const QFontMetrics &fm, const QListView *lv, int c) const;
+    virtual int width(const QFontMetrics &fm, const Q3ListView *lv, int c) const;
 
     // Reimplemented to remove trailing zeroes from results.
     virtual void setText(int column, const QString &text);
