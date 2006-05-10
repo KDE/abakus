@@ -22,29 +22,18 @@
 #include <kmainwindow.h>
 
 #include "numerictypes.h"
-//Added by qt3to4:
-#include <QContextMenuEvent>
-#include <QEvent>
-#include <kvbox.h>
 
-class QPoint;
-class KVBox;
-class QCheckBox;
-class QRadioButton;
-class QBoxLayout;
-class Q3ListViewItem;
-class QSplitter;
-class QTimer;
-
-//class KComboBox;
-class Editor;
+class QContextMenuEvent;
 class KMenu;
 class KAction;
-class K3ListView;
 class ResultListView;
 class ResultListViewText;
-
 class AbakusIface;
+
+namespace Ui
+{
+    class MainWindow;
+}
 
 // Main window class, handles events and layout and stuff
 class MainWindow : public KMainWindow
@@ -57,14 +46,11 @@ class MainWindow : public KMainWindow
 
     protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
-    virtual bool eventFilter(QObject *o, QEvent *e);
     virtual bool queryExit();
-    virtual void polish();
 
     private slots:
-    void slotReturnPressed();
     void slotTextChanged();
-    void slotEvaluate();
+    void slotReturnPressed();
 
     void slotPrecisionAuto();
     void slotPrecision3();
@@ -116,16 +102,9 @@ class MainWindow : public KMainWindow
     }
 
     private:
-    KVBox *m_history;
-    QRadioButton *m_degrees;
-    QRadioButton *m_radians;
-    Editor *m_edit;
+    Ui::MainWindow *m_ui;
     KMenu *m_popup;
-    ResultListView *m_result;
     QString m_lastError;
-    QBoxLayout *m_layout;
-    K3ListView *m_fnList, *m_varList;
-    QSplitter *m_mainSplitter, *m_listSplitter;
     QSize m_newSize, m_oldSize;
 
     AbakusIface *m_dcopInterface;
