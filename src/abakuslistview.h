@@ -19,18 +19,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <klistview.h>
+#include <k3listview.h>
 
 #include "numerictypes.h"
 
-class KPopupMenu;
+class KMenu;
 
-class ListView : public KListView
+class ListView : public K3ListView
 {
     Q_OBJECT
 
     public:
-    ListView(QWidget *parent, const char *name = 0);
+    ListView(QWidget *parent);
 
     protected:
     virtual Q3DragObject *dragObject();
@@ -82,14 +82,14 @@ class ListView : public KListView
     void removeSelected();
 
     private:
-    KPopupMenu *m_menu;
+    KMenu *m_menu;
     bool m_usePopup;
 
     int m_removeSingleId;
     int m_removeAllId;
 };
 
-class ValueListViewItem : public KListViewItem
+class ValueListViewItem : public K3ListViewItem
 {
     public:
     ValueListViewItem (Q3ListView *listView, const QString &name, const Abakus::number_t &value);
@@ -112,7 +112,7 @@ class VariableListView : public ListView
     Q_OBJECT
     public:
 
-    VariableListView(QWidget *parent, const char *name = 0);
+    VariableListView(QWidget *parent);
 
     protected:
     virtual QString removeItemString() const;
@@ -132,7 +132,7 @@ class FunctionListView : public ListView
     Q_OBJECT
     public:
 
-    FunctionListView(QWidget *parent, const char *name = 0);
+    FunctionListView(QWidget *parent);
 
     protected:
     virtual QString removeItemString() const;

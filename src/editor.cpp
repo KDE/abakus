@@ -37,25 +37,34 @@
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <qmessagebox.h>
-#include <q3vbox.h>
+
 //Added by qt3to4:
 #include <QWheelEvent>
 #include <QKeyEvent>
 #include <Q3Frame>
 #include <QMouseEvent>
+#include <QStyleOption>
 
 #include <netwm.h>
 #include <fixx11h.h>  // netwm.h includes X11 headers which conflict with qevent
 #include <qevent.h>
 
 #include <kdebug.h>
+#include <kvbox.h>
 
 class CalcResultLabel : public QLabel
 {
 public:
-  CalcResultLabel(QWidget *parent, const char *name, int WFlags) :
-    QLabel(parent, name, Qt::WFlags)
+  CalcResultLabel(QWidget *parent, const QString &name) :
+    QLabel(parent)
   {
+    setObjectName(name);
+    setWindowFlags(
+      Qt::WindowStaysOnTopHint |
+      Qt::FramelessWindowHint |
+      Qt::Tool |
+      Qt::X11BypassWindowManagerHint
+    );
   }
 
 protected:
@@ -99,7 +108,7 @@ class EditorCompletion::Private
 {
 public:
   Editor* editor;
-  Q3VBox *completionPopup;
+  KVBox *completionPopup;
   Q3ListBox *completionListBox;
 };
 
@@ -145,7 +154,7 @@ void ChoiceItem::paint( QPainter* painter )
   painter->drawText( 3, yPos, item );
 
   //int xPos = fm.width( item );
-  int xPos = QMAX(fm.width(item), minNameWidth);
+  int xPos = qMax(fm.width(item), minNameWidth);
   if( !isSelected() )
     painter->setPen( listBox()->palette().disabled().text().dark() );
   painter->drawText( 10 + xPos, yPos, desc );
@@ -172,7 +181,7 @@ int EditorHighlighter::highlightParagraph ( const QString & text, int )
   for( unsigned i = 0; i < tokens.count(); i++ )
   {
     Token& token = tokens[i];
-    QString text = token.text().lower();
+    QString text = token.text().toLower();
     QFont font = editor->font();
     QColor color = Qt::black;
     switch( token.type() )
@@ -241,8 +250,7 @@ Editor::Editor( QWidget* parent, const char* name ):
   connect( d->matchingTimer, SIGNAL( timeout() ), SLOT( doMatchingRight() ) );
   connect( this, SIGNAL( textChanged() ), SLOT( checkAutoCalc() ) );
   connect( d->autoCalcTimer, SIGNAL( timeout() ), SLOT( autoCalc() ) );
-  d->autoCalcLabel = new CalcResultLabel( 0, "autocalc", Qt::WStyle_StaysOnTop |
-    Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_Tool |  Qt::WX11BypassWM );
+  d->autoCalcLabel = new CalcResultLabel( 0, "autocalc" );
   d->autoCalcLabel->setFrameStyle( Q3Frame::Plain | Q3Frame::Box );
   d->autoCalcLabel->setPalette( QToolTip::palette() );
   d->autoCalcLabel->hide();
@@ -263,12 +271,14 @@ QSize Editor::sizeHint() const
 {
   constPolish();
   QFontMetrics fm = fontMetrics();
-  int h = QMAX(fm.lineSpacing(), 14);
+  int h = qMax(fm.lineSpacing(), 14);
   int w = fm.width( 'x' ) * 20;
   int m = frameWidth() * 2;
-  return( style().sizeFromContents(QStyle::CT_LineEdit, this,
+
+  QStyleOption styleOptions;
+  return style()->sizeFromContents(QStyle::CT_LineEdit, &styleOptions,
              QSize( w + m, h + m + 4 ).
-             expandedTo(QApplication::globalStrut())));
+             expandedTo(QApplication::globalStrut()));
 }
 
 QStringList Editor::history() const
@@ -479,7 +489,7 @@ void Editor::triggerAutoComplete()
   Tokens tokens = Evaluator::scan( subtext );
   if(!tokens.valid())
   {
-    kdWarning() << "invalid tokens.\n";
+    kWarning() << "invalid tokens.\n";
     return;
   }
 
@@ -540,7 +550,7 @@ void Editor::triggerAutoComplete()
     QString str = QStringList::split( ':', choices[0] )[0];
 
     // single perfect match, no need to give choices.
-    if(str == id.lower())
+    if(str == id.toLower())
       return;
 
     str = str.remove( 0, id.length() );
@@ -622,7 +632,7 @@ void Editor::autoCalc()
     }
   }
 
-  Abakus::number_t result = parseString(str.latin1());
+  Abakus::number_t result = parseString(str.toLatin1());
   if( Result::lastResult()->type() == Result::Value )
   {
     QString ss = QString("Result: <b>%2</b>").arg(result.toString());
@@ -756,7 +766,8 @@ EditorCompletion::EditorCompletion( Editor* editor ): QObject( editor )
   d = new Private;
   d->editor = editor;
 
-  d->completionPopup = new Q3VBox( editor->topLevelWidget(), 0, Qt::WType_Popup );
+  d->completionPopup = new KVBox( editor->topLevelWidget() );
+  d->completionPopup->setWindowFlags( Qt::Popup );
   d->completionPopup->setFrameStyle( Q3Frame::Box | Q3Frame::Plain );
   d->completionPopup->setLineWidth( 1 );
   d->completionPopup->installEventFilter( this );

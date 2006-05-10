@@ -16,21 +16,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <klocale.h>
-#include <kpopupmenu.h>
+#include <klocalizedstring.h>
+#include <kmenu.h>
 #include <kdebug.h>
 
 #include <q3dragobject.h>
 #include <qcursor.h>
 #include <q3header.h>
+#include <kvbox.h>
 
 #include "dragsupport.h"
 #include "abakuslistview.h"
 #include "valuemanager.h"
 #include "function.h"
 
-ListView::ListView(QWidget *parent, const char *name) :
-    KListView(parent, name), m_menu(0), m_usePopup(false), m_removeSingleId(0),
+ListView::ListView(QWidget *parent) :
+    K3ListView(parent), m_menu(0), m_usePopup(false), m_removeSingleId(0),
     m_removeAllId(0)
 {
     setResizeMode(LastColumn);
@@ -66,9 +67,9 @@ void ListView::enablePopupHandler(bool enable)
 
     if(m_usePopup) {
 	if(m_menu)
-	    kdError() << "ListView menu shouldn't exist here!\n";
+	    kError() << "ListView menu shouldn't exist here!\n";
 
-	m_menu = new KPopupMenu(this);
+	m_menu = new KMenu(this);
 
 	m_removeSingleId = m_menu->insertItem(removeItemString(), this, SLOT(removeSelected()));
 	m_removeAllId = m_menu->insertItem("Placeholder", this, SLOT(removeAllItems()));
@@ -124,7 +125,7 @@ void ListView::removeSelected()
 
 ValueListViewItem::ValueListViewItem(Q3ListView *listView, const QString &name,
 	const Abakus::number_t &value) :
-    KListViewItem(listView, name), m_value(value)
+    K3ListViewItem(listView, name), m_value(value)
 {
     valueChanged();
 }
@@ -147,8 +148,8 @@ Abakus::number_t ValueListViewItem::itemValue() const
     return m_value;
 }
 
-VariableListView::VariableListView(QWidget *parent, const char *name) :
-    ListView(parent, name)
+VariableListView::VariableListView(QWidget *parent) :
+    ListView(parent)
 {
     enablePopupHandler(true);
 }
@@ -169,7 +170,7 @@ QString VariableListView::removeAllItemsString(unsigned count) const
 	if(!ValueManager::instance()->isValueReadOnly(*value))
 	    ++count;
 
-    return i18n("Remove all variables (1 variable)",
+    return i18np("Remove all variables (1 variable)",
 	        "Remove all variables (%n variables)",
 		count);
 }
@@ -189,8 +190,8 @@ void VariableListView::removeAllItems()
     ValueManager::instance()->slotRemoveUserVariables();
 }
 
-FunctionListView::FunctionListView(QWidget *parent, const char *name) :
-    ListView(parent, name)
+FunctionListView::FunctionListView(QWidget *parent) :
+    ListView(parent)
 {
     enablePopupHandler(true);
 }
@@ -202,7 +203,7 @@ QString FunctionListView::removeItemString() const
 
 QString FunctionListView::removeAllItemsString(unsigned count) const
 {
-    return i18n("Remove all functions (1 function)",
+    return i18np("Remove all functions (1 function)",
 	        "Remove all functions (%n functions)",
 		count);
 }

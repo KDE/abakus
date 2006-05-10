@@ -6,14 +6,15 @@
 #include <kpushbutton.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcombobox.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kaction.h>
 
 #include <qlabel.h>
 #include <qregexp.h>
 #include <qtimer.h>
+#include <kvbox.h>
 
 #include "function.h"
 #include "node.h"

@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <kdebug.h>
-#include <kpopupmenu.h>
-#include <klocale.h>
+#include <kmenu.h>
+#include <klocalizedstring.h>
 
 #include <qclipboard.h>
 #include <qapplication.h>
@@ -28,6 +28,7 @@
 #include <q3header.h>
 //Added by qt3to4:
 #include <QContextMenuEvent>
+#include <kvbox.h>
 
 #include "resultlistview.h"
 #include "resultlistviewtext.h"
@@ -36,8 +37,8 @@
 using DragSupport::makePixmap;
 using namespace ResultList;
 
-ResultListView::ResultListView(QWidget *parent, const char *name) :
-    KListView(parent, name), m_itemRightClicked(0)
+ResultListView::ResultListView(QWidget *parent) :
+    K3ListView(parent), m_itemRightClicked(0)
 {
     connect(this, SIGNAL(doubleClicked(Q3ListViewItem *, const QPoint &, int)),
                   SLOT(slotDoubleClicked(Q3ListViewItem *, const QPoint &, int)));
@@ -50,6 +51,7 @@ ResultListView::ResultListView(QWidget *parent, const char *name) :
     header()->setStretchEnabled(ResultColumn, true);
 
     setDragEnabled(true);
+    setObjectName("resultListView");
     setItemMargin(2);
     setColumnAlignment(ResultColumn, Qt::AlignLeft);
     setColumnAlignment(ShortcutColumn, Qt::AlignHCenter);
@@ -63,7 +65,7 @@ bool ResultListView::getStackValue(unsigned stackPosition, Abakus::number_t &res
     for(; it; it = it->itemBelow()) {
 	ResultListViewText *resultItem = dynamic_cast<ResultListViewText *>(it);
 	if(!resultItem->wasError() && resultItem->stackPosition() == stackPosition) {
-	    result = Abakus::number_t(resultItem->resultText().latin1());
+	    result = Abakus::number_t(resultItem->resultText());
 	    return true;
 	}
     }
@@ -96,7 +98,7 @@ Q3DragObject *ResultListView::dragObject()
 void ResultListView::contextMenuEvent(QContextMenuEvent *e)
 {
     m_itemRightClicked = itemUnderCursor();
-    KPopupMenu *menu = constructPopupMenu(m_itemRightClicked);
+    KMenu *menu = constructPopupMenu(m_itemRightClicked);
 
     menu->popup(e->globalPos());
 }
@@ -113,9 +115,9 @@ void ResultListView::slotDoubleClicked(Q3ListViewItem *item, const QPoint &, int
 	emit signalResultSelected(textItem->resultText());
 }
 
-KPopupMenu *ResultListView::constructPopupMenu(const ResultListViewText *item)
+KMenu *ResultListView::constructPopupMenu(const ResultListViewText *item)
 {
-    KPopupMenu *menu = new KPopupMenu(this, "list view context menu");
+    KMenu *menu = new KMenu(this);
 
     menu->insertItem(i18n("Clear &History"), this, SLOT(clear()), Qt::ALT+Qt::Key_R);
 
@@ -138,7 +140,7 @@ void ResultListView::slotCopyResult()
 
 ResultListViewText *ResultListView::lastItem() const
 {
-    return static_cast<ResultListViewText *>(KListView::lastItem());
+    return static_cast<ResultListViewText *>(K3ListView::lastItem());
 }
 
 ResultListViewText *ResultListView::itemUnderCursor() const

@@ -25,6 +25,7 @@
 #include <qregexp.h>
 
 #include <math.h>
+#include <kvbox.h>
 
 #include "function.h"
 #include "node.h"
@@ -242,7 +243,7 @@ QStringList FunctionManager::functionList(FunctionManager::FunctionType type)
 		    }
 
 		// Now sort the sequence numbers and return the ordered list
-		qHeapSort(sequenceNumberTable.begin(), sequenceNumberTable.end());
+		qSort(sequenceNumberTable.begin(), sequenceNumberTable.end());
 
 		for(unsigned i = 0; i < sequenceNumberTable.count(); ++i)
 		    if(sequenceNumberTable[i] >= 0)

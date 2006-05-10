@@ -20,11 +20,13 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
+#include <klocalizedstring.h>
 
 #include <config.h>
 
 #if HAVE_MPFR
 #include <mpfr.h>
+#include <kvbox.h>
 #endif
 
 #include "mainwindow.h"
@@ -56,9 +58,9 @@ int main(int argc, char **argv)
 
 #if HAVE_MPFR
     mpfr_set_default_prec(6 * 78); // 78 digits, figure about 6 bits needed.
-    kdDebug() << "Using the MPFR high-precision library.\n";
+    kDebug() << "Using the MPFR high-precision library.\n";
 #else
-    kdDebug() << "Using the internal high-precision library.\n";
+    kDebug() << "Using the internal high-precision library.\n";
 #endif
 
     KCmdLineArgs::init(argc, argv, about);

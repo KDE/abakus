@@ -26,6 +26,7 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <q3dict.h>
+#include <kvbox.h>
 
 
 

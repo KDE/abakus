@@ -31,6 +31,7 @@
 #include <q3valuevector.h>
 
 #include <kdebug.h>
+#include <kvbox.h>
 
 //
 // Reimplementation of goodies from Evaluator follows.
@@ -46,18 +47,18 @@ Evaluator::~Evaluator()
 
 void Evaluator::setExpression(const QString &expr)
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kError() << k_funcinfo << " not implemented.\n";
 }
 
 QString Evaluator::expression() const
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kError() << k_funcinfo << " not implemented.\n";
     return QString();
 }
 
 void Evaluator::clear()
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kError() << k_funcinfo << " not implemented.\n";
     // Yeah, whatever.
 }
 
@@ -68,7 +69,7 @@ bool Evaluator::isValid() const
 
 Tokens Evaluator::tokens() const
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kError() << k_funcinfo << " not implemented.\n";
     return Tokens();
 }
 
@@ -120,7 +121,7 @@ Tokens Evaluator::scan(const QString &expr)
 
 QString Evaluator::error() const
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kError() << k_funcinfo << " not implemented.\n";
     return "No Error Yet";
 }
 
@@ -191,9 +192,9 @@ Token& Token::operator=( const Token& token )
 
 Abakus::number_t Token::asNumber() const
 {
-  if( isNumber() ) 
-    return Abakus::number_t( m_text.latin1() );
-  else 
+  if( isNumber() )
+    return Abakus::number_t( m_text.toLatin1().constData() );
+  else
     return Abakus::number_t();
 }
 

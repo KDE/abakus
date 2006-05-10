@@ -63,7 +63,7 @@ class Node
 class BaseFunction : public Node
 {
     public:
-    BaseFunction(const char *name);
+    BaseFunction(const QString &name);
 
     virtual QString name() const { return m_name; }
     virtual const Function *function() const;
@@ -76,7 +76,7 @@ class BaseFunction : public Node
 class UnaryFunction : public BaseFunction
 {
     public:
-    UnaryFunction(const char *name, Node *operand);
+    UnaryFunction(const QString &name, Node *operand);
     virtual ~UnaryFunction();
 
     virtual Node *operand() const { return m_node; }
@@ -114,7 +114,7 @@ class DerivativeFunction : public Node
 class UserDefinedFunction : public UnaryFunction
 {
     public:
-    UserDefinedFunction(const char *name, Node *operand) : UnaryFunction(name, operand) { };
+    UserDefinedFunction(const QString &name, Node *operand) : UnaryFunction(name, operand) { };
 
     virtual Abakus::number_t value() const { return operand()->value(); }
     virtual Abakus::number_t derivative() const { return operand()->derivative(); }
@@ -123,7 +123,7 @@ class UserDefinedFunction : public UnaryFunction
 class BuiltinFunction : public UnaryFunction
 {
     public:
-    BuiltinFunction(const char *name, Node *operand);
+    BuiltinFunction(const QString &name, Node *operand);
 
     virtual Abakus::number_t value() const;
     virtual Abakus::number_t derivative() const;
@@ -179,7 +179,7 @@ class BinaryOperator : public Node
 class Identifier : public Node
 {
     public:
-    Identifier(const char *name);
+    Identifier(const QString &name);
 
     virtual void applyMap(NodeFunctor &fn) const;
     virtual QString infixString() const { return name(); }
@@ -188,9 +188,9 @@ class Identifier : public Node
     virtual Abakus::number_t derivative() const
     {
         if(name() == "x")
-            return "1";
+            return Abakus::number_t(1);
         else
-            return "0";
+            return Abakus::number_t(0);
     }
 
     virtual QString name() const { return m_name; }
@@ -208,7 +208,7 @@ class NumericValue : public Node
     virtual QString infixString() const;
 
     virtual Abakus::number_t value() const { return m_value; }
-    virtual Abakus::number_t derivative() const { return "0"; }
+    virtual Abakus::number_t derivative() const { return 0; }
 
     private:
     Abakus::number_t m_value;

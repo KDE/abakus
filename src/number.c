@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>/* Prototypes needed for external utility routines. */
+#include <kvbox.h>
 
 #define bc_rt_warn rt_warn
 #define bc_rt_error rt_error

@@ -19,13 +19,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <klistview.h>
+#include <k3listview.h>
 #include "numerictypes.h"
 //Added by qt3to4:
 #include <QContextMenuEvent>
 #include <QLabel>
+#include <kvbox.h>
 
-class KPopupMenu;
+class KMenu;
 class QLabel;
 class Q3DragObject;
 class ResultListViewText;
@@ -34,12 +35,12 @@ namespace ResultList {
     enum { ExpressionColumn = 0, ResultColumn, ShortcutColumn };
 }
 
-class ResultListView : public KListView
+class ResultListView : public K3ListView
 {
     Q_OBJECT
 
     public:
-    ResultListView(QWidget *parent = 0, const char *name = "result list view");
+    ResultListView(QWidget *parent = 0);
 
     bool getStackValue(unsigned stackPosition, Abakus::number_t &result);
 
@@ -58,7 +59,7 @@ class ResultListView : public KListView
     void slotCopyResult();
 
     private:
-    KPopupMenu *constructPopupMenu(const ResultListViewText *item);
+    KMenu *constructPopupMenu(const ResultListViewText *item);
     ResultListViewText *itemUnderCursor() const;
 
     ResultListViewText *m_itemRightClicked;

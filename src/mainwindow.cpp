@@ -22,6 +22,7 @@
 #include <kaccel.h>
 #include <kmenubar.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kstdaction.h>
 #include <kshortcut.h>
 #include <kdebug.h>
@@ -32,17 +33,20 @@
 #include <kinputdialog.h>
 
 #include <qlayout.h>
-#include <q3vbox.h>
-#include <q3hbox.h>
+
+
 #include <qradiobutton.h>
 #include <q3buttongroup.h>
 #include <qsplitter.h>
 //Added by qt3to4:
 #include <QEvent>
 #include <QLabel>
-#include <Q3HBoxLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QContextMenuEvent>
-#include <Q3VBoxLayout>
+#include <QAction>
+#include <QActionGroup>
+#include <kvbox.h>
 
 #include "editor.h"
 #include "evaluator.h"
@@ -60,7 +64,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
 {
     m_mainSplitter = new QSplitter(this);
     QWidget *box = new QWidget(m_mainSplitter);
-    Q3VBoxLayout *layout = new Q3VBoxLayout(box);
+    QVBoxLayout *layout = new QVBoxLayout(box);
     m_layout = layout;
     layout->setSpacing(6);
     layout->setMargin(6);
@@ -68,7 +72,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     QWidget *configBox = new QWidget(box);
     layout->addWidget(configBox);
 
-    Q3HBoxLayout *configLayout = new Q3HBoxLayout(configBox);
+    QHBoxLayout *configLayout = new QHBoxLayout(configBox);
 
     configLayout->addWidget(new QWidget(configBox));
 
@@ -79,7 +83,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     Q3ButtonGroup *buttonGroup = new Q3ButtonGroup(0);
 
     QWidget *buttonGroupBox = new QWidget(configBox);
-    Q3HBoxLayout *buttonGroupLayout = new Q3HBoxLayout(buttonGroupBox);
+    QHBoxLayout *buttonGroupLayout = new QHBoxLayout(buttonGroupBox);
     buttonGroupLayout->addStretch(0);
 
     configLayout->addWidget(buttonGroupBox);
@@ -95,7 +99,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     buttonGroupLayout->addWidget(m_radians);
     connect(m_radians, SIGNAL(clicked()), SLOT(slotRadians()));
 
-    m_history = new Q3VBox(box);
+    m_history = new KVBox(box);
     layout->addWidget(m_history);
     m_history->setSpacing(6);
     m_history->setMargin(0);
@@ -111,7 +115,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
     m_history->setStretchFactor(m_result, 1);
     layout->setStretchFactor(m_history, 1);
 
-    Q3HBox *editBox = new Q3HBox(box);
+    KHBox *editBox = new KHBox(box);
     layout->addWidget(editBox);
     editBox->setSpacing(6);
 
@@ -162,7 +166,7 @@ MainWindow::MainWindow() : KMainWindow(0, "abakus-mainwindow"), m_popup(0), m_in
 
 bool MainWindow::inRPNMode() const
 {
-    return action<KToggleAction>("toggleExpressionMode")->isChecked();
+    return action("toggleExpressionMode")->isChecked();
 }
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e)
@@ -178,14 +182,14 @@ bool MainWindow::queryExit()
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *e)
 {
-    static KPopupMenu *popup = 0;
+    static KMenu *popup = 0;
 
     if(!popup) {
-        popup = new KPopupMenu(this);
+        popup = new KMenu(this);
         action("options_show_menubar")->plug(popup);
     }
 
-    if(!action<KToggleAction>("options_show_menubar")->isChecked())
+    if(!action("options_show_menubar")->isChecked())
         popup->popup(e->globalPos());
 }
 
@@ -210,7 +214,7 @@ void MainWindow::slotReturnPressed()
     QString str = interpolateExpression(text, after);
 
     QString resultVal;
-    ResultListViewText *item;
+    ResultListViewText *item = 0;
 
     if(str.isNull())
         return; // Error already has been posted
@@ -252,7 +256,7 @@ void MainWindow::slotReturnPressed()
         for(int i = 0; i < parenLevel; ++i)
             str += ')';
 
-        Abakus::number_t result = parseString(str.latin1());
+        Abakus::number_t result = parseString(str.toLatin1());
 
         bool compact = !m_history->isShown();
 
@@ -332,7 +336,7 @@ void MainWindow::slotDegrees()
     setTrigMode(Abakus::Degrees);
     m_degrees->setChecked(true);
     if(action("setDegreesMode"))
-        action<KToggleAction>("setDegreesMode")->setChecked(true);
+        action("setDegreesMode")->setChecked(true);
 }
 
 void MainWindow::slotRadians()
@@ -340,7 +344,7 @@ void MainWindow::slotRadians()
     setTrigMode(Abakus::Radians);
     m_radians->setChecked(true);
     if(action("setRadiansMode"))
-        action<KToggleAction>("setRadiansMode")->setChecked(true);
+        action("setRadiansMode")->setChecked(true);
 }
 
 int MainWindow::getParenthesesLevel(const QString &str)
@@ -372,7 +376,7 @@ void MainWindow::loadConfig()
         }
 
         bool useRPN = config.readBoolEntry("Use RPN Mode", false);
-        action<KToggleAction>("toggleExpressionMode")->setChecked(useRPN);
+        action("toggleExpressionMode")->setChecked(useRPN);
 
         int precision = config.readNumEntry("Decimal Precision", -1);
         if(precision < -1 || precision > 75)
@@ -389,11 +393,11 @@ void MainWindow::loadConfig()
         for(QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
             QStringList values = QStringList::split('=', *it);
             if(values.count() != 2) {
-                kdWarning() << "Your configuration file has somehow been corrupted!\n";
+                kWarning() << "Your configuration file has somehow been corrupted!\n";
                 continue;
             }
 
-            ValueManager::instance()->setValue(values[0], Abakus::number_t(values[1].latin1()));
+            ValueManager::instance()->setValue(values[0], Abakus::number_t(values[1]));
         }
     }
 
@@ -401,20 +405,20 @@ void MainWindow::loadConfig()
         KConfigGroup config(KGlobal::config(), "GUI");
 
         bool showHistory = config.readBoolEntry("ShowHistory", true);
-        action<KToggleAction>("toggleHistoryList")->setChecked(showHistory);
+        action("toggleHistoryList")->setChecked(showHistory);
         m_history->setShown(showHistory);
 
         bool showFunctions = config.readBoolEntry("ShowFunctions", true);
-        action<KToggleAction>("toggleFunctionList")->setChecked(showFunctions);
+        action("toggleFunctionList")->setChecked(showFunctions);
         m_fnList->setShown(showFunctions);
 
         bool showVariables = config.readBoolEntry("ShowVariables", true);
-        action<KToggleAction>("toggleVariableList")->setChecked(showVariables);
+        action("toggleVariableList")->setChecked(showVariables);
         m_varList->setShown(showVariables);
 
         bool compactMode = config.readBoolEntry("InCompactMode", false);
         compactMode = compactMode || !showHistory;
-        action<KToggleAction>("toggleCompactMode")->setChecked(compactMode);
+        action("toggleCompactMode")->setChecked(compactMode);
 
         if(compactMode)
             QTimer::singleShot(0, this, SLOT(slotToggleCompactMode()));
@@ -424,8 +428,10 @@ void MainWindow::loadConfig()
         KConfigGroup config(KGlobal::config(), "Functions");
 
         QStringList fnList = config.readListEntry("FunctionList");
-        for(QStringList::ConstIterator it = fnList.begin(); it != fnList.end(); ++it)
-            parseString(*it); // Run the function definitions through the parser
+        foreach(QString fn, fnList) {
+            // Run the function definitions through the parser
+            parseString(fn.toLocal8Bit().constData());
+        }
     }
 
     populateListViews();
@@ -469,7 +475,7 @@ void MainWindow::saveConfig()
 
     {
         KConfigGroup config(KGlobal::config(), "GUI");
-        bool inCompactMode = action<KToggleAction>("toggleCompactMode")->isChecked();
+        bool inCompactMode = action("toggleCompactMode")->isChecked();
 
         config.writeEntry("InCompactMode", inCompactMode);
 
@@ -512,57 +518,93 @@ void MainWindow::setupLayout()
     KStdAction::quit(kapp, SLOT(quit()), ac);
     KStdAction::showMenubar(this, SLOT(slotToggleMenuBar()), ac);
 
-    KToggleAction *ta = new KToggleAction(i18n("&Degrees"), Qt::SHIFT + Qt::ALT + Qt::Key_D, this, SLOT(slotDegrees()), ac, "setDegreesMode");
-    ta->setExclusiveGroup("TrigMode");
+    QActionGroup *trigActions = new QActionGroup(this);
+
+    KAction *ta = new KAction(i18n("Degrees"), ac, "setDegreesMode");
     ta->setChecked(trigMode() == Abakus::Degrees);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_D);
 
-    ta = new KToggleAction(i18n("&Radians"), Qt::SHIFT + Qt::ALT + Qt::Key_R, this, SLOT(slotRadians()), ac, "setRadiansMode");
-    ta->setExclusiveGroup("TrigMode");
+    trigActions->addAction(ta);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotDegrees()));
+
+    ta = new KAction(i18n("Radians"), ac, "setRadiansMode");
     ta->setChecked(trigMode() == Abakus::Radians);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_R);
 
-    ta = new KToggleAction(i18n("Show &History List"), Qt::SHIFT + Qt::ALT + Qt::Key_H, this, SLOT(slotToggleHistoryList()), ac, "toggleHistoryList");
+    trigActions->addAction(ta);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotRadians()));
+
+    ta = new KAction(i18n("Show History List"), ac, "toggleHistoryList");
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_H);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotToggleHistoryList()));
     ta->setChecked(true);
 
-    ta = new KToggleAction(i18n("Show &Variables"), Qt::SHIFT + Qt::ALT + Qt::Key_V, this, SLOT(slotToggleVariableList()), ac, "toggleVariableList");
+    ta = new KAction(i18n("Show Variables"), ac, "toggleVariableList");
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_V);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotToggleVariableList()));
     ta->setChecked(true);
 
-    ta = new KToggleAction(i18n("Show &Functions"), Qt::SHIFT + Qt::ALT + Qt::Key_F, this, SLOT(slotToggleFunctionList()), ac, "toggleFunctionList");
+    ta = new KAction(i18n("Show Functions"), ac, "toggleFunctionList");
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_F);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotToggleFunctionList()));
     ta->setChecked(true);
 
-    ta = new KToggleAction(i18n("Activate &Compact Mode"), Qt::SHIFT + Qt::ALT + Qt::Key_C, this, SLOT(slotToggleCompactMode()), ac, "toggleCompactMode");
+    ta = new KAction(i18n("Activate Compact Mode"), ac, "toggleCompactMode");
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_C);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotToggleCompactMode()));
     ta->setChecked(false);
 
-    ta = new KToggleAction(i18n("Use R&PN Mode"), Qt::SHIFT + Qt::ALT + Qt::Key_P, this, SLOT(slotToggleExpressionMode()), ac, "toggleExpressionMode");
+    ta = new KAction(i18n("Use RPN Mode"), ac, "toggleExpressionMode");
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_P);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotToggleExpressionMode()));
     ta->setChecked(false);
 
     // Precision actions.
-    ta = new KToggleAction(i18n("&Automatic Precision"), 0, this, SLOT(slotPrecisionAuto()), ac, "precisionAuto");
-    ta->setExclusiveGroup("Precision");
+    QActionGroup *precActions = new QActionGroup(this);
+
+    ta = new KAction(i18n("Automatic Precision"), ac, "precisionAuto");
+    ta->setShortcut(0);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotPrecisionAuto()));
     ta->setChecked(true);
+    precActions->addAction(ta);
 
-    ta = new KToggleAction(i18n("&3 Decimal Digits"), 0, this, SLOT(slotPrecision3()), ac, "precision3");
-    ta->setExclusiveGroup("Precision");
+    ta = new KAction(i18n("3 Decimal Digits"), ac, "precision3");
+    ta->setShortcut(0);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotPrecision3()));
     ta->setChecked(false);
+    precActions->addAction(ta);
 
-    ta = new KToggleAction(i18n("&8 Decimal Digits"), 0, this, SLOT(slotPrecision8()), ac, "precision8");
-    ta->setExclusiveGroup("Precision");
+    ta = new KAction(i18n("8 Decimal Digits"), ac, "precision8");
+    ta->setShortcut(0);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotPrecision8()));
     ta->setChecked(false);
+    precActions->addAction(ta);
 
-    ta = new KToggleAction(i18n("&15 Decimal Digits"), 0, this, SLOT(slotPrecision15()), ac, "precision15");
-    ta->setExclusiveGroup("Precision");
+    ta = new KAction(i18n("15 Decimal Digits"), ac, "precision15");
+    ta->setShortcut(0);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotPrecision15()));
     ta->setChecked(false);
+    precActions->addAction(ta);
 
-    ta = new KToggleAction(i18n("&50 Decimal Digits"), 0, this, SLOT(slotPrecision50()), ac, "precision50");
-    ta->setExclusiveGroup("Precision");
+    ta = new KAction(i18n("50 Decimal Digits"), ac, "precision50");
+    ta->setShortcut(0);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotPrecision50()));
     ta->setChecked(false);
+    precActions->addAction(ta);
 
-    ta = new KToggleAction(i18n("C&ustom Precision..."), 0, this, SLOT(slotPrecisionCustom()), ac, "precisionCustom");
-    ta->setExclusiveGroup("Precision");
+    ta = new KAction(i18n("Custom Precision..."), ac, "precisionCustom");
+    ta->setShortcut(0);
+    connect(ta, SIGNAL(triggered(bool)), SLOT(slotPrecisionCustom()));
     ta->setChecked(false);
+    precActions->addAction(ta);
 
-    new KAction(i18n("Clear &History"), "editclear", Qt::SHIFT + Qt::ALT + Qt::Key_L, m_result, SLOT(clear()), ac, "clearHistory");
+    ta = new KAction(KIcon("editclear"), i18n("Clear History"), ac, "clearHistory");
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_L);
+    connect(ta, SIGNAL(triggered(bool)), m_result, SLOT(clear()));
 
-    new KAction(i18n("Select Editor"), "goto", Qt::Key_F6, m_edit, SLOT(setFocus()), ac, "select_edit");
+    ta = new KAction(KIcon("goto"), i18n("Select Editor"), ac, "select_edit");
+    ta->setShortcut(Qt::Key_F6);
+    connect(ta, SIGNAL(triggered(bool)), m_edit, SLOT(setFocus()));
 }
 
 void MainWindow::populateListViews()
@@ -599,38 +641,38 @@ void MainWindow::slotToggleMenuBar()
 
 void MainWindow::slotToggleFunctionList()
 {
-    bool show = action<KToggleAction>("toggleFunctionList")->isChecked();
+    bool show = action("toggleFunctionList")->isChecked();
     m_fnList->setShown(show);
 
     if(!m_history->isShown()) {
         m_history->setShown(true);
-        action<KToggleAction>("toggleHistoryList")->setChecked(true);
+        action("toggleHistoryList")->setChecked(true);
         slotToggleHistoryList();
     }
 
-    action<KToggleAction>("toggleCompactMode")->setChecked(false);
+    action("toggleCompactMode")->setChecked(false);
 }
 
 void MainWindow::slotToggleVariableList()
 {
-    bool show = action<KToggleAction>("toggleVariableList")->isChecked();
+    bool show = action("toggleVariableList")->isChecked();
     m_varList->setShown(show);
 
     if(!m_history->isShown()) {
         m_history->setShown(true);
-        action<KToggleAction>("toggleHistoryList")->setChecked(true);
+        action("toggleHistoryList")->setChecked(true);
         slotToggleHistoryList();
     }
 
-    action<KToggleAction>("toggleCompactMode")->setChecked(false);
+    action("toggleCompactMode")->setChecked(false);
 }
 
 void MainWindow::slotToggleHistoryList()
 {
-    bool show = action<KToggleAction>("toggleHistoryList")->isChecked();
+    bool show = action("toggleHistoryList")->isChecked();
     m_history->setShown(show);
 
-    action<KToggleAction>("toggleCompactMode")->setChecked(false);
+    action("toggleCompactMode")->setChecked(false);
 }
 
 void MainWindow::slotNewFunction(const QString &name)
@@ -640,7 +682,7 @@ void MainWindow::slotNewFunction(const QString &name)
     QString fnName = QString("%1(%2)").arg(name, userFn->varName);
     QString expr = fn->operand()->infixString();
 
-    new KListViewItem(m_fnList, fnName, expr);
+    new K3ListViewItem(m_fnList, fnName, expr);
 }
 
 void MainWindow::slotRemoveFunction(const QString &name)
@@ -673,7 +715,7 @@ void MainWindow::slotRemoveValue(const QString &name)
 
 void MainWindow::slotToggleCompactMode()
 {
-    if(action<KToggleAction>("toggleCompactMode")->isChecked()) {
+    if(action("toggleCompactMode")->isChecked()) {
         m_wasFnShown = m_fnList->isShown();
         m_wasVarShown = m_varList->isShown();
         m_wasHistoryShown = m_history->isShown();
@@ -682,9 +724,9 @@ void MainWindow::slotToggleCompactMode()
         m_varList->setShown(false);
         m_history->setShown(false);
 
-        action<KToggleAction>("toggleFunctionList")->setChecked(false);
-        action<KToggleAction>("toggleVariableList")->setChecked(false);
-        action<KToggleAction>("toggleHistoryList")->setChecked(false);
+        action("toggleFunctionList")->setChecked(false);
+        action("toggleVariableList")->setChecked(false);
+        action("toggleHistoryList")->setChecked(false);
 
         m_oldSize = size();
         m_newSize = QSize(0, 0);
@@ -695,9 +737,9 @@ void MainWindow::slotToggleCompactMode()
         m_varList->setShown(m_wasVarShown);
         m_history->setShown(m_wasHistoryShown);
 
-        action<KToggleAction>("toggleFunctionList")->setChecked(m_wasFnShown);
-        action<KToggleAction>("toggleVariableList")->setChecked(m_wasVarShown);
-        action<KToggleAction>("toggleHistoryList")->setChecked(m_wasHistoryShown);
+        action("toggleFunctionList")->setChecked(m_wasFnShown);
+        action("toggleVariableList")->setChecked(m_wasVarShown);
+        action("toggleHistoryList")->setChecked(m_wasHistoryShown);
 
         m_newSize = m_oldSize;
         QTimer::singleShot(0, this, SLOT(slotUpdateSize()));
@@ -802,27 +844,27 @@ void MainWindow::selectCorrectPrecisionAction()
 {
     switch(Abakus::m_prec) {
         case 3:
-            action<KToggleAction>("precision3")->setChecked(true);
+            action("precision3")->setChecked(true);
         break;
 
         case 8:
-            action<KToggleAction>("precision8")->setChecked(true);
+            action("precision8")->setChecked(true);
         break;
 
         case 15:
-            action<KToggleAction>("precision15")->setChecked(true);
+            action("precision15")->setChecked(true);
         break;
 
         case 50:
-            action<KToggleAction>("precision50")->setChecked(true);
+            action("precision50")->setChecked(true);
         break;
 
         case -1:
-            action<KToggleAction>("precisionAuto")->setChecked(true);
+            action("precisionAuto")->setChecked(true);
         break;
 
         default:
-            action<KToggleAction>("precisionCustom")->setChecked(true);
+            action("precisionCustom")->setChecked(true);
     }
 }
 

@@ -19,12 +19,13 @@
 #include <math.h>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <q3valuestack.h>
 #include <qregexp.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <kvbox.h>
 
 #include "rpnmuncher.h"
 #include "valuemanager.h"
@@ -95,7 +96,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         switch(tokenize(*it))
         {
         case Number:
-            m_stack.push(Abakus::number_t((*it).latin1()));
+            m_stack.push(Abakus::number_t(*it));
         break;
 
         case Pop:
@@ -212,7 +213,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
 
         default:
             // Impossible case happened.
-            kdError() << "Impossible case happened in " << k_funcinfo << endl;
+            kError() << "Impossible case happened in " << k_funcinfo << endl;
             m_error = true;
             m_errorStr = "Bug found in program, please report.";
             return Abakus::number_t::nan();
@@ -240,16 +241,16 @@ static int tokenize (const QString &token)
     if(FunctionManager::instance()->isFunction(token))
         return Func;
 
-    if(token.lower() == "set")
+    if(token.toLower() == "set")
         return Set;
 
-    if(token.lower() == "pop")
+    if(token.toLower() == "pop")
         return Pop;
 
-    if(token.lower() == "clear")
+    if(token.toLower() == "clear")
         return Clear;
 
-    if(token.lower() == "remove")
+    if(token.toLower() == "remove")
         return Remove;
 
     if(QRegExp("^\\w+$").search(token) != -1 &&
@@ -259,7 +260,7 @@ static int tokenize (const QString &token)
     }
 
     if(QRegExp("^[-+*/=]$").search(token) != -1)
-        return token[0];
+        return token[0].toAscii();
 
     return Unknown;
 }

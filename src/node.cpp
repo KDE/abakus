@@ -19,6 +19,7 @@
 #include <kdebug.h>
 
 #include <math.h>
+#include <kvbox.h>
 
 #include "node.h"
 #include "valuemanager.h"
@@ -30,7 +31,7 @@ void Node::deleteNode(Node *node)
         delete node;
 }
 
-BaseFunction::BaseFunction(const char *name) :
+BaseFunction::BaseFunction(const QString &name) :
     m_name(name)
 {
 }
@@ -40,7 +41,7 @@ const Function *BaseFunction::function() const
     return FunctionManager::instance()->function(m_name);
 }
 
-UnaryFunction::UnaryFunction(const char *name, Node *operand) :
+UnaryFunction::UnaryFunction(const QString &name, Node *operand) :
     BaseFunction(name), m_node(operand)
 {
 }
@@ -67,7 +68,7 @@ QString UnaryFunction::infixString() const
     return QString("%1(%2)").arg(name(), operand()->infixString());
 }
 
-BuiltinFunction::BuiltinFunction(const char *name, Node *operand) :
+BuiltinFunction::BuiltinFunction(const QString &name, Node *operand) :
     UnaryFunction(name, operand)
 {
 }
@@ -196,8 +197,8 @@ Abakus::number_t DerivativeFunction::value() const
 
 Abakus::number_t DerivativeFunction::derivative() const
 {
-    kdError() << k_funcinfo << endl;
-    kdError() << "This function is never supposed to be called!\n";
+    kError() << k_funcinfo << endl;
+    kError() << "This function is never supposed to be called!\n";
 
     return m_operand->derivative();
 }
@@ -245,7 +246,7 @@ Abakus::number_t UnaryOperator::derivative() const
 	    return -(operand()->derivative());
 
 	default:
-	    kdError() << "Impossible case encountered for UnaryOperator!\n";
+	    kError() << "Impossible case encountered for UnaryOperator!\n";
 	    return Abakus::number_t(0);
     }
 }
@@ -257,7 +258,7 @@ Abakus::number_t UnaryOperator::value() const
 	    return -(operand()->value());
 
 	default:
-	    kdError() << "Impossible case encountered for UnaryOperator!\n";
+	    kError() << "Impossible case encountered for UnaryOperator!\n";
 	    return Abakus::number_t(0);
     }
 }
@@ -321,7 +322,7 @@ QString BinaryOperator::infixString() const
 Abakus::number_t BinaryOperator::derivative() const
 {
     if(!leftNode() || !rightNode()) {
-	kdError() << "Can't evaluate binary operator!\n";
+	kError() << "Can't evaluate binary operator!\n";
 	return Abakus::number_t(0);
     }
 
@@ -347,7 +348,7 @@ Abakus::number_t BinaryOperator::derivative() const
             return f.pow(g) * ((g / f) * fPrime + gPrime * f.ln());
 
 	default:
-	    kdError() << "Impossible case encountered evaluating binary operator!\n";
+	    kError() << "Impossible case encountered evaluating binary operator!\n";
 	    return Abakus::number_t(0);
     }
 }
@@ -355,7 +356,7 @@ Abakus::number_t BinaryOperator::derivative() const
 Abakus::number_t BinaryOperator::value() const
 {
     if(!leftNode() || !rightNode()) {
-	kdError() << "Can't evaluate binary operator!\n";
+	kError() << "Can't evaluate binary operator!\n";
 	return Abakus::number_t(0);
     }
 
@@ -379,7 +380,7 @@ Abakus::number_t BinaryOperator::value() const
             return lValue.pow(rValue);
 
 	default:
-	    kdError() << "Impossible case encountered evaluating binary operator!\n";
+	    kError() << "Impossible case encountered evaluating binary operator!\n";
 	    return Abakus::number_t(0);
     }
 }
@@ -397,7 +398,7 @@ bool BinaryOperator::isSimpleNode(Node *node) const
     return false;
 }
 
-Identifier::Identifier(const char *name) : m_name(name)
+Identifier::Identifier(const QString &name) : m_name(name)
 {
 }
 

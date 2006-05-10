@@ -23,29 +23,30 @@
 #include <qfontmetrics.h>
 #include <qfont.h>
 #include <qpalette.h>
+#include <kvbox.h>
 
 #include "resultlistviewtext.h"
 
 using namespace ResultList;
 
-ResultListViewText::ResultListViewText(KListView *listView,
+ResultListViewText::ResultListViewText(K3ListView *listView,
                                      const QString &text,
 				     const QString &result,
 				     ResultListViewText *after,
 				     bool isError)
-    : KListViewItem(listView, after, text, result), m_text(text),
+    : K3ListViewItem(listView, after, text, result), m_text(text),
       m_result(result), m_wasError(isError), m_stackPosition(0)
 {
     // This is some kind of non-result answer, don't bother worrying about the
     // stack status, it hasn't changed.
 }
 
-ResultListViewText::ResultListViewText(KListView *listView,
+ResultListViewText::ResultListViewText(K3ListView *listView,
                                      const QString &text,
 				     const Abakus::number_t &result,
 				     ResultListViewText *after,
 				     bool isError)
-    : KListViewItem(listView, after, text), m_text(text),
+    : K3ListViewItem(listView, after, text), m_text(text),
       m_result(result.toString()), m_wasError(isError), m_stackPosition(0),
       m_value(result)
 {
@@ -98,11 +99,11 @@ void ResultListViewText::paintCell(QPainter *p, const QColorGroup &cg, int colum
     if(column == ShortcutColumn) {
 	QFont f = p->font();
 	f.setItalic(true);
-	f.setPointSize(QMIN(f.pointSize() * 9 / 11, 10));
+	f.setPointSize(qMin(f.pointSize() * 9 / 11, 10));
 	p->setFont(f);
     }
 
-    KListViewItem::paintCell(p, group, column, width, align);
+    K3ListViewItem::paintCell(p, group, column, width, align);
 }
 
 int ResultListViewText::width(const QFontMetrics &fm, const Q3ListView *lv, int c) const
@@ -111,25 +112,25 @@ int ResultListViewText::width(const QFontMetrics &fm, const Q3ListView *lv, int 
     if(c == ResultColumn) {
 	QFont f = lv->font();
 	f.setBold(true);
-	return KListViewItem::width(QFontMetrics(f), lv, c);
+	return K3ListViewItem::width(QFontMetrics(f), lv, c);
     }
 
     if(c == ShortcutColumn) {
 	QFont f = lv->font();
 	f.setItalic(true);
-	f.setPointSize(QMIN(f.pointSize() * 9 / 11, 10));
-	return KListViewItem::width(QFontMetrics(f), lv, c);
+	f.setPointSize(qMin(f.pointSize() * 9 / 11, 10));
+	return K3ListViewItem::width(QFontMetrics(f), lv, c);
     }
 
-    return KListViewItem::width(fm, lv, c);
+    return K3ListViewItem::width(fm, lv, c);
 }
 
 void ResultListViewText::setText(int column, const QString &text)
 {
     if(!m_wasError && column == ResultColumn) {
-	KListViewItem::setText(column, m_value.toString());
+	K3ListViewItem::setText(column, m_value.toString());
 	return;
     }
 
-    KListViewItem::setText(column, text);
+    K3ListViewItem::setText(column, text);
 }

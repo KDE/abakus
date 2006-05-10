@@ -31,6 +31,7 @@
 
 #if HAVE_MPFR
 #include <mpfr.h>
+#include <kvbox.h>
 #endif
 
 namespace Abakus
@@ -70,7 +71,7 @@ public:
 
     /// Create number from textual representation, useful for ginormously
     /// precise numbers.
-    number(const char *str);
+    number(const QString &str);
 
     /// Convienience constructor to create a number from an integer.
     explicit number(int i);
@@ -248,10 +249,10 @@ public:
         mpfr_init_set(m_t, other.m_t, RoundDirection);
     }
 
-    number(const char *str)
+    number(const QString &str)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
-        mpfr_init_set_str (m_t, str, 10, RoundDirection);
+        mpfr_init_set_str (m_t, str.toLocal8Bit().constData(), 10, RoundDirection);
     }
 
     explicit number(int i)
@@ -526,7 +527,7 @@ public:
     explicit number(int i) : m_t(i) { }
     number(const number<HNumber> &other) : m_t(other.m_t) { }
 
-    number(const char *s) : m_t(s) { }
+    number(const QString &s) : m_t(s) { }
 
     bool operator!=(const number<HNumber> &other) const
     {

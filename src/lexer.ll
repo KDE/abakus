@@ -149,7 +149,7 @@ public:
 Lexer::Lexer(const QString &expr) :
     m_private(new Private)
 {
-    const char *exprString = expr.latin1();
+    const char *exprString = expr.toLatin1();
 
     yyCurTokenPos = 0;
     yyThisTokenLength = 0;
@@ -163,7 +163,7 @@ Lexer::Lexer(const QString &expr) :
 
     if(yyCurTokenPos != 0)
     {
-	kdError() << "yyCurTokenPos should be 0!!\n";
+	kError() << "yyCurTokenPos should be 0!!\n";
     }
 
     m_private->thisPos = yyCurTokenPos;

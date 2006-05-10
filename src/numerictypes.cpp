@@ -22,7 +22,9 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
+#include <klocalizedstring.h>
 #include <klocale.h>
+#include <kvbox.h>
 
 Abakus::TrigMode Abakus::m_trigMode = Abakus::Degrees;
 int Abakus::m_prec = -1;

@@ -30,6 +30,7 @@
 #include <QWheelEvent>
 #include <QKeyEvent>
 #include <QEvent>
+#include <kvbox.h>
 
 #include "hmath.h"
 

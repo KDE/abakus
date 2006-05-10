@@ -25,21 +25,22 @@
 //Added by qt3to4:
 #include <QContextMenuEvent>
 #include <QEvent>
+#include <kvbox.h>
 
 class QPoint;
-class Q3VBox;
+class KVBox;
 class QCheckBox;
 class QRadioButton;
-class Q3BoxLayout;
+class QBoxLayout;
 class Q3ListViewItem;
 class QSplitter;
 class QTimer;
 
 //class KComboBox;
 class Editor;
-class KPopupMenu;
+class KMenu;
 class KAction;
-class KListView;
+class K3ListView;
 class ResultListView;
 class ResultListViewText;
 
@@ -115,15 +116,15 @@ class MainWindow : public KMainWindow
     }
 
     private:
-    Q3VBox *m_history;
+    KVBox *m_history;
     QRadioButton *m_degrees;
     QRadioButton *m_radians;
     Editor *m_edit;
-    KPopupMenu *m_popup;
+    KMenu *m_popup;
     ResultListView *m_result;
     QString m_lastError;
-    Q3BoxLayout *m_layout;
-    KListView *m_fnList, *m_varList;
+    QBoxLayout *m_layout;
+    K3ListView *m_fnList, *m_varList;
     QSplitter *m_mainSplitter, *m_listSplitter;
     QSize m_newSize, m_oldSize;
 

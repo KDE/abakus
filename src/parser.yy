@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <kvbox.h>
 
 #include "result.h"
 #include "node.h"

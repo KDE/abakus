@@ -24,6 +24,7 @@
 
 #include <qstring.h>
 #include <q3valuevector.h>
+#include <kvbox.h>
 
 #include "numerictypes.h"
 

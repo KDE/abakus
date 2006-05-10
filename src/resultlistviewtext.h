@@ -27,16 +27,16 @@ class QColorGroup;
 class QFontMetrics;
 
 // This class shows the results shown in the MainWindow result pane.
-class ResultListViewText : public KListViewItem
+class ResultListViewText : public K3ListViewItem
 {
     public:
-    ResultListViewText(KListView *listView,
+    ResultListViewText(K3ListView *listView,
                       const QString &text,
 		      const QString &result,
 		      ResultListViewText *after,
 		      bool isError = false);
 
-    ResultListViewText(KListView *listView,
+    ResultListViewText(K3ListView *listView,
                       const QString &text,
 		      const Abakus::number_t &result,
 		      ResultListViewText *after,
@@ -53,7 +53,7 @@ class ResultListViewText : public KListViewItem
     // Redisplays the text by calling value.toString again.
     void precisionChanged();
 
-    // Reimplemented from KListViewItem
+    // Reimplemented from K3ListViewItem
     virtual void paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int align);
     virtual int width(const QFontMetrics &fm, const Q3ListView *lv, int c) const;
 

@@ -25,6 +25,7 @@
 #include <qfont.h>
 #include <qbrush.h>
 #include <qfontmetrics.h>
+#include <kvbox.h>
 
 #include "dragsupport.h"
 

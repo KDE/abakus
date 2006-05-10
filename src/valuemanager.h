@@ -23,6 +23,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <kvbox.h>
 
 #include "numerictypes.h"
 

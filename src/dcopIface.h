@@ -23,6 +23,7 @@
 #include <dcopobject.h>
 
 #include <qstring.h>
+#include <kvbox.h>
 
 #include "mainwindow.h"
 #include "numerictypes.h"
@@ -39,7 +40,7 @@ class AbakusIface : virtual public DCOPObject
     k_dcop:
     virtual double evaluate(const QString &expr)
     {
-	Abakus::number_t result = parseString(expr.latin1());
+	Abakus::number_t result = parseString(expr.toLatin1());
 	return result.asDouble();
     }
 };
