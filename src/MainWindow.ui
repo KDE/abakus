@@ -115,11 +115,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="vScrollBarMode" >
-            <enum>Q3ScrollView::AlwaysOff</enum>
+           <property name="verticalScrollBarPolicy" >
+            <enum>Qt::ScrollBarAlwaysOff</enum>
            </property>
-           <property name="hScrollBarMode" >
-            <enum>Q3ScrollView::AlwaysOff</enum>
+           <property name="horizontalScrollBarPolicy" >
+            <enum>Qt::ScrollBarAlwaysOff</enum>
            </property>
           </widget>
          </item>
@@ -147,13 +147,13 @@
  </widget>
  <pixmapfunction></pixmapfunction>
  <customwidgets>
-  <customwidget>
+<!--  <customwidget>
    <class>Q3TextEdit</class>
    <extends></extends>
    <header>q3textedit.h</header>
    <container>0</container>
    <pixmap></pixmap>
-  </customwidget>
+  </customwidget> -->
   <customwidget>
    <class>FunctionListView</class>
    <extends>Q3ListView</extends>
@@ -184,7 +184,7 @@
   </customwidget>
   <customwidget>
    <class>Editor</class>
-   <extends>Q3TextEdit</extends>
+   <extends>QTextEdit</extends>
    <header>editor.h</header>
    <container>0</container>
    <pixmap></pixmap>

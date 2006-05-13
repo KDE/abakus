@@ -70,7 +70,7 @@ MainWindow::MainWindow()
     connect(m_ui->editLine, SIGNAL(returnPressed()),
                       SLOT(slotReturnPressed()));
     connect(m_ui->editLine, SIGNAL(textChanged()),
-                      SLOT(slotTextPressed()));
+                      SLOT(slotTextChanged()));
 
     connect(m_ui->radiansButton, SIGNAL(clicked()),
                       SLOT(slotRadians()));
@@ -172,7 +172,7 @@ void MainWindow::slotReturnPressed()
 
         // Skip creating list view items if in compact mode.
         if(m_ui->resultList->isHidden()) {
-            m_ui->editLine->setText(resultVal);
+            m_ui->editLine->setPlainText(resultVal);
             QTimer::singleShot(0, m_ui->editLine, SLOT(selectAll()));
 
             return;
@@ -220,14 +220,14 @@ void MainWindow::slotReturnPressed()
 
         // Skip creating list view items if in compact mode.
         if(compact) {
-            m_ui->editLine->setText(resultVal);
+            m_ui->editLine->setPlainText(resultVal);
             QTimer::singleShot(0, m_ui->editLine, SLOT(selectAll()));
 
             return;
         }
     }
 
-    m_ui->editLine->setText(text);
+    m_ui->editLine->setPlainText(text);
 
     m_ui->resultList->setCurrentItem(item);
     m_ui->resultList->ensureItemVisible(item);
@@ -247,8 +247,8 @@ void MainWindow::slotTextChanged()
             return;
 
         if(str.find(QRegExp("^[-+*/^]")) != -1) {
-            m_ui->editLine->setText("ans " + str + " ");
-            m_ui->editLine->moveCursor(Q3TextEdit::MoveEnd, false);
+            m_ui->editLine->setPlainText("ans " + str + " ");
+            m_ui->editLine->moveCursorToEnd();
         }
     }
 }
@@ -568,8 +568,8 @@ KAction *MainWindow::action(const char *key) const
 
 void MainWindow::slotEntrySelected(const QString &text)
 {
-    m_ui->editLine->setText(text);
-    m_ui->editLine->moveCursor(Q3TextEdit::MoveEnd, false);
+    m_ui->editLine->setPlainText(text);
+    m_ui->editLine->moveCursorToEnd();
 }
 
 void MainWindow::slotResultSelected(const QString &text)
