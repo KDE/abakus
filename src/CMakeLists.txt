@@ -1,4 +1,4 @@
-kde4_header()
+
 project(abakus)
 
 # Need to include checks for MPFR, GNU MP, FLEX, and BISON
@@ -88,4 +88,4 @@ install_files(${DATA_INSTALL_DIR}/abakus FILES abakusui.rc)
 
 kde4_install_icons(${ICON_INSTALL_DIR} hicolor)
 
-kde4_footer()
+
