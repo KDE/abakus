@@ -38,51 +38,45 @@ QPixmap makePixmap(const QString &text, const QFont &font)
     QFontMetrics fm(font);
 
     int height = 2 * fm.height();
+
     QSize bonusSize (height, 0);
     QSize size(fm.width(text), height);
-    QImage image(size + bonusSize, 32);
+    QImage image(size + bonusSize, QImage::Format_ARGB32);
+    QImage mask = image.copy();
 
-    image.setAlphaBuffer(false);
-    image.fill(0); // All transparent pixels
-    image.setAlphaBuffer(true);
+    image.fill(Qt::black);
+    mask.fill(Qt::black);
 
-    QPixmap pix(size + bonusSize);
-    pix.fill(Qt::magenta); // Watch for incoming hacks
+    { // QPainter will destruct automatically
+	QPainter painter(&image), maskPainter(&mask);
+	painter.setFont(font);
 
-    QPainter painter(&pix);
-    painter.setFont(font);
+	maskPainter.setPen(Qt::white);
+	maskPainter.setBrush(Qt::white);
+	painter.setBrush(background);
+	painter.setPen(Qt::black);
+	painter.setRenderHint(QPainter::Antialiasing, true);
 
-    // Outline black, background white
-    painter.setPen(Qt::black);
-    painter.setBrush(background);
+	// roundRect is annoying in that the four "pies" in each corner aren't
+	// circular, they're elliptical.  Try to make the radii force it circular
+	// again.
+	QRect r = image.rect();
+	r.setRight(r.right() - 1);
+	r.setBottom(r.bottom() - 1);
 
-    // roundRect is annoying in that the four "pies" in each corner aren't
-    // circular, they're elliptical.  Try to make the radii force it circular
-    // again.
-    painter.drawRoundRect(pix.rect(), 75 * pix.height() / pix.width(), 75);
+	maskPainter.drawRoundRect(r, 75 * image.height() / image.width(), 75);
+	painter.drawRoundRect(r, 75 * image.height() / image.width(), 75);
 
-    // Alias better names for some constants.
-    int textLeft = height / 2;
+	// Alias better names for some constants.
+	int textLeft = height / 2;
 
-    // Draw text
-    painter.setPen(Qt::black);
-    painter.drawText(textLeft, height / 4, size.width(), size.height(), 0, text);
+	// Draw text
+	painter.setPen(Qt::black);
+	painter.drawText(textLeft, height / 4, size.width(), size.height(), 0, text);
+    } // QPainter is gone
 
-    QImage overlay(pix.convertToImage());
-
-    // The images should have the same size, copy pixels from overlay to the
-    // bottom unless the pixel is called magenta.  The pixels we don't copy
-    // are transparent in the QImage, and will remain transparent when
-    // converted to a QPixmap.
-
-    for(int i = 0; i < image.width(); ++i)
-	for(int j = 0; j < image.height(); ++j) {
-	    if(QColor(overlay.pixel(i, j)) != Qt::magenta)
-		image.setPixel(i, j, overlay.pixel(i, j));
-	}
-
-    pix.convertFromImage(image);
-    return pix;
+    image.setAlphaChannel(mask);
+    return QPixmap::fromImage(image);
 }
 
 } // DragSupport

@@ -34,6 +34,7 @@
 #include <QContextMenuEvent>
 #include <QAction>
 #include <QActionGroup>
+#include <QTextCursor>
 
 #include "editor.h"
 #include "evaluator.h"
@@ -136,7 +137,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *e)
 
 void MainWindow::slotReturnPressed()
 {
-    QString text = m_ui->editLine->text();
+    QString text = m_ui->editLine->toPlainText();
 
     text.replace("\n", "");
 
@@ -237,7 +238,7 @@ void MainWindow::slotReturnPressed()
 
 void MainWindow::slotTextChanged()
 {
-    QString str = m_ui->editLine->text();
+    QString str = m_ui->editLine->toPlainText();
 
     if(str.length() == 1 && m_insert) {
         m_insert = false;
@@ -246,7 +247,7 @@ void MainWindow::slotTextChanged()
         if(inRPNMode())
             return;
 
-        if(str.find(QRegExp("^[-+*/^]")) != -1) {
+        if(str.contains(QRegExp("^[-+*/^]"))) {
             m_ui->editLine->setPlainText("ans " + str + " ");
             m_ui->editLine->moveCursorToEnd();
         }
@@ -281,7 +282,7 @@ int MainWindow::getParenthesesLevel(const QString &str)
 {
     int level = 0;
 
-    for(unsigned i = 0; i < str.length(); ++i)
+    for(int i = 0; i < str.length(); ++i)
         if(str[i] == '(')
             ++level;
         else if(str[i] == ')')
@@ -320,8 +321,8 @@ void MainWindow::loadConfig()
         KConfigGroup config(KGlobal::config(), "Variables");
 
         QStringList list = config.readEntry("Saved Variables", QStringList());
-        for(QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-            QStringList values = QStringList::split('=', *it);
+        foreach(QString s, list) {
+            QStringList values = s.split('=');
             if(values.count() != 2) {
                 kWarning() << "Your configuration file has somehow been corrupted!\n";
                 continue;
@@ -574,7 +575,10 @@ void MainWindow::slotEntrySelected(const QString &text)
 
 void MainWindow::slotResultSelected(const QString &text)
 {
-    m_ui->editLine->insert(text);
+    QTextCursor c = m_ui->editLine->textCursor();
+
+    c.insertText(text);
+    m_ui->editLine->setTextCursor(c);
 }
 
 void MainWindow::slotToggleMenuBar()
@@ -697,9 +701,9 @@ QString MainWindow::interpolateExpression(const QString &text, ResultListViewTex
 {
     QString str(text);
     QRegExp stackRE("\\$\\d+");
-    int pos;
+    int pos = 0;
 
-    while((pos = stackRE.search(str)) != -1) {
+    while((pos = stackRE.indexIn(str, pos)) != -1) {
         QString stackStr = stackRE.cap();
         Abakus::number_t value;
         unsigned numPos = stackStr.mid(1).toUInt();
