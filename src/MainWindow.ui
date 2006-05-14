@@ -23,11 +23,11 @@
     <number>6</number>
    </property>
    <item>
-    <widget class="QSplitter" name="" >
+    <widget class="QSplitter" name="splitter" >
      <property name="orientation" >
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="" >
+     <widget class="QWidget" name="layoutWidget" >
       <layout class="QVBoxLayout" >
        <property name="margin" >
         <number>0</number>
@@ -121,6 +121,9 @@
            <property name="horizontalScrollBarPolicy" >
             <enum>Qt::ScrollBarAlwaysOff</enum>
            </property>
+           <property name="acceptRichText" >
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
          <item>
@@ -134,7 +137,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QSplitter" name="" >
+     <widget class="QSplitter" name="splitter" >
       <property name="orientation" >
        <enum>Qt::Vertical</enum>
       </property>
@@ -147,24 +150,10 @@
  </widget>
  <pixmapfunction></pixmapfunction>
  <customwidgets>
-<!--  <customwidget>
-   <class>Q3TextEdit</class>
-   <extends></extends>
-   <header>q3textedit.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget> -->
   <customwidget>
    <class>FunctionListView</class>
    <extends>Q3ListView</extends>
    <header>abakuslistview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>Q3ListView</class>
-   <extends></extends>
-   <header>q3listview.h</header>
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>
@@ -186,6 +175,13 @@
    <class>Editor</class>
    <extends>QTextEdit</extends>
    <header>editor.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>Q3ListView</class>
+   <extends>Q3Frame</extends>
+   <header>q3listview.h</header>
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>

@@ -190,7 +190,7 @@ void EditorHighlighter::highlightBlock ( const QString & text )
 
   Tokens tokens = Evaluator::scan( text );
 
-  for( unsigned i = 0; i < tokens.count(); i++ )
+  for( int i = 0; i < tokens.count(); i++ )
   {
     Token& token = tokens[i];
     QString text = token.text().toLower();
@@ -281,13 +281,18 @@ Editor::~Editor()
 
 QSize Editor::sizeHint() const
 {
-//  constPolish();
+  ensurePolished();
+
   QFontMetrics fm = fontMetrics();
-  int h = qMax(fm.lineSpacing(), 14);
-  int w = fm.width( 'x' ) * 20;
+  int h = qMax(fm.lineSpacing(), 14) + 4;
+  int w = fm.width( 'x' ) * 17 + 4;
   int m = frameWidth() * 2;
 
-  QStyleOption styleOptions;
+  QStyleOptionFrameV2 styleOptions;
+  styleOptions.rect = rect();
+  styleOptions.palette = palette();
+  styleOptions.state = QStyle::State_None;
+
   return style()->sizeFromContents(QStyle::CT_LineEdit, &styleOptions,
              QSize( w + m, h + m ).
              expandedTo(QApplication::globalStrut()));
@@ -367,6 +372,9 @@ void Editor::squelchNextAutoCalc()
 
 void Editor::setPlainText(const QString &txt)
 {
+  if( txt.contains( QChar( '\n' ) ) )
+    kWarning() << txt << " shouldn't have a newline.\n";
+
   QTextEdit::setPlainText(txt);
   squelchNextAutoCalc();
 }
@@ -460,6 +468,7 @@ void Editor::doMatchingLeft()
       cursor.mergeCharFormat( selectionFormat );
 
       cursor.setPosition( curPos );
+      setTextCursor( cursor );
     }
   }
 }
@@ -492,9 +501,8 @@ void Editor::doMatchingRight()
   {
     // find the matching right par
     unsigned par = 1;
-    unsigned int k = 0;
     Token matchToken;
-    int matchPos = -1;
+    int matchPos = -1, k;
 
     for( k = 1; k < tokens.count(); k++ )
     {
@@ -524,6 +532,7 @@ void Editor::doMatchingRight()
       cursor.mergeCharFormat( selectionFormat );
 
       cursor.setPosition( curPos );
+      setTextCursor( cursor );
     }
   }
 
@@ -563,17 +572,17 @@ void Editor::triggerAutoComplete()
   QStringList fnames = FunctionManager::instance()->functionList(FunctionManager::All);
   QStringList choices;
 
-  for( unsigned i=0; i<fnames.count(); i++ )
-    if( fnames[i].startsWith( id, Qt::CaseInsensitive ) )
+  foreach( QString str, fnames )
+  {
+    if( str.startsWith( id, Qt::CaseInsensitive ) )
     {
-      QString str = fnames[i];
-
       ::Function* f = FunctionManager::instance()->function( str );
       if( f && !f->description.isEmpty() )
         str.append( ':' ).append( f->description );
 
       choices.append( str );
     }
+  }
 
   choices.sort();
 
@@ -648,6 +657,8 @@ void Editor::autoComplete( const QString& item )
   cursor.setPosition( lastToken.pos() );
   cursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor, lastToken.text().length() );
   cursor.insertText( str[0] );
+
+  setTextCursor( cursor );
 
   blockSignals( false );
 }
@@ -894,11 +905,13 @@ void EditorCompletion::doneCompletion()
 void EditorCompletion::showCompletion( const QStringList &choices )
 {
   static bool shown = false;
-  if( !choices.count() ) return;
+
+  if( choices.isEmpty() )
+    return;
 
   d->completionListBox->clear();
   int maxWidth = 0;
-  for( unsigned i = 0; i < choices.count(); i++ ) {
+  for( int i = 0; i < choices.count(); i++ ) {
     ChoiceItem *item = new ChoiceItem( d->completionListBox, choices[i] );
     int itemMaxWidth = item->nameWidth();
 
