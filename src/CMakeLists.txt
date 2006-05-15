@@ -77,7 +77,7 @@ kde4_add_dcop_skels(abakus_SRCS dcopIface.h)
 kde4_add_ui_files(abakus_SRCS "MainWindow.ui")
 
 kde4_add_executable(abakus ${abakus_SRCS} ${math_srcs} ${parser_srcs})
-target_link_libraries(abakus ${KDE4_KDECORE_LIBS} ${math_libs} m kdeui)
+target_link_libraries(abakus ${KDE4_KDEUI_LIBS} ${math_libs} m )
 
 install_targets(/bin abakus)
 
