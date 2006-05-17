@@ -41,7 +41,7 @@ HEX [0-9A-Fa-f]+
 [ \t]* { yyCurTokenPos += yyThisTokenLength; yyThisTokenLength = yyleng; }
 
  /* Power operator */
-"**" { 
+"**" {
     yyCurTokenPos += yyThisTokenLength;
     yyThisTokenLength = 2;
     return POWER;

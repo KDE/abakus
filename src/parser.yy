@@ -202,7 +202,7 @@ S: REMOVE IDENT '(' IDENT ')' {
 
 S: REMOVE IDENT {
     ValueManager *manager = ValueManager::instance();
-    
+
     if(manager->isValueSet($2->name()) && !manager->isValueReadOnly($2->name())) {
 	manager->removeValue($2->name());
 

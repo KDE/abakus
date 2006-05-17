@@ -35,7 +35,7 @@ public:
     {
       Unknown,
       Number,
-      Operator,  
+      Operator,
       Identifier
     } Type;
 
@@ -55,10 +55,10 @@ public:
     } Op;
 
     Token( Type type = Unknown, const QString& text = QString::null, int pos = -1 );
-    
+
     Token( const Token& );
     Token& operator=( const Token& );
-    
+
     Type type() const { return m_type; }
     QString text() const { return m_text; }
     int pos() const { return m_pos; };
@@ -71,7 +71,7 @@ public:
     Op asOperator() const;
 
     QString description() const;
-    
+
     static const Token null;
 
 protected:
@@ -107,7 +107,7 @@ public:
     ~Evaluator();
 
     void setExpression( const QString& expr );
-    QString expression() const;    
+    QString expression() const;
 
     void clear();
     bool isValid() const;
@@ -115,12 +115,12 @@ public:
     Tokens tokens() const;
     static Tokens scan( const QString& expr );
 
-    QString error() const;    
-    
+    QString error() const;
+
     // Abakus::number_t eval();
-    
+
     static QString autoFix( const QString& expr );
-    
+
 private:
     Evaluator( const Evaluator& );
     Evaluator& operator=( const Evaluator& );

@@ -312,7 +312,7 @@ QString BinaryOperator::infixString() const
         default:
             op = "Error";
     }
-    
+
     QString left = QString(isSimpleNode(leftNode()) ? "%1" : "(%1)").arg(leftNode()->infixString());
     QString right = QString(isSimpleNode(rightNode()) ? "%1" : "(%1)").arg(rightNode()->infixString());
 

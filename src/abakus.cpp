@@ -71,6 +71,6 @@ int main(int argc, char **argv)
     app.connect(&app, SIGNAL(lastWindowClosed()), SLOT(quit()));
     win->show();
     win->resize(500, 300);
-    
+
     return app.exec();
 }

@@ -18,7 +18,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
+
 #include "evaluator.h"
 #include "function.h"
 #include "node.h" // For parser_yacc.hpp below
@@ -137,7 +137,7 @@ const Token Token::null;
 static Token::Op matchOperator( const QString& text )
 {
   Token::Op result = Token::InvalidOp;
-  
+
   if( text.length() == 1 )
   {
     QChar p = text[0];
@@ -156,12 +156,12 @@ static Token::Op matchOperator( const QString& text )
         default : result = Token::InvalidOp; break;
     }
   }
-  
+
   if( text.length() == 2 )
   {
     if( text == "**" ) result = Token::Caret;
   }
-  
+
   return result;
 }
 
@@ -229,23 +229,23 @@ QString Evaluator::autoFix( const QString& expr )
 {
   int par = 0;
   QString result;
-  
+
   // strip off all funny characters
   for( unsigned c = 0; c < expr.length(); c++ )
     if( expr[c] >= QChar(32) )
       result.append( expr[c] );
-  
+
   // automagically close all parenthesis
   Tokens tokens = Evaluator::scan( result );
   for( unsigned i=0; i<tokens.count(); i++ )
     if( tokens[i].asOperator() == Token::LeftPar ) par++;
     else if( tokens[i].asOperator() == Token::RightPar ) par--;
   for(; par > 0; par-- )
-    result.append( ')' );  
-    
-  // special treatment for simple function 
+    result.append( ')' );
+
+  // special treatment for simple function
   // e.g. "cos" is regarded as "cos(ans)"
-  if( !result.isEmpty() ) 
+  if( !result.isEmpty() )
   {
     Tokens tokens = Evaluator::scan( result );
     if( (tokens.count() == 1) &&
@@ -255,8 +255,8 @@ QString Evaluator::autoFix( const QString& expr )
       result.append( "(ans)" );
     }
   }
-  
-  return result;  
+
+  return result;
 }
 
 // vim: set et ts=8 sw=4:

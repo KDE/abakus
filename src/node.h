@@ -93,7 +93,7 @@ class UnaryFunction : public BaseFunction
 class DerivativeFunction : public Node
 {
     public:
-    DerivativeFunction(Node *operand, Node *where) : 
+    DerivativeFunction(Node *operand, Node *where) :
         m_operand(operand), m_where(where) { }
     ~DerivativeFunction();
 
