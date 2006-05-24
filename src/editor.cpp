@@ -24,6 +24,7 @@
 #include "editor.h"
 #include "evaluator.h"
 #include "result.h"
+#include "lexer.h"
 
 #include <netwm.h>
 #include <fixx11h.h>  // netwm.h includes X11 headers which conflict with qevent
@@ -188,7 +189,7 @@ void EditorHighlighter::highlightBlock ( const QString & text )
   QStringList fnames = FunctionManager::instance()->functionList(FunctionManager::All);
   fnames.sort(); // Sort list so we can bin search it.
 
-  Tokens tokens = Evaluator::scan( text );
+  TokenList tokens = Lexer::tokenize( text );
 
   for( int i = 0; i < tokens.count(); i++ )
   {
@@ -418,10 +419,10 @@ void Editor::doMatchingLeft()
   cursor.movePosition( QTextCursor::Start, QTextCursor::MoveAnchor );
 
   // tokenize the expression
-  Tokens tokens = Evaluator::scan( cursor.selectedText() );
+  TokenList tokens = Lexer::tokenize( cursor.selectedText() );
 
   // check for right par
-  if( !tokens.valid() || tokens.isEmpty() )
+  if( tokens.isEmpty() )
     return;
 
   Token lastToken = tokens[ tokens.count()-1 ];
@@ -429,7 +430,7 @@ void Editor::doMatchingLeft()
   selectionFormat.setForeground( highlightColor( Editor::MatchedPar ) );
 
   // right par ?
-  if( lastToken.isOperator() &&
+  if( lastToken.type() == Token::Operator &&
       lastToken.asOperator() == Token::RightPar &&
       lastToken.pos() == curPos - 1
     )
@@ -446,7 +447,7 @@ void Editor::doMatchingLeft()
         break;
 
       Token matchToken = tokens[k];
-      if( matchToken.isOperator() )
+      if( matchToken.type() == Token::Operator )
       {
         if( matchToken.asOperator() == Token::RightPar )
           par++;
@@ -483,10 +484,10 @@ void Editor::doMatchingRight()
   cursor.movePosition( QTextCursor::Start, QTextCursor::MoveAnchor );
 
   // tokenize the expression
-  Tokens tokens = Evaluator::scan( cursor.selectedText() );
+  TokenList tokens = Lexer::tokenize( cursor.selectedText() );
 
   // check for left par
-  if( !tokens.valid() || tokens.isEmpty() )
+  if( tokens.isEmpty() )
     return;
 
   Token firstToken = tokens[ 0 ];
@@ -494,8 +495,7 @@ void Editor::doMatchingRight()
   selectionFormat.setForeground( highlightColor( Editor::MatchedPar ) );
 
   // left par ?
-  if( firstToken.isOperator() &&
-      firstToken.asOperator() == Token::LeftPar &&
+  if( firstToken.asOperator() == Token::LeftPar &&
       firstToken.pos() == 0
     )
   {
@@ -510,7 +510,7 @@ void Editor::doMatchingRight()
         break;
 
       Token matchToken = tokens[k];
-      if( matchToken.isOperator() )
+      if( matchToken.type() == Token::Operator )
       {
         if( matchToken.asOperator() == Token::LeftPar )
           par++;
@@ -548,12 +548,7 @@ void Editor::triggerAutoComplete()
   cursor.movePosition( QTextCursor::Start, QTextCursor::KeepAnchor );
 
   QString subtext = cursor.selectedText();
-  Tokens tokens = Evaluator::scan( subtext );
-  if(!tokens.valid())
-  {
-    kWarning() << "invalid tokens.\n";
-    return;
-  }
+  TokenList tokens = Lexer::tokenize( subtext );
 
   if(tokens.isEmpty() || subtext.endsWith(" "))
     return;
@@ -561,7 +556,7 @@ void Editor::triggerAutoComplete()
   Token lastToken = tokens[ tokens.count()-1 ];
 
   // last token must be an identifier
-  if( !lastToken.isIdentifier() )
+  if( lastToken.type() != Token::Identifier )
     return;
 
   QString id = lastToken.text();
@@ -641,13 +636,13 @@ void Editor::autoComplete( const QString& item )
   QTextCursor cursor = textCursor();
   cursor.movePosition( QTextCursor::Start, QTextCursor::KeepAnchor );
 
-  Tokens tokens = Evaluator::scan( cursor.selectedText() );
+  TokenList tokens = Lexer::tokenize( cursor.selectedText() );
 
-  if( !tokens.valid() || tokens.isEmpty() )
+  if( tokens.isEmpty() )
     return;
 
   Token lastToken = tokens[ tokens.count()-1 ];
-  if( !lastToken.isIdentifier() )
+  if( lastToken.type() != Token::Identifier )
     return;
 
   QStringList str = item.split( ':' );
@@ -673,7 +668,7 @@ void Editor::autoCalc()
     return;
 
   // too short? do not bother...
-  Tokens tokens = Evaluator::scan( str );
+  TokenList tokens = Lexer::tokenize( str );
   if( tokens.count() < 2 )
     return;
 
@@ -685,10 +680,10 @@ void Editor::autoCalc()
   // strip off assignment operator, e.g. "x=1+2" becomes "1+2" only
   // the reason is that we want only to evaluate (on the fly) the expression,
   // not to update (put the result in) the variable
-  if( tokens.count() > 2 && tokens[0].isIdentifier() &&
+  if( tokens.count() > 2 && tokens[0].type() == Token::Identifier &&
       tokens[1].asOperator() == Token::Equal )
   {
-    Tokens::const_iterator it = tokens.begin();
+    TokenList::const_iterator it = tokens.begin();
     ++it;
     ++it; // Skip first two tokens.
 

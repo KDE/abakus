@@ -8,6 +8,7 @@ include_directories(${KDE4_INCLUDES})
 set(abakus_SRCS 
     abakus.cpp
     abakuslistview.cpp
+    dcopIface.cpp
     dragsupport.cpp
     editor.cpp
     evaluator.cpp
@@ -19,6 +20,7 @@ set(abakus_SRCS
     resultlistview.cpp
     resultlistviewtext.cpp
     rpnmuncher.cpp
+    token.cpp
     valuemanager.cpp
 )
 

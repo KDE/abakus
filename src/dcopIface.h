@@ -19,30 +19,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <kdebug.h>
 #include <dcopobject.h>
 
-#include <qstring.h>
-#include <kvbox.h>
-
-#include "mainwindow.h"
-#include "numerictypes.h"
-#include "function.h"
+class QString;
 
 class AbakusIface : virtual public DCOPObject
 {
     K_DCOP
     public:
-    AbakusIface() : DCOPObject("Calculator")
-    {
-    }
+    AbakusIface();
 
     k_dcop:
-    virtual double evaluate(const QString &expr)
-    {
-	Abakus::number_t result = parseString(expr.toLatin1());
-	return result.asDouble();
-    }
+    virtual double evaluate(const QString &expr);
 };
 
 #endif

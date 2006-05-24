@@ -22,102 +22,13 @@
 #ifndef ABAKUS_EVALUATOR_H
 #define ABAKUS_EVALUATOR_H
 
-#include <qstring.h>
-#include <q3valuevector.h>
-#include <kvbox.h>
-
+#include "token.h"
 #include "numerictypes.h"
-
-class Token
-{
-public:
-    typedef enum
-    {
-      Unknown,
-      Number,
-      Operator,
-      Identifier
-    } Type;
-
-    typedef enum
-    {
-      InvalidOp = 0,
-      Plus,           //  + (addition)
-      Minus,          //  - (substraction, negation)
-      Asterisk,       //  * (multiplication)
-      Slash,          //  / (division)
-      Caret,          //  ^ (power) or **.
-      LeftPar,        //  (
-      RightPar,       //  )
-      Comma,          // argument separator
-      Percent,
-      Equal           // variable assignment
-    } Op;
-
-    Token( Type type = Unknown, const QString& text = QString::null, int pos = -1 );
-
-    Token( const Token& );
-    Token& operator=( const Token& );
-
-    Type type() const { return m_type; }
-    QString text() const { return m_text; }
-    int pos() const { return m_pos; };
-
-    bool isNumber() const { return m_type == Number; }
-    bool isOperator() const { return m_type == Operator; }
-    bool isIdentifier() const { return m_type == Identifier; }
-
-    Abakus::number_t asNumber() const;
-    Op asOperator() const;
-
-    QString description() const;
-
-    static const Token null;
-
-protected:
-    Type m_type;
-    QString m_text;
-    int m_pos;
-};
-
-
-class Tokens: public Q3ValueVector<Token>
-{
-public:
-    Tokens(): Q3ValueVector<Token>(), m_valid(true) {};
-
-    bool valid() const { return m_valid; }
-    void setValid( bool v ) { m_valid = v; }
-
-protected:
-    bool m_valid;
-};
-
-class Variable
-{
-public:
-    QString name;
-    Abakus::number_t value;
-};
 
 class Evaluator
 {
 public:
     Evaluator();
-    ~Evaluator();
-
-    void setExpression( const QString& expr );
-    QString expression() const;
-
-    void clear();
-    bool isValid() const;
-
-    Tokens tokens() const;
-    static Tokens scan( const QString& expr );
-
-    QString error() const;
-
-    // Abakus::number_t eval();
 
     static QString autoFix( const QString& expr );
 

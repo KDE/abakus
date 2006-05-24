@@ -43,6 +43,7 @@
 #include "resultlistviewtext.h"
 #include "valuemanager.h"
 #include "node.h"
+#include "lexer.h"
 #include "rpnmuncher.h"
 #include "dcopIface.h"
 #include "abakuslistview.h"

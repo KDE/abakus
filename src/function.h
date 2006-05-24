@@ -96,28 +96,4 @@ class FunctionManager : public QObject
 
 Abakus::number_t evaluateFunction(const Function *func, const Abakus::number_t value);
 
-// Implemented in lexer.l due to prototype issues.
-Abakus::number_t parseString(const char *str);
-
-// Implemented in lexer.l due to prototype issues.
-class Lexer
-{
-public:
-    Lexer(const QString &expr);
-    ~Lexer();
-
-    bool hasNext() const;
-    int nextType();
-
-    int tokenPos() const;
-
-    // Can call this after nextType to find the associated string value of the
-    // token.
-    QString tokenValue() const;
-
-private:
-    class Private;
-    Private *m_private;
-};
-
 #endif

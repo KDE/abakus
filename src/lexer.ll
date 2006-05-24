@@ -23,6 +23,7 @@
 #include <kdebug.h>
 
 #include "node.h"
+#include "lexer.h"
 #include "function.h"
 #include "parser_yacc.hpp"
 #include "result.h"
@@ -149,17 +150,17 @@ public:
 Lexer::Lexer(const QString &expr) :
     m_private(new Private)
 {
-    const char *exprString = expr.toLatin1();
+    QByteArray exprString = expr.toUtf8();
 
     yyCurTokenPos = 0;
     yyThisTokenLength = 0;
 
-    m_private->buffer = yy_scan_string(exprString ? exprString : "");
+    m_private->buffer = yy_scan_string(exprString.constData());
     m_private->lastToken = -1;
     m_private->lastPos = -1;
 
     m_private->thisToken = yylex();
-    m_private->thisTokenData = QString(yytext);
+    m_private->thisTokenData = QString::fromUtf8(yytext);
 
     if(yyCurTokenPos != 0)
     {
@@ -187,7 +188,7 @@ int Lexer::nextType()
     m_private->lastToken = m_private->thisToken;
 
     m_private->thisToken = yylex();
-    m_private->thisTokenData = QString(yytext);
+    m_private->thisTokenData = QString::fromUtf8(yytext);
     m_private->thisPos = yyCurTokenPos;
 
     return m_private->lastToken;
@@ -203,7 +204,20 @@ int Lexer::tokenPos() const
     return m_private->lastPos;
 }
 
-/* Declared in function.h, implemented here in lexer.l since this is where
+TokenList Lexer::tokenize(const QString &expr)
+{
+    Lexer l(expr);
+    TokenList list;
+
+    while(l.hasNext()) {
+	int type = l.nextType();
+	list << Token(type, l.tokenValue(), l.tokenPos());
+    }
+
+    return list;
+}
+
+/* Declared in lexer.h, implemented here in lexer.l since this is where
  * all the yy_*() functions and types are defined.
  */
 Abakus::number_t parseString(const char *str)
