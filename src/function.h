@@ -21,16 +21,12 @@
 
 #include "numerictypes.h"
 
-#include <qobject.h>
-#include <qstringlist.h>
-#include <qstring.h>
-#include <qmap.h>
-#include <q3dict.h>
-#include <kvbox.h>
-
-
+#include <QObject>
+#include <QString>
+#include <QHash>
 
 class BaseFunction;
+class QStringList;
 
 struct UserFunction
 {
@@ -66,7 +62,7 @@ class FunctionManager : public QObject
 {
     Q_OBJECT
     public:
-    typedef Q3Dict<Function> functionDict;
+    typedef QHash<QString, Function *> functionDict;
 
     static FunctionManager *instance();
 
@@ -88,7 +84,7 @@ class FunctionManager : public QObject
     void signalFunctionRemoved(const QString &name);
 
     private:
-    FunctionManager(QObject *parent = 0, const char *name = "function manager");
+    FunctionManager(QObject *parent = 0);
 
     static FunctionManager *m_manager;
     functionDict m_dict;

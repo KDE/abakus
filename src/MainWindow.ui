@@ -1,5 +1,5 @@
 <ui version="4.0" >
- <author></author>
+ <author>Michael Pyne &lt;michael.pyne@kdemail.net></author>
  <comment></comment>
  <exportmacro></exportmacro>
  <class>MainWindow</class>
@@ -8,8 +8,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>615</width>
-    <height>345</height>
+    <width>550</width>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -141,8 +141,46 @@
       <property name="orientation" >
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="FunctionListView" name="fnList" />
-      <widget class="VariableListView" name="varList" />
+      <widget class="FunctionListView" name="fnList" >
+       <property name="frameShadow" >
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="dragEnabled" >
+        <bool>true</bool>
+       </property>
+       <property name="alternatingRowColors" >
+        <bool>true</bool>
+       </property>
+       <property name="indentation" >
+        <number>20</number>
+       </property>
+       <property name="rootIsDecorated" >
+        <bool>false</bool>
+       </property>
+       <property name="uniformRowHeights" >
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="VariableListView" name="varList" >
+       <property name="frameShape" >
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow" >
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="dragEnabled" >
+        <bool>true</bool>
+       </property>
+       <property name="alternatingRowColors" >
+        <bool>true</bool>
+       </property>
+       <property name="rootIsDecorated" >
+        <bool>false</bool>
+       </property>
+       <property name="uniformRowHeights" >
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>
@@ -150,27 +188,6 @@
  </widget>
  <pixmapfunction></pixmapfunction>
  <customwidgets>
-  <customwidget>
-   <class>FunctionListView</class>
-   <extends>Q3ListView</extends>
-   <header>abakuslistview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>VariableListView</class>
-   <extends>Q3ListView</extends>
-   <header>abakuslistview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>ResultListView</class>
-   <extends>Q3ListView</extends>
-   <header>resultlistview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
   <customwidget>
    <class>Editor</class>
    <extends>QTextEdit</extends>
@@ -185,7 +202,38 @@
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>
+  <customwidget>
+   <class>FunctionListView</class>
+   <extends>QTreeWidget</extends>
+   <header>abakuslistview.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>VariableListView</class>
+   <extends>QTreeWidget</extends>
+   <header>abakuslistview.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+  <customwidget>
+   <class>ResultListView</class>
+   <extends>Q3ListView</extends>
+   <header>resultlistview.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>degreesButton</tabstop>
+  <tabstop>radiansButton</tabstop>
+  <tabstop>resultList</tabstop>
+  <tabstop>editLine</tabstop>
+  <tabstop>evaluateButton</tabstop>
+  <tabstop>fnList</tabstop>
+  <tabstop>varList</tabstop>
+ </tabstops>
+ <includes/>
  <resources/>
  <connections/>
 </ui>

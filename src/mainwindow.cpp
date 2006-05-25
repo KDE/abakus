@@ -1,6 +1,6 @@
 /*
  * mainwindow.cpp - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,16 +84,10 @@ MainWindow::MainWindow()
     connect(m_ui->resultList, SIGNAL(signalResultSelected(const QString &)),
                       SLOT(slotResultSelected(const QString &)));
 
-    m_ui->fnList->addColumn("Functions");
-    m_ui->fnList->addColumn("Value");
-
-    m_ui->varList->addColumn("Variables");
-    m_ui->varList->addColumn("Value");
-
     connect(FunctionManager::instance(), SIGNAL(signalFunctionAdded(const QString &)),
-            this, SLOT(slotNewFunction(const QString &)));
+            this, SLOT(slotNewFunction(const QString &)), Qt::DirectConnection);
     connect(FunctionManager::instance(), SIGNAL(signalFunctionRemoved(const QString &)),
-            this, SLOT(slotRemoveFunction(const QString &)));
+            this, SLOT(slotRemoveFunction(const QString &)), Qt::DirectConnection);
 
     connect(ValueManager::instance(), SIGNAL(signalValueAdded(const QString &, Abakus::number_t)),
             this, SLOT(slotNewValue(const QString &, Abakus::number_t)));
@@ -627,19 +621,29 @@ void MainWindow::slotNewFunction(const QString &name)
 {
     UserFunction *userFn = FunctionManager::instance()->function(name)->userFn;
     UnaryFunction *fn = dynamic_cast<UnaryFunction *>(userFn->fn);
-    QString fnName = QString("%1(%2)").arg(name, userFn->varName);
-    QString expr = fn->operand()->infixString();
 
-    new K3ListViewItem(m_ui->fnList, fnName, expr);
+    QStringList strList;
+
+    strList << QString("%1(%2)").arg(name, userFn->varName);
+    strList << fn->operand()->infixString();
+
+    new QTreeWidgetItem(m_ui->fnList, strList);
 }
 
 void MainWindow::slotRemoveFunction(const QString &name)
 {
-    UserFunction *userFn = FunctionManager::instance()->function(name)->userFn;
-    QString fnName = QString("%1(%2)").arg(name, userFn->varName);
+    Function *fn = FunctionManager::instance()->function(name);
 
-    Q3ListViewItem *item = 0;
-    while((item = m_ui->fnList->findItem(fnName, 0)) != 0)
+    if(!fn || !fn->userFn) {
+        kError() << "Unable to remove function " << name << endl;
+        return;
+    }
+
+    QString fnName = QString("%1(%2)").arg(name, fn->userFn->varName);
+
+    QList<QTreeWidgetItem *> items = m_ui->fnList->findItems(fnName, Qt::MatchExactly);
+
+    foreach(QTreeWidgetItem *item, items)
         delete item;
 }
 
@@ -650,15 +654,18 @@ void MainWindow::slotNewValue(const QString &name, Abakus::number_t value)
 
 void MainWindow::slotChangeValue(const QString &name, Abakus::number_t value)
 {
-    ValueListViewItem *item = static_cast<ValueListViewItem *>(m_ui->varList->findItem(name, 0));
+    QList<QTreeWidgetItem *> items = m_ui->varList->findItems(name, Qt::MatchExactly);
 
-    if(item)
-        item->valueChanged(value);
+    foreach(QTreeWidgetItem *item, items)
+        static_cast<ValueListViewItem *>(item)->valueChanged(value);
 }
 
 void MainWindow::slotRemoveValue(const QString &name)
 {
-    delete m_ui->varList->findItem(name, 0);
+    QList<QTreeWidgetItem *> items = m_ui->varList->findItems(name, Qt::MatchExactly);
+
+    foreach(QTreeWidgetItem *item, items)
+        delete item;
 }
 
 void MainWindow::slotToggleCompactMode()
@@ -767,17 +774,15 @@ void MainWindow::slotPrecisionCustom()
 void MainWindow::redrawResults()
 {
     Q3ListViewItemIterator it(m_ui->resultList);
-
     while(it.current()) {
         static_cast<ResultListViewText *>(it.current())->precisionChanged();
         ++it;
     }
 
-    it = Q3ListViewItemIterator (m_ui->varList);
-
-    while(it.current()) {
-        static_cast<ValueListViewItem *>(it.current())->valueChanged();
-        ++it;
+    QTreeWidgetItemIterator items(m_ui->varList);
+    while(*items) {
+        static_cast<ValueListViewItem *>(*items)->updateText();
+        ++items;
     }
 
     // Because of the way we implemented the menu, it is possible to deselect

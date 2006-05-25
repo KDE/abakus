@@ -26,7 +26,6 @@
 
 #if HAVE_MPFR
 #include <mpfr.h>
-#include <kvbox.h>
 #endif
 
 #include "mainwindow.h"
@@ -65,12 +64,9 @@ int main(int argc, char **argv)
 
     KCmdLineArgs::init(argc, argv, about);
     KApplication app;
-    MainWindow *win = new MainWindow;
+    MainWindow win;
 
-    app.setMainWidget(win);
-    app.connect(&app, SIGNAL(lastWindowClosed()), SLOT(quit()));
-    win->show();
-    win->resize(500, 300);
+    win.show();
 
     return app.exec();
 }

@@ -16,16 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "numerictypes.h"
 
 #include <kdebug.h>
 
-#include <q3valuevector.h>
-#include <qstring.h>
-#include <qregexp.h>
+#include <QMap>
+#include <QRegExp>
 
-#include <math.h>
-#include <kvbox.h>
+//#include <math.h>
 
 #include "function.h"
 #include "node.h"
@@ -71,10 +68,10 @@ FunctionManager *FunctionManager::instance()
     return m_manager;
 }
 
-FunctionManager::FunctionManager(QObject *parent, const char *name) :
-    QObject(parent, name)
+FunctionManager::FunctionManager(QObject *parent) :
+    QObject(parent)
 {
-    m_dict.setAutoDelete(true);
+    setObjectName("FunctionManager");
 }
 
 // Dummy return value to enable static initialization in the DECL_*()
@@ -138,13 +135,13 @@ DECLARE_FUNC1(frac, "Fractional part of number");
 
 Function *FunctionManager::function(const QString &name)
 {
-    return m_dict[name];
+    return m_dict.value(name, 0);
 }
 
 // Returns true if the named identifier is a function, false otherwise.
 bool FunctionManager::isFunction(const QString &name)
 {
-    return function(name) != 0;
+    return m_dict.contains(name);
 }
 
 bool FunctionManager::isFunctionUserDefined(const QString &name)
@@ -180,12 +177,12 @@ bool FunctionManager::addFunction(BaseFunction *fn, const QString &dependantVar)
     fnTabEntry->needsTrig = false;
     fnTabEntry->userDefined = true;
 
-    if(m_dict.find(fn->name()))
+    if(m_dict.contains(fn->name()))
 	emit signalFunctionRemoved(fn->name());
 
-    m_dict.replace(fn->name(), fnTabEntry);
-    emit signalFunctionAdded(fn->name());
+    m_dict.insert(fn->name(), fnTabEntry);
 
+    emit signalFunctionAdded(fn->name());
     return true;
 }
 
@@ -206,48 +203,46 @@ void FunctionManager::removeFunction(const QString &name)
 	fn->userFn = 0;
 	m_dict.remove(name);
 
-	Q3DictIterator<Function> it(m_dict);
-	for (; it.current(); ++it) {
-	    UserFunction *userFn = it.current()->userDefined ? it.current()->userFn : 0;
+	functionDict::Iterator it = m_dict.begin();
+	for (; it != m_dict.end(); ++it) {
+	    UserFunction *userFn = it.value()->userDefined ? it.value()->userFn : 0;
 	    if(userFn && userFn->sequenceNumber > savedSeqNum)
-		--it.current()->userFn->sequenceNumber;
+		--it.value()->userFn->sequenceNumber;
 	}
     }
 }
 
 QStringList FunctionManager::functionList(FunctionManager::FunctionType type)
 {
-    Q3DictIterator<Function> it(m_dict);
+    functionDict::ConstIterator it = m_dict.constBegin();
+    functionDict::ConstIterator end = m_dict.constEnd();
     QStringList functions;
 
     switch(type) {
 	case Builtin:
-	    for(; it.current(); ++it)
-		if(!it.current()->userDefined)
-		    functions += it.current()->name;
+	    for(; it != end; ++it)
+		if(!it.value()->userDefined)
+		    functions += it.key();
 	break;
 
 	case UserDefined:
 	    // We want to return the function names in the order they were
 	    // added.
 	    {
-		Q3ValueVector<Function *> fnTable(m_dict.count(), 0);
-		Q3ValueVector<int> sequenceNumberTable(m_dict.count(), -1);
+		QMap<int, Function *> fnTable;
 
 		// First find out what sequence numbers we have.
-		for(; it.current(); ++it)
-		    if(it.current()->userDefined) {
-			int id = it.current()->userFn->sequenceNumber;
-			fnTable[id] = it.current();
-			sequenceNumberTable.append(id);
-		    }
+		for(; it != end; ++it)
+		    if(it.value()->userDefined)
+			fnTable.insert(it.value()->userFn->sequenceNumber, it.value());
 
 		// Now sort the sequence numbers and return the ordered list
-		qSort(sequenceNumberTable.begin(), sequenceNumberTable.end());
+		QList<int> ids = fnTable.keys();
+		qSort(ids.begin(), ids.end());
 
-		for(unsigned i = 0; i < sequenceNumberTable.count(); ++i)
-		    if(sequenceNumberTable[i] >= 0)
-			functions += fnTable[sequenceNumberTable[i]]->name;
+		foreach(int id, ids)
+		    if(id >= 0)
+			functions += fnTable[id]->name;
 	    }
 	break;
 

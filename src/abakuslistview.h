@@ -19,21 +19,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <k3listview.h>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QPoint>
 
 #include "numerictypes.h"
 
 class KMenu;
 
-class ListView : public K3ListView
+class ListView : public QTreeWidget
 {
     Q_OBJECT
 
     public:
     ListView(QWidget *parent);
-
-    protected:
-    virtual Q3DragObject *dragObject();
 
     /**
      * Used to enable fancy popup handling support in subclasses.  Subclasses
@@ -63,7 +62,7 @@ class ListView : public K3ListView
      * function to remove the selected item, which is passed in as a
      * parameter.
      */
-    virtual void removeSelectedItem(Q3ListViewItem *item);
+    virtual void removeSelectedItem(QTreeWidgetItem *item);
 
     /**
      * If using the popup menu handling, the subclass needs to reimplement this
@@ -73,29 +72,41 @@ class ListView : public K3ListView
 
     /**
      * If using the popup menu handling, this function may be called to
-     * determine whether the selected item given by @p item is removable.
+     * determine whether the given item is removable.
      */
-    virtual bool isItemRemovable(Q3ListViewItem *item) const;
+    virtual bool isItemRemovable(QTreeWidgetItem *) const;
+
+    protected:
+    virtual void startDrag(Qt::DropActions supportedActions);
+    virtual void contextMenuEvent(QContextMenuEvent *);
 
     private slots:
-    void rightClicked(Q3ListViewItem *item, const QPoint &pt);
     void removeSelected();
 
     private:
     KMenu *m_menu;
     bool m_usePopup;
 
-    int m_removeSingleId;
-    int m_removeAllId;
+    QAction *m_removeSingle, *m_removeAll;
 };
 
-class ValueListViewItem : public K3ListViewItem
+/**
+ * Used with VariableListView
+ */
+class ValueListViewItem : public QTreeWidgetItem
 {
     public:
-    ValueListViewItem (Q3ListView *listView, const QString &name, const Abakus::number_t &value);
+    ValueListViewItem (QTreeWidget *treeWidget, const QString &name, const Abakus::number_t &value);
 
-    // Will cause the list item to rethink the text.
-    void valueChanged();
+    /**
+     * Update the currently displayed text (such as when the precision length
+     * selection changes).
+     */
+    void updateText();
+
+    /**
+     * Set a new value for the item and update the text.
+     */
     void valueChanged(const Abakus::number_t &newValue);
 
     Abakus::number_t itemValue() const;
@@ -117,10 +128,10 @@ class VariableListView : public ListView
     protected:
     virtual QString removeItemString() const;
     virtual QString removeAllItemsString(unsigned count) const;
-    virtual bool isItemRemovable(Q3ListViewItem *item) const;
+    virtual bool isItemRemovable(QTreeWidgetItem *item) const;
 
     protected slots:
-    virtual void removeSelectedItem(Q3ListViewItem *item);
+    virtual void removeSelectedItem(QTreeWidgetItem *item);
     virtual void removeAllItems();
 };
 
@@ -137,10 +148,10 @@ class FunctionListView : public ListView
     protected:
     virtual QString removeItemString() const;
     virtual QString removeAllItemsString(unsigned count) const;
-    virtual bool isItemRemovable(Q3ListViewItem *item) const;
+    virtual bool isItemRemovable(QTreeWidgetItem *item) const;
 
     protected slots:
-    virtual void removeSelectedItem(Q3ListViewItem *item);
+    virtual void removeSelectedItem(QTreeWidgetItem *item);
     virtual void removeAllItems();
 };
 

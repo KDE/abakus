@@ -20,10 +20,12 @@
 #include <kmenu.h>
 #include <kdebug.h>
 
-#include <q3dragobject.h>
-#include <qcursor.h>
-#include <q3header.h>
-#include <kvbox.h>
+#include <QContextMenuEvent>
+#include <QCursor>
+#include <QHeaderView>
+#include <QDrag>
+#include <QMimeData>
+#include <QAction>
 
 #include "dragsupport.h"
 #include "abakuslistview.h"
@@ -31,31 +33,32 @@
 #include "function.h"
 
 ListView::ListView(QWidget *parent) :
-    K3ListView(parent), m_menu(0), m_usePopup(false), m_removeSingleId(0),
-    m_removeAllId(0)
+    QTreeWidget(parent), m_menu(0), m_usePopup(false), m_removeSingle(0),
+    m_removeAll(0)
 {
-    setResizeMode(LastColumn);
-    setDragEnabled(true);
-
-    connect(this, SIGNAL(contextMenuRequested(Q3ListViewItem *, const QPoint &, int)),
-	          SLOT(rightClicked(Q3ListViewItem *, const QPoint &)));
+    header()->setResizeMode(QHeaderView::Stretch);
+    header()->setStretchLastSection(true);
 }
 
-Q3DragObject *ListView::dragObject()
+void ListView::startDrag(Qt::DropActions supportedActions)
 {
     QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
-    Q3ListViewItem *item = itemAt(viewportPos);
+    QTreeWidgetItem *item = itemAt(viewportPos);
 
     if(!item)
-	return 0;
+	return;
 
-    int column = header()->sectionAt(viewportPos.x());
+    int column = columnAt(viewportPos.x());
     QString dragText = item->text(column);
 
-    Q3DragObject *drag = new Q3TextDrag(dragText, this, "list item drag");
+    QDrag *drag = new QDrag(this);
+    QMimeData *mimeData = new QMimeData;
+
+    mimeData->setText(dragText);
+    drag->setMimeData(mimeData);
     drag->setPixmap(DragSupport::makePixmap(dragText, font()));
 
-    return drag;
+    drag->start(supportedActions);
 }
 
 void ListView::enablePopupHandler(bool enable)
@@ -71,8 +74,8 @@ void ListView::enablePopupHandler(bool enable)
 
 	m_menu = new KMenu(this);
 
-	m_removeSingleId = m_menu->insertItem(removeItemString(), this, SLOT(removeSelected()));
-	m_removeAllId = m_menu->insertItem("Placeholder", this, SLOT(removeAllItems()));
+	m_removeSingle = m_menu->addAction(removeItemString(), this, SLOT(removeSelected()));
+	m_removeAll = m_menu->addAction("Placeholder", this, SLOT(removeAllItems()));
     }
     else {
 	delete m_menu;
@@ -85,62 +88,65 @@ QString ListView::removeItemString() const
     return QString();
 }
 
-QString ListView::removeAllItemsString(unsigned count) const
+QString ListView::removeAllItemsString(unsigned) const
 {
-    Q_UNUSED(count);
-
     return QString();
 }
 
-void ListView::removeSelectedItem(Q3ListViewItem *item)
+void ListView::removeSelectedItem(QTreeWidgetItem *)
 {
-    Q_UNUSED(item);
 }
 
 void ListView::removeAllItems()
 {
 }
 
-bool ListView::isItemRemovable(Q3ListViewItem *item) const
+bool ListView::isItemRemovable(QTreeWidgetItem *) const
 {
-    Q_UNUSED(item);
-
     return false;
 }
 
-void ListView::rightClicked(Q3ListViewItem *item, const QPoint &pt)
+void ListView::contextMenuEvent(QContextMenuEvent *e)
 {
-    if(!m_usePopup)
+    if(!m_usePopup) {
+	QTreeWidget::contextMenuEvent(e);
 	return;
+    }
 
-    m_menu->setItemEnabled(m_removeSingleId, item && isItemRemovable(item));
-    m_menu->changeItem(m_removeAllId, removeAllItemsString(childCount()));
-    m_menu->popup(pt);
+    QTreeWidgetItem *item = itemAt(e->pos());
+
+    m_removeSingle->setEnabled(item && isItemRemovable(item));
+    m_removeAll->setText(removeAllItemsString(topLevelItemCount()));
+
+    m_menu->popup(e->globalPos());
 }
 
 void ListView::removeSelected()
 {
-    removeSelectedItem(selectedItem());
+    QList<QTreeWidgetItem *> items = selectedItems();
+
+    foreach(QTreeWidgetItem *item, items)
+	removeSelectedItem(item); // Don't delete here, MainWindow does it.
 }
 
-ValueListViewItem::ValueListViewItem(Q3ListView *listView, const QString &name,
-	const Abakus::number_t &value) :
-    K3ListViewItem(listView, name), m_value(value)
+ValueListViewItem::ValueListViewItem(
+	QTreeWidget *treeWidget,
+	const QString &name,
+	const Abakus::number_t &value)
+    : QTreeWidgetItem(treeWidget, QStringList(name)), m_value(value)
 {
-    valueChanged();
+    updateText();
 }
 
-void ValueListViewItem::valueChanged()
+void ValueListViewItem::updateText()
 {
     setText(1, m_value.toString());
-    repaint();
 }
 
 void ValueListViewItem::valueChanged(const Abakus::number_t &newValue)
 {
     m_value = newValue;
-
-    valueChanged();
+    updateText();
 }
 
 Abakus::number_t ValueListViewItem::itemValue() const
@@ -152,6 +158,11 @@ VariableListView::VariableListView(QWidget *parent) :
     ListView(parent)
 {
     enablePopupHandler(true);
+
+    QStringList labels;
+
+    labels << i18n("Variables") << i18nc("Value of a variable", "Value");
+    setHeaderLabels(labels);
 }
 
 QString VariableListView::removeItemString() const
@@ -175,12 +186,12 @@ QString VariableListView::removeAllItemsString(unsigned count) const
 		count);
 }
 
-bool VariableListView::isItemRemovable(Q3ListViewItem *item) const
+bool VariableListView::isItemRemovable(QTreeWidgetItem *item) const
 {
     return !ValueManager::instance()->isValueReadOnly(item->text(0));
 }
 
-void VariableListView::removeSelectedItem(Q3ListViewItem *item)
+void VariableListView::removeSelectedItem(QTreeWidgetItem *item)
 {
     ValueManager::instance()->removeValue(item->text(0));
 }
@@ -194,6 +205,11 @@ FunctionListView::FunctionListView(QWidget *parent) :
     ListView(parent)
 {
     enablePopupHandler(true);
+
+    QStringList labels;
+
+    labels << i18n("Function Name") << i18nc("Function Definition (e.g. sin(x))", "Definition");
+    setHeaderLabels(labels);
 }
 
 QString FunctionListView::removeItemString() const
@@ -208,12 +224,12 @@ QString FunctionListView::removeAllItemsString(unsigned count) const
 		count);
 }
 
-bool FunctionListView::isItemRemovable(Q3ListViewItem *item) const
+bool FunctionListView::isItemRemovable(QTreeWidgetItem *) const
 {
     return true;
 }
 
-void FunctionListView::removeSelectedItem(Q3ListViewItem *item)
+void FunctionListView::removeSelectedItem(QTreeWidgetItem *item)
 {
     // Use section to get the beginning of the string up to (and not
     // including) the first (
