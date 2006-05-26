@@ -54,13 +54,19 @@ public:
     Token(const Token &);
     Token & operator=(const Token &);
 
+    /// Return the exact symbol (e.g. SET, DERIV, PLUS)
+    int token() const { return m_token; }
+
+    /// Return the symbol type (e.g. Identifier, Number)
     Type type() const { return m_type; }
+
     QString text() const { return m_text; }
     int pos() const { return m_pos; };
 
     Op asOperator() const;
 
 private:
+    int m_token;
     Type m_type;
     QString m_text;
     int m_pos;

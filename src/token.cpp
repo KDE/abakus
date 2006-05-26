@@ -23,7 +23,7 @@
 #include <QList>
 
 Token::Token(int lexType, const QString &text, int pos) :
-    m_type(Unknown), m_text(text), m_pos(pos)
+    m_token(lexType), m_type(Unknown), m_text(text), m_pos(pos)
 {
     switch(lexType)
     {
@@ -57,7 +57,8 @@ Token::Token(int lexType, const QString &text, int pos) :
     }
 }
 
-Token::Token(const Token &other) : m_type(other.type()), m_text(other.text()),
+Token::Token(const Token &other) : m_token(other.token()),
+				   m_type(other.type()), m_text(other.text()),
 				   m_pos(other.pos())
 {
 }
@@ -67,6 +68,7 @@ Token &Token::operator=(const Token &other)
     if(this == &other)
 	return *this;
 
+    m_token = other.token();
     m_type = other.type();
     m_text = other.text();
     m_pos = other.pos();

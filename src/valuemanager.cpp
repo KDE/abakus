@@ -1,6 +1,6 @@
 /*
  * valuemanager.cpp - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,9 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
-#include <qregexp.h>
-#include <kvbox.h>
+#include <QRegExp>
+#include <QStringList>
 
-#include "numerictypes.h"
 #include "valuemanager.h"
 
 ValueManager *ValueManager::m_manager = 0;
@@ -35,11 +34,13 @@ ValueManager *ValueManager::instance()
     return m_manager;
 }
 
-ValueManager::ValueManager(QObject *parent, const char *name) :
-    QObject(parent, name)
+ValueManager::ValueManager(QObject *parent) :
+    QObject(parent)
 {
     m_values.insert("pi", Abakus::number_t::PI);
     m_values.insert("e", Abakus::number_t::E);
+
+    setObjectName("ValueManager");
 }
 
 Abakus::number_t ValueManager::value(const QString &name) const
@@ -56,7 +57,7 @@ bool ValueManager::isValueReadOnly(const QString &name) const
 {
     QRegExp readOnlyValues("^(ans|pi|e|stackCount)$");
 
-    return name.find(readOnlyValues) != -1;
+    return name.contains(readOnlyValues);
 }
 
 void ValueManager::setValue(const QString &name, const Abakus::number_t value)
@@ -66,7 +67,8 @@ void ValueManager::setValue(const QString &name, const Abakus::number_t value)
     else if(!m_values.contains(name))
         emit signalValueAdded(name, value);
 
-    m_values.replace(name, value);
+    m_values.remove(name);
+    m_values.insert(name, value);
 }
 
 void ValueManager::removeValue(const QString &name)

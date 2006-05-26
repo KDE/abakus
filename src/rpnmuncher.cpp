@@ -1,6 +1,6 @@
 /*
  * rpnmuncher.cpp - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <math.h>
+//#include <math.h>
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
-#include <q3valuestack.h>
-#include <qregexp.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <kvbox.h>
+#include <QStack>
+#include <QString>
 
+#include "numerictypes.h"
+#include "node.h" // For parser_yacc.hpp
+#include "parser_yacc.hpp"
+#include "lexer.h"
 #include "rpnmuncher.h"
 #include "valuemanager.h"
 #include "function.h"
@@ -62,10 +63,6 @@ class Operand
     Abakus::number_t m_value;
 };
 
-typedef enum { Number = 256, Func, Ident, Power, Set, Remove, Pop, Clear, Unknown } Token;
-
-static int tokenize (const QString &token);
-
 QString RPNParser::m_errorStr;
 bool RPNParser::m_error(false);
 OperandStack RPNParser::m_stack;
@@ -80,7 +77,7 @@ struct Counter
 
 Abakus::number_t RPNParser::rpnParseString(const QString &text)
 {
-    QStringList tokens = QStringList::split(QRegExp("\\s"), text);
+    TokenList tokens = Lexer::tokenize(text);
     Counter counter; // Will update stack count when we leave proc.
     (void) counter;  // Avoid warnings about it being unused.
 
@@ -92,52 +89,50 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
     m_error = false;
     m_errorStr = QString::null;
 
-    for(QStringList::ConstIterator it = tokens.begin(); it != tokens.end(); ++it) {
-        switch(tokenize(*it))
+    foreach(Token token, tokens) {
+        switch(token.token())
         {
-        case Number:
-            m_stack.push(Abakus::number_t(*it));
+        case NUM:
+            m_stack.push(Abakus::number_t(token.text()));
         break;
 
-        case Pop:
-            if(m_stack.isEmpty()) {
-                m_error = true;
-                m_errorStr = i18n("Can't pop from an empty stack.");
-                return Abakus::number_t::nan();
+        case ID:
+            if(token.text().toLower() == QLatin1String("pop")) {
+                if(m_stack.isEmpty()) {
+                    m_error = true;
+                    m_errorStr = i18n("Can't pop from an empty stack.");
+                    return Abakus::number_t::nan();
+                }
+
+                m_stack.pop();
             }
-
-            m_stack.pop();
+            else if(token.text().toLower() == QLatin1String("clear"))
+                m_stack.clear();
+            else
+                m_stack.push(token.text());
         break;
 
-        case Clear:
-            m_stack.clear();
-        break;
-
-        case Func:
+        case FN:
             if(m_stack.count() < 1) {
                 m_error = true;
-                m_errorStr = i18n("Insufficient operands for function %1").arg(*it);
+                m_errorStr = i18n("Insufficient operands for function %1", token.text());
                 return Abakus::number_t::nan();
             }
 
-            fn = manager->function(*it);
+            fn = manager->function(token.text());
 
             l = m_stack.pop();
             m_stack.push(evaluateFunction(fn, l));
         break;
 
-        case Ident:
-            m_stack.push(*it);
-        break;
-
-        case Set:
-        case Remove:
+        case SET:
+        case REMOVE:
             m_error = true;
             m_errorStr = i18n("The set and remove commands can only be used in normal mode.");
             return Abakus::number_t::nan();
         break;
 
-        case Power:
+        case POWER:
             if(m_stack.count() < 2) {
                 m_error = true;
                 m_errorStr = i18n("Insufficient operands for exponentiation operator.");
@@ -147,12 +142,6 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
             r = m_stack.pop();
             l = m_stack.pop();
             m_stack.push(l.value().pow(r));
-        break;
-
-        case Unknown:
-            m_error = true;
-            m_errorStr = i18n("Unknown token %1").arg(*it);
-            return Abakus::number_t::nan();
         break;
 
         case '=':
@@ -214,6 +203,8 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         default:
             // Impossible case happened.
             kError() << "Impossible case happened in " << k_funcinfo << endl;
+            kError() << "Token is " << token.text() << endl;
+            kError() << "Token type is " << token.token() << endl;
             m_error = true;
             m_errorStr = "Bug found in program, please report.";
             return Abakus::number_t::nan();
@@ -224,45 +215,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
     if(m_stack.isEmpty())
         return Abakus::number_t::nan();
 
-    return m_stack.top();
-}
-
-static int tokenize (const QString &token)
-{
-    bool isOK;
-
-    token.toDouble(&isOK);
-    if(isOK)
-        return Number;
-
-    if(token == "**" || token == "^")
-        return Power;
-
-    if(FunctionManager::instance()->isFunction(token))
-        return Func;
-
-    if(token.toLower() == "set")
-        return Set;
-
-    if(token.toLower() == "pop")
-        return Pop;
-
-    if(token.toLower() == "clear")
-        return Clear;
-
-    if(token.toLower() == "remove")
-        return Remove;
-
-    if(QRegExp("^\\w+$").search(token) != -1 &&
-       QRegExp("\\d").search(token) == -1)
-    {
-        return Ident;
-    }
-
-    if(QRegExp("^[-+*/=]$").search(token) != -1)
-        return token[0].toAscii();
-
-    return Unknown;
+    return m_stack.pop();
 }
 
 // vim: set et sw=4 ts=8:
