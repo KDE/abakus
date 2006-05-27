@@ -29,18 +29,17 @@
 #include <netwm.h>
 #include <fixx11h.h>  // netwm.h includes X11 headers which conflict with qevent
 
-#include <qapplication.h>
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <q3listbox.h>
-#include <qpainter.h>
-#include <qregexp.h>
-#include <qstringlist.h>
-#include <qstyle.h>
-#include <qtimer.h>
-#include <qtooltip.h>
-#include <qmessagebox.h>
-
+#include <QApplication>
+#include <QLabel>
+#include <QLineEdit>
+#include <Q3ListBox>
+#include <QPainter>
+#include <QRegExp>
+#include <QStringList>
+#include <QStyle>
+#include <QTimer>
+#include <QToolTip>
+#include <QHBoxLayout>
 #include <QWheelEvent>
 #include <QKeyEvent>
 #include <Q3Frame>
@@ -50,7 +49,6 @@
 #include <QX11Info>
 
 #include <kdebug.h>
-#include <kvbox.h>
 
 class CalcResultLabel : public QLabel
 {
@@ -110,7 +108,7 @@ class EditorCompletion::Private
 {
 public:
   Editor* editor;
-  KVBox *completionPopup;
+  QFrame *completionPopup;
   Q3ListBox *completionListBox;
 };
 
@@ -264,7 +262,7 @@ Editor::Editor( QWidget* parent ):
   connect( this, SIGNAL( textChanged() ), SLOT( checkAutoCalc() ) );
   connect( d->autoCalcTimer, SIGNAL( timeout() ), SLOT( autoCalc() ) );
   d->autoCalcLabel = new CalcResultLabel( 0, "autocalc" );
-  d->autoCalcLabel->setFrameStyle( Q3Frame::Plain | Q3Frame::Box );
+  d->autoCalcLabel->setFrameStyle( QFrame::Plain | QFrame::Box );
   d->autoCalcLabel->setPalette( QToolTip::palette() );
   d->autoCalcLabel->hide();
 
@@ -835,18 +833,23 @@ EditorCompletion::EditorCompletion( Editor* editor ): QObject( editor )
   d = new Private;
   d->editor = editor;
 
-  d->completionPopup = new KVBox( editor->topLevelWidget() );
+  d->completionPopup = new QFrame( editor->topLevelWidget() );
   d->completionPopup->setWindowFlags( Qt::Popup );
-  d->completionPopup->setFrameStyle( Q3Frame::Box | Q3Frame::Plain );
+  d->completionPopup->setFrameStyle( QFrame::Box | QFrame::Plain );
   d->completionPopup->setLineWidth( 1 );
   d->completionPopup->installEventFilter( this );
   d->completionPopup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+  QLayout *layout = new QVBoxLayout(d->completionPopup);
+  layout->setMargin(0);
 
   d->completionListBox = new Q3ListBox( d->completionPopup );
   d->completionPopup->setFocusProxy( d->completionListBox );
   d->completionListBox->setFrameStyle( Q3Frame::NoFrame );
   d->completionListBox->setVariableWidth( true );
   d->completionListBox->installEventFilter( this );
+
+  layout->addWidget(d->completionListBox);
 }
 
 EditorCompletion::~EditorCompletion()
