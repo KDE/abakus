@@ -89,11 +89,29 @@
            <verstretch>1</verstretch>
           </sizepolicy>
          </property>
-         <property name="hScrollBarMode" >
-          <enum>Q3ScrollView::AlwaysOff</enum>
+         <property name="frameShape" >
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow" >
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy" >
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="dragEnabled" >
+          <bool>true</bool>
+         </property>
+         <property name="alternatingRowColors" >
+          <bool>true</bool>
          </property>
          <property name="selectionMode" >
-          <enum>Q3ListView::NoSelection</enum>
+          <enum>QAbstractItemView::NoSelection</enum>
+         </property>
+         <property name="rootIsDecorated" >
+          <bool>false</bool>
+         </property>
+         <property name="uniformRowHeights" >
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -189,16 +207,16 @@
  <pixmapfunction></pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>Editor</class>
-   <extends>QTextEdit</extends>
-   <header>editor.h</header>
+   <class>ResultListView</class>
+   <extends>QTreeWidget</extends>
+   <header>resultlistview.h</header>
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>
   <customwidget>
-   <class>Q3ListView</class>
-   <extends>Q3Frame</extends>
-   <header>q3listview.h</header>
+   <class>Editor</class>
+   <extends>QTextEdit</extends>
+   <header>editor.h</header>
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>
@@ -216,13 +234,6 @@
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>
-  <customwidget>
-   <class>ResultListView</class>
-   <extends>Q3ListView</extends>
-   <header>resultlistview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>degreesButton</tabstop>
@@ -233,7 +244,6 @@
   <tabstop>fnList</tabstop>
   <tabstop>varList</tabstop>
  </tabstops>
- <includes/>
  <resources/>
  <connections/>
 </ui>

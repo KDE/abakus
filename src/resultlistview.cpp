@@ -20,15 +20,12 @@
 #include <kmenu.h>
 #include <klocalizedstring.h>
 
-#include <qclipboard.h>
-#include <qapplication.h>
-#include <qevent.h>
-#include <qcursor.h>
-#include <q3dragobject.h>
-#include <q3header.h>
-//Added by qt3to4:
+#include <QAction>
+#include <QClipboard>
+#include <QApplication>
+#include <QCursor>
+#include <QHeaderView>
 #include <QContextMenuEvent>
-#include <kvbox.h>
 
 #include "resultlistview.h"
 #include "resultlistviewtext.h"
@@ -38,33 +35,39 @@ using DragSupport::makePixmap;
 using namespace ResultList;
 
 ResultListView::ResultListView(QWidget *parent) :
-    K3ListView(parent), m_itemRightClicked(0)
+    QTreeWidget(parent), m_itemRightClicked(0)
 {
-    connect(this, SIGNAL(doubleClicked(Q3ListViewItem *, const QPoint &, int)),
-                  SLOT(slotDoubleClicked(Q3ListViewItem *, const QPoint &, int)));
+    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+                  SLOT(slotDoubleClicked(QTreeWidgetItem *, int)));
 
-    addColumn(i18n("Expression"));
-    addColumn(i18n("Result"));
-    addColumn(i18n("Shortcut"));
+    QStringList columns;
+
+    columns << i18nc("not visible, math expression", "Expression")
+	    << i18nc("not visible, math result", "Result")
+	    << i18nc("not visible, shortcut to previous answer, not keyboard shortcut", "Shortcut");
+
+    setHeaderLabels(columns);
 
     header()->hide(); // I hate that header
-    header()->setStretchEnabled(ResultColumn, true);
+    header()->setResizeMode(ResultColumn, QHeaderView::Stretch);
+    header()->setResizeMode(ExpressionColumn, QHeaderView::Stretch);
+    header()->setResizeMode(ShortcutColumn, QHeaderView::Custom);
+    header()->resizeSection(ShortcutColumn, sizeHintForColumn(ShortcutColumn));
 
     setDragEnabled(true);
     setObjectName("resultListView");
-    setItemMargin(2);
-    setColumnAlignment(ResultColumn, Qt::AlignLeft);
-    setColumnAlignment(ShortcutColumn, Qt::AlignHCenter);
-    setColumnWidthMode(ResultColumn, Maximum);
-    setSortColumn(-1);
+    setSortingEnabled(false);
 }
 
 bool ResultListView::getStackValue(unsigned stackPosition, Abakus::number_t &result)
 {
-    Q3ListViewItem *it = firstChild();
-    for(; it; it = it->itemBelow()) {
-	ResultListViewText *resultItem = dynamic_cast<ResultListViewText *>(it);
+    QTreeWidgetItemIterator it(this);
+
+    for(; *it; ++it) {
+	ResultListViewText *resultItem = static_cast<ResultListViewText *>(*it);
 	if(!resultItem->wasError() && resultItem->stackPosition() == stackPosition) {
+
+	    // TODO: ResultItem should have the number value, not just the text.
 	    result = Abakus::number_t(resultItem->resultText());
 	    return true;
 	}
@@ -73,26 +76,41 @@ bool ResultListView::getStackValue(unsigned stackPosition, Abakus::number_t &res
     return false;
 }
 
-Q3DragObject *ResultListView::dragObject()
+void ResultListView::startDrag(Qt::DropActions supportedActions)
 {
-    QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
     ResultListViewText *item = itemUnderCursor();
+    if(!item)
+	return;
 
-    if(item) {
-	QString text = item->resultText();
+    QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
+    int column = columnAt(viewportPos.x());
+    QString text = item->resultText();
 
-	int column = header()->sectionAt(viewportPos.x());
+    if(column == ExpressionColumn)
+	text = item->expressionText();
 
-	if(column == ExpressionColumn)
-	    text = item->expressionText();
+    QDrag *drag = new QDrag(this);
+    QMimeData *mimeData = new QMimeData;
 
-	Q3DragObject *drag = new Q3TextDrag(text, this);
-	drag->setPixmap(makePixmap(text, font()));
+    mimeData->setText(text);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(makePixmap(text, font()));
 
-	return drag;
+    drag->start(supportedActions);
+}
+
+int ResultListView::sizeHintForColumn(int column)
+{
+    if(column == ShortcutColumn) {
+	QFont f = font();
+	f.setItalic(true);
+	f.setPointSize(qMin(f.pointSize() * 9 / 11, 10));
+
+	QFontMetrics fm(f);
+	return fm.width("  $99  ");
     }
-
-    return 0;
+    else
+	return QTreeWidget::sizeHintForColumn(column);
 }
 
 void ResultListView::contextMenuEvent(QContextMenuEvent *e)
@@ -101,9 +119,10 @@ void ResultListView::contextMenuEvent(QContextMenuEvent *e)
     KMenu *menu = constructPopupMenu(m_itemRightClicked);
 
     menu->popup(e->globalPos());
+    delete menu;
 }
 
-void ResultListView::slotDoubleClicked(Q3ListViewItem *item, const QPoint &, int c)
+void ResultListView::slotDoubleClicked(QTreeWidgetItem *item, int c)
 {
     ResultListViewText *textItem = dynamic_cast<ResultListViewText *>(item);
     if(!textItem)
@@ -119,11 +138,11 @@ KMenu *ResultListView::constructPopupMenu(const ResultListViewText *item)
 {
     KMenu *menu = new KMenu(this);
 
-    menu->insertItem(i18n("Clear &History"), this, SLOT(clear()), Qt::ALT+Qt::Key_R);
+    menu->addAction(i18n("Clear &History"), this, SLOT(clear()), Qt::ALT+Qt::Key_R);
+    QAction *a = menu->addAction(i18n("Copy Result to Clipboard"), this, SLOT(slotCopyResult()));
 
-    int id = menu->insertItem(i18n("Copy Result to Clipboard"), this, SLOT(slotCopyResult()));
     if(!item || item->wasError())
-	menu->setItemEnabled(id, false);
+	a->setEnabled(false);
 
     return menu;
 }
@@ -140,13 +159,14 @@ void ResultListView::slotCopyResult()
 
 ResultListViewText *ResultListView::lastItem() const
 {
-    return static_cast<ResultListViewText *>(K3ListView::lastItem());
+    QTreeWidgetItem *item = topLevelItem(topLevelItemCount() - 1);
+    return static_cast<ResultListViewText *>(item);
 }
 
 ResultListViewText *ResultListView::itemUnderCursor() const
 {
     QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
-    Q3ListViewItem *underCursor = itemAt(viewportPos);
+    QTreeWidgetItem *underCursor = itemAt(viewportPos);
     return static_cast<ResultListViewText *>(underCursor);
 }
 

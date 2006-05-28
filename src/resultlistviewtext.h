@@ -2,7 +2,7 @@
 #define ABAKUS_RESULTLISTVIEWTEXT_H
 /*
  * resultlistviewtext.h - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,21 +22,23 @@
 #include "resultlistview.h"
 #include "numerictypes.h"
 
+#include <QTreeWidgetItem>
+
 class QPainter;
 class QColorGroup;
 class QFontMetrics;
 
 // This class shows the results shown in the MainWindow result pane.
-class ResultListViewText : public K3ListViewItem
+class ResultListViewText : public QTreeWidgetItem
 {
     public:
-    ResultListViewText(K3ListView *listView,
+    ResultListViewText(QTreeWidget *listView,
                       const QString &text,
 		      const QString &result,
 		      ResultListViewText *after,
 		      bool isError = false);
 
-    ResultListViewText(K3ListView *listView,
+    ResultListViewText(QTreeWidget *listView,
                       const QString &text,
 		      const Abakus::number_t &result,
 		      ResultListViewText *after,
@@ -52,10 +54,6 @@ class ResultListViewText : public K3ListViewItem
 
     // Redisplays the text by calling value.toString again.
     void precisionChanged();
-
-    // Reimplemented from K3ListViewItem
-    virtual void paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int align);
-    virtual int width(const QFontMetrics &fm, const Q3ListView *lv, int c) const;
 
     // Reimplemented to remove trailing zeroes from results.
     virtual void setText(int column, const QString &text);

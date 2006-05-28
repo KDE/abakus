@@ -2,7 +2,7 @@
 #define ABAKUS_RESULTLISTVIEW_H
 /*
  * resultlistview.h - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <k3listview.h>
-#include "numerictypes.h"
-//Added by qt3to4:
-#include <QContextMenuEvent>
-#include <QLabel>
-#include <kvbox.h>
+#include <QTreeWidget>
 
+#include "numerictypes.h"
+
+class QContextMenuEvent;
 class KMenu;
 class QLabel;
-class Q3DragObject;
 class ResultListViewText;
 
 namespace ResultList {
     enum { ExpressionColumn = 0, ResultColumn, ShortcutColumn };
 }
 
-class ResultListView : public K3ListView
+class ResultListView : public QTreeWidget
 {
     Q_OBJECT
 
@@ -48,14 +45,15 @@ class ResultListView : public K3ListView
 
     protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
-    virtual Q3DragObject *dragObject();
+    virtual void startDrag(Qt::DropActions supportedActions);
+    virtual int sizeHintForColumn(int column);
 
     signals:
     void signalEntrySelected(const QString &text);
     void signalResultSelected(const QString &text);
 
     private slots:
-    void slotDoubleClicked(Q3ListViewItem *item, const QPoint & /* Ignored */, int c);
+    void slotDoubleClicked(QTreeWidgetItem *item, int c);
     void slotCopyResult();
 
     private:

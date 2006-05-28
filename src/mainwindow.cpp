@@ -226,7 +226,7 @@ void MainWindow::slotReturnPressed()
     m_ui->editLine->setPlainText(text);
 
     m_ui->resultList->setCurrentItem(item);
-    m_ui->resultList->ensureItemVisible(item);
+    m_ui->resultList->scrollToItem(item);
 
     QTimer::singleShot(0, m_ui->editLine, SLOT(selectAll()));
 }
@@ -773,16 +773,16 @@ void MainWindow::slotPrecisionCustom()
 
 void MainWindow::redrawResults()
 {
-    Q3ListViewItemIterator it(m_ui->resultList);
-    while(it.current()) {
-        static_cast<ResultListViewText *>(it.current())->precisionChanged();
+    QTreeWidgetItemIterator it(m_ui->resultList);
+    while(*it) {
+        static_cast<ResultListViewText *>(*it)->precisionChanged();
         ++it;
     }
 
-    QTreeWidgetItemIterator items(m_ui->varList);
-    while(*items) {
-        static_cast<ValueListViewItem *>(*items)->updateText();
-        ++items;
+    it = QTreeWidgetItemIterator(m_ui->varList);
+    while(*it) {
+        static_cast<ValueListViewItem *>(*it)->updateText();
+        ++it;
     }
 
     // Because of the way we implemented the menu, it is possible to deselect
