@@ -2,6 +2,8 @@
    Copyright (C) 2004 Ariya Hidayat <ariya.hidayat@gmail.com>
    Last update: November 15, 2004
 
+   Copyright (C) 2006 Michael Pyne <michael.pyne@kdemail.net>
+
    This file was copied from the SpeedCrunch program.  Please visit
    http://speedcrunch.berlios.de/ for more information.
 
@@ -57,18 +59,6 @@ public:
   bc_num num;
   bool nan;
 };
-
-void out_of_memory(void){
-  return;
-}
-
-void rt_warn(char * ,...){
-  return;
-}
-
-void rt_error(char * ,...){
-  return;
-}
 
 static bc_num h_create( int len = 1, int scale = 0 )
 {
@@ -331,31 +321,40 @@ HNumber::HNumber( int i )
   bc_int2num( &d->num, i );
 }
 
-HNumber::HNumber( const QString &str )
+HNumber::HNumber( const QString &numStr )
 {
   h_init();
   d = new Private;
   d->nan = false;
   d->num = h_create();
 
-  if( str.toLower() == QLatin1String("nan") )
+  QString str = numStr.toLower(); // Simply regexp handling too.
+
+  if( str == QLatin1String("nan") )
     d->nan = true;
 
   if( !str.isEmpty() && !d->nan )
   {
     // Find exponent part so we can check precision.
-    QRegExp exp("^([-+]?\\d*)([,.]\\d+)?(e[+-]?\\d+)$");
+    QRegExp exp(
+        "^([-+]?\\d*)"     // Required: Optional sign with digits
+        "([,.](?:\\d+)?)?" // Optional: Decimal separator with optional,
+                           // non-capturing fraction
+        "(?:e([+-]?\\d+))?$" // Optional: Exponent with optional sign and digits.
+                             // The "e" is not included in the capture.
+    );
+
     if(str.indexOf(exp) == -1)
     {
       // Invalid string format.
-      break;
+      return;
     }
 
     QString mantissa = exp.cap(1) + exp.cap(2);
-    int expd = exp.cap(3).toInt();
+    int expd = 1;
 
-    kDebug() << "Captured mantissa: " << mantissa << endl;
-    kDebug() << "Captured fraction: " << exp << endl;
+    if(exp.numCaptures() >= 3)
+      expd = exp.cap(3).toInt();
 
     h_destroy( d->num );
     d->num = h_str2num( mantissa.toLocal8Bit().constData() );
@@ -1295,7 +1294,6 @@ std::ostream& operator<<( std::ostream& s, HNumber num )
 
 #include <iostream>
 #include <string.h>
-#include <kvbox.h>
 
 static int hmath_total_tests = 0;
 static int hmath_failed_tests = 0;

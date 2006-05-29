@@ -2,7 +2,7 @@
 #define ABAKUS_FUNCTION_H
 /*
  * function.h - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

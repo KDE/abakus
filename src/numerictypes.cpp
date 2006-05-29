@@ -1,6 +1,6 @@
 /*
  * numerictypes.cpp - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,18 +18,16 @@
  */
 
 #include "numerictypes.h"
-#include "hmath.h"
 
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocalizedstring.h>
 #include <klocale.h>
-#include <kvbox.h>
 
 Abakus::TrigMode Abakus::m_trigMode = Abakus::Degrees;
 int Abakus::m_prec = -1;
 
-#if HAVE_MPFR
+#ifdef HAVE_MPFR
 
 namespace Abakus
 {
@@ -168,6 +166,8 @@ const Abakus::number_t::value_type Abakus::number_t::PI = setupPi();
 const Abakus::number_t::value_type Abakus::number_t::E = setupExponential();
 
 #else
+
+#include "hmath.h"
 
 // Converts hmath number to a string.
 

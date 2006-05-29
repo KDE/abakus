@@ -2,7 +2,7 @@
 #define ABAKUS_NUMERICTYPES_H
 /*
  * numerictypes.h - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,12 @@
 #include <qstringlist.h>
 #include <qregexp.h>
 
-#include "hmath.h"
 #include "config.h"
 
-#if HAVE_MPFR
+#ifdef HAVE_MPFR
 #include <mpfr.h>
-#include <kvbox.h>
+#else
+#include "hmath.h"
 #endif
 
 namespace Abakus
@@ -193,7 +193,7 @@ inline number<T> operator/(const number<T> &l, const number<T> &r)
     return number<T>(l.value() / r.value());
 }
 
-#if HAVE_MPFR
+#ifdef HAVE_MPFR
 
 /**
  * Utility function to convert a MPFR number to a string.  This is declared

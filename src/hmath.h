@@ -1,6 +1,8 @@
 /* HMath: C++ high precision math routines
    Copyright (C) 2004 Ariya Hidayat <ariya.hidayat@gmail.com>
 
+   Copyright (C) 2006 Michael Pyne <michael.pyne@kdemail.net>
+
    This file was copied from the SpeedCrunch program.  Please visit
    http://speedcrunch.berlios.de/ for more information.
 

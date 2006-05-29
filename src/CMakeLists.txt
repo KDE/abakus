@@ -1,5 +1,5 @@
 
-project(abakus)
+project(abakus CXX)
 
 # Need to include checks for MPFR, GNU MP, FLEX, and BISON
 
@@ -26,13 +26,14 @@ set(abakus_SRCS
 
 set(math_srcs)
 set(math_libs)
-set(MPFR_FOUND 1) # For now, XXX fix this
 set(HAVE_FLEX_BISON 1) # For now, XXX fix this
 
 if(MPFR_FOUND)
     set(math_libs mpfr gmp)
+    message(STATUS "Using MPFR")
 else(MPFR_FOUND)
-    set(math_srcs hmath.cpp number.c)
+    set(math_srcs hmath.cpp number.cpp)
+    message(STATUS "Using built-in high precision math.")
 endif(MPFR_FOUND)
 
 set(parser_srcs)

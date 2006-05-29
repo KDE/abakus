@@ -2,6 +2,8 @@
 /*
     Copyright (C) 1991, 1992, 1993, 1994, 1997, 2000 Free Software Foundation, Inc.
 
+    Copyright (C) 2006 Michael Pyne <michael.pyne@kdemail.net>
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License , or
@@ -29,17 +31,11 @@
 
 *************************************************************************/
 
-#ifndef _NUMBER_H_
-#define _NUMBER_H_
+#ifndef ABAKUS_NUMBER_H
+#define ABAKUS_NUMBER_H
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#undef _PROTOTYPE
-
-#ifndef NUMBER__STDC__
-#define NUMBER__STDC__
 #endif
 
 typedef enum {PLUS, MINUS} sign;
@@ -99,66 +95,56 @@ extern bc_num _two_;
 
 /* Function Prototypes */
 
-/* Define the _PROTOTYPE macro if it is needed. */
+void bc_init_numbers (void);
 
-#ifndef _PROTOTYPE
-#ifdef NUMBER__STDC__
-#define _PROTOTYPE(func, args) func args
-#else
-#define _PROTOTYPE(func, args) func()
-#endif
-#endif
+bc_num bc_new_num (int length, int scale);
 
-_PROTOTYPE(void bc_init_numbers, (void));
+void bc_free_num (bc_num *num);
 
-_PROTOTYPE(bc_num bc_new_num, (int length, int scale));
+bc_num bc_copy_num (bc_num num);
 
-_PROTOTYPE(void bc_free_num, (bc_num *num));
+void bc_init_num (bc_num *num);
 
-_PROTOTYPE(bc_num bc_copy_num, (bc_num num));
+void bc_str2num (bc_num *num, char *str, int scale);
 
-_PROTOTYPE(void bc_init_num, (bc_num *num));
+char *bc_num2str (bc_num num);
 
-_PROTOTYPE(void bc_str2num, (bc_num *num, char *str, int scale));
+void bc_int2num (bc_num *num, int val);
 
-_PROTOTYPE(char *bc_num2str, (bc_num num));
+long bc_num2long (bc_num num);
 
-_PROTOTYPE(void bc_int2num, (bc_num *num, int val));
+int bc_compare (bc_num n1, bc_num n2);
 
-_PROTOTYPE(long bc_num2long, (bc_num num));
+char bc_is_zero (bc_num num);
 
-_PROTOTYPE(int bc_compare, (bc_num n1, bc_num n2));
+char bc_is_near_zero (bc_num num, int scale);
 
-_PROTOTYPE(char bc_is_zero, (bc_num num));
+char bc_is_neg (bc_num num);
 
-_PROTOTYPE(char bc_is_near_zero, (bc_num num, int scale));
+void bc_add (bc_num n1, bc_num n2, bc_num *result, int scale_min);
 
-_PROTOTYPE(char bc_is_neg, (bc_num num));
+void bc_sub (bc_num n1, bc_num n2, bc_num *result, int scale_min);
 
-_PROTOTYPE(void bc_add, (bc_num n1, bc_num n2, bc_num *result, int scale_min));
+void bc_multiply (bc_num n1, bc_num n2, bc_num *prod, int scale);
 
-_PROTOTYPE(void bc_sub, (bc_num n1, bc_num n2, bc_num *result, int scale_min));
+int bc_divide (bc_num n1, bc_num n2, bc_num *quot, int scale);
 
-_PROTOTYPE(void bc_multiply, (bc_num n1, bc_num n2, bc_num *prod, int scale));
+int bc_modulo (bc_num num1, bc_num num2, bc_num *result,
+			   int scale);
 
-_PROTOTYPE(int bc_divide, (bc_num n1, bc_num n2, bc_num *quot, int scale));
+int bc_divmod (bc_num num1, bc_num num2, bc_num *quot,
+			   bc_num *rem, int scale);
 
-_PROTOTYPE(int bc_modulo, (bc_num num1, bc_num num2, bc_num *result,
-			   int scale));
+int bc_raisemod (bc_num base, bc_num expo, bc_num mod,
+			     bc_num *result, int scale);
 
-_PROTOTYPE(int bc_divmod, (bc_num num1, bc_num num2, bc_num *quot,
-			   bc_num *rem, int scale));
+void bc_raise (bc_num num1, bc_num num2, bc_num *result,
+			   int scale);
 
-_PROTOTYPE(int bc_raisemod, (bc_num base, bc_num expo, bc_num mod,
-			     bc_num *result, int scale));
+int bc_sqrt (bc_num *num, int scale);
 
-_PROTOTYPE(void bc_raise, (bc_num num1, bc_num num2, bc_num *result,
-			   int scale));
-
-_PROTOTYPE(int bc_sqrt, (bc_num *num, int scale));
-
-_PROTOTYPE(void bc_out_num, (bc_num num, int o_base, void (* out_char)(int),
-			     int leading_zero));
+void bc_out_num (bc_num num, int o_base, void (* out_char)(int),
+			     int leading_zero);
 
 #ifdef __cplusplus
 }

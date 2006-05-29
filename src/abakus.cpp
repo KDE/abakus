@@ -1,6 +1,6 @@
 /*
  * abakus.cpp - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 #include <config.h>
 
-#if HAVE_MPFR
+#ifdef HAVE_MPFR
 #include <mpfr.h>
 #endif
 
@@ -35,8 +35,11 @@ const char *const version = "0.91";
 int main(int argc, char **argv)
 {
     KAboutData *about = new KAboutData("abakus", I18N_NOOP("abakus"), version,
-        I18N_NOOP("A simple keyboard-driven calculator"), KAboutData::License_GPL,
-	"(c) 2004, 2005 Michael Pyne", 0 /* text */, "http://grammarian.homelinux.net/abakus/",
+        I18N_NOOP("A simple keyboard-driven calculator"),
+	KAboutData::License_GPL,
+	"© 2004, 2005, 2006 Michael Pyne",
+	0 /* text */,
+	"http://grammarian.homelinux.net/abakus/",
 	"michael.pyne@kdemail.net");
 
     about->addAuthor("Michael Pyne",
@@ -55,7 +58,7 @@ int main(int argc, char **argv)
                      I18N_NOOP("Inspiration/code for the initial design came from his Ruby implementation."),
 		     "zack@kde.org");
 
-#if HAVE_MPFR
+#ifdef HAVE_MPFR
     mpfr_set_default_prec(6 * 78); // 78 digits, figure about 6 bits needed.
     kDebug() << "Using the MPFR high-precision library.\n";
 #else

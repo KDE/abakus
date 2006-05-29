@@ -2,7 +2,7 @@
 #define ABAKUS_NODE_H
 /*
  * node.h - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2006 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ class NumericValue : public Node
     virtual QString infixString() const;
 
     virtual Abakus::number_t value() const { return m_value; }
-    virtual Abakus::number_t derivative() const { return 0; }
+    virtual Abakus::number_t derivative() const { return Abakus::number_t(0); }
 
     private:
     Abakus::number_t m_value;
