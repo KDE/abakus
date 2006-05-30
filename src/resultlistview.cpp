@@ -49,9 +49,12 @@ ResultListView::ResultListView(QWidget *parent) :
     setHeaderLabels(columns);
 
     header()->hide(); // I hate that header
+
+    header()->setStretchLastSection(false);
     header()->setResizeMode(ResultColumn, QHeaderView::Stretch);
     header()->setResizeMode(ExpressionColumn, QHeaderView::Stretch);
     header()->setResizeMode(ShortcutColumn, QHeaderView::Custom);
+
     header()->resizeSection(ShortcutColumn, sizeHintForColumn(ShortcutColumn));
 
     setDragEnabled(true);

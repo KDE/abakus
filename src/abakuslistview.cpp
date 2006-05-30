@@ -36,7 +36,7 @@ ListView::ListView(QWidget *parent) :
     QTreeWidget(parent), m_menu(0), m_usePopup(false), m_removeSingle(0),
     m_removeAll(0)
 {
-    header()->setResizeMode(QHeaderView::Stretch);
+    header()->setResizeMode(QHeaderView::Interactive);
     header()->setStretchLastSection(true);
 }
 
