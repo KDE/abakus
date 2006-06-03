@@ -9,7 +9,6 @@ include(MacroLibrary)
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 link_directories(${KDE4_LIB_DIR})
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(HAVE_MPFR ${MPFR_FOUND})
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.cmake
@@ -18,3 +17,5 @@ configure_file(${CMAKE_SOURCE_DIR}/config.h.cmake
 include_directories(${CMAKE_BINARY_DIR})
 
 add_subdirectory(src)
+add_subdirectory(cmake)
+add_subdirectory(doc)
