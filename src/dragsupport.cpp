@@ -17,14 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <qstring.h>
-#include <qpixmap.h>
-#include <qimage.h>
-#include <qpainter.h>
-#include <qcolor.h>
-#include <qfont.h>
-#include <qbrush.h>
-#include <qfontmetrics.h>
+#include <QPixmap>
+#include <QImage>
+#include <QPainter>
+#include <QColor>
+#include <QFont>
+#include <QBrush>
+#include <QFontMetrics>
 
 #include "dragsupport.h"
 
@@ -40,18 +39,19 @@ QPixmap makePixmap(const QString &text, const QFont &font)
 
     QSize bonusSize (height, 0);
     QSize size(fm.width(text), height);
-    QImage image(size + bonusSize, QImage::Format_ARGB32);
-    QImage mask = image.copy();
 
-    image.fill(Qt::black);
-    mask.fill(Qt::black);
+    // The next 3 lines allow us to programmatically construct a QPixmap with
+    // a completely transparent background.
+
+    QImage image(size + bonusSize, QImage::Format_ARGB32_Premultiplied);
+    image.fill(Qt::transparent);
+
+    QPixmap pix = QPixmap::fromImage(image);
 
     { // QPainter will destruct automatically
-	QPainter painter(&image), maskPainter(&mask);
+	QPainter painter(&pix);
 	painter.setFont(font);
 
-	maskPainter.setPen(Qt::white);
-	maskPainter.setBrush(Qt::white);
 	painter.setBrush(background);
 	painter.setPen(Qt::black);
 	painter.setRenderHint(QPainter::Antialiasing, true);
@@ -63,7 +63,6 @@ QPixmap makePixmap(const QString &text, const QFont &font)
 	r.setRight(r.right() - 1);
 	r.setBottom(r.bottom() - 1);
 
-	maskPainter.drawRoundRect(r, 75 * image.height() / image.width(), 75);
 	painter.drawRoundRect(r, 75 * image.height() / image.width(), 75);
 
 	// Alias better names for some constants.
@@ -74,8 +73,7 @@ QPixmap makePixmap(const QString &text, const QFont &font)
 	painter.drawText(textLeft, height / 4, size.width(), size.height(), 0, text);
     } // QPainter is gone
 
-    image.setAlphaChannel(mask);
-    return QPixmap::fromImage(image);
+    return pix;
 }
 
 } // DragSupport
