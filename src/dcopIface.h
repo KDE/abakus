@@ -19,18 +19,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <dcopobject.h>
+#include <QObject>
 
 class QString;
 
-class AbakusIface : virtual public DCOPObject
+class AbakusIface : public QObject
 {
-    K_DCOP
-    public:
-    AbakusIface();
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.Abakus")
 
-    k_dcop:
-    virtual double evaluate(const QString &expr);
+    public:
+    AbakusIface(QObject *parent);
+
+    public slots:
+    Q_SCRIPTABLE double evaluate(const QString &expr);
 };
 
 #endif

@@ -19,13 +19,16 @@
 
 #include <QString>
 #include <QByteArray>
+#include <dbus/qdbus.h>
 
 #include "numerictypes.h"
 #include "lexer.h"
 #include "dcopIface.h"
 
-AbakusIface::AbakusIface() : DCOPObject("Calculator")
+AbakusIface::AbakusIface(QObject *parent) : QObject(parent)
 {
+    setObjectName("Calculator Interface");
+    QDBus::sessionBus().registerObject("/", this, QDBusConnection::ExportSlots);
 }
 
 double AbakusIface::evaluate(const QString &expr)
@@ -33,3 +36,5 @@ double AbakusIface::evaluate(const QString &expr)
     Abakus::number_t result = parseString(expr.toUtf8().constData());
     return result.asDouble();
 }
+
+#include "dcopIface.moc"

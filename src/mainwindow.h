@@ -107,7 +107,7 @@ class MainWindow : public KMainWindow
     QString m_lastError;
     QSize m_newSize, m_oldSize;
 
-    AbakusIface *m_dcopInterface;
+    AbakusIface *m_dbusInterface;
 
     bool m_wasFnShown, m_wasVarShown, m_wasHistoryShown;
     bool m_compactMode;

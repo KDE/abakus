@@ -100,7 +100,7 @@ MainWindow::MainWindow()
 //    layout->setMargin(KDialog::marginHint());
 
     setupLayout();
-    m_dcopInterface = new AbakusIface();
+    m_dbusInterface = new AbakusIface(this);
     setupGUI(QSize(450, 400), Keys | Save | Create);
 
     m_ui->editLine->setFocus();
