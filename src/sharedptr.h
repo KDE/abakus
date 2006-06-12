@@ -39,6 +39,8 @@ public:
             if(!m_refCount) {
                 delete m_ptr;
                 m_ptr = 0;
+
+                delete this;
             }
         }
 

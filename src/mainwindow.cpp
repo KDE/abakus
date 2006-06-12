@@ -106,6 +106,11 @@ MainWindow::MainWindow()
     m_ui->editLine->setFocus();
 }
 
+MainWindow::~MainWindow()
+{
+    delete m_ui;
+}
+
 bool MainWindow::inRPNMode() const
 {
     return action("toggleExpressionMode")->isChecked();

@@ -56,11 +56,10 @@ class Editor : public QTextEdit
 
     bool autoCalcEnabled() const;
     void setAutoCalcEnabled( bool enable );
-    void setFormat( char format );
-    void setDecimalDigits( int digits );
 
     void setSyntaxHighlight( bool enable );
     bool isSyntaxHighlightEnabled() const;
+
     void setHighlightColor( ColorType type, QColor color );
     QColor highlightColor( ColorType type );
 

@@ -41,6 +41,7 @@ class MainWindow : public KMainWindow
     Q_OBJECT
     public:
     MainWindow();
+    ~MainWindow();
 
     bool inRPNMode() const;
 

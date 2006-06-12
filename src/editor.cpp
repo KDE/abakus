@@ -87,15 +87,21 @@ private:
 class Editor::Private
 {
 public:
-  Evaluator* eval;
+  Private() : autoCalcLabel(0)
+  {
+  }
+
+  ~Private()
+  {
+    delete autoCalcLabel;
+  }
+
   QStringList history;
   int index;
   bool autoCompleteEnabled;
   EditorCompletion* completion;
   QTimer* completionTimer;
   bool autoCalcEnabled;
-  char format;
-  int decimalDigits;
   QTimer* autoCalcTimer;
   QLabel* autoCalcLabel;
   bool syntaxHighlightEnabled;
@@ -228,7 +234,6 @@ Editor::Editor( QWidget* parent ):
   QTextEdit( parent )
 {
   d = new Private;
-  d->eval = 0;
   d->index = 0;
   d->autoCompleteEnabled = true;
   d->completion = new EditorCompletion( this );
@@ -326,16 +331,6 @@ bool Editor::autoCalcEnabled() const
 void Editor::setAutoCalcEnabled( bool enable )
 {
   d->autoCalcEnabled = enable;
-}
-
-void Editor::setFormat( char format )
-{
-  d->format = format;
-}
-
-void Editor::setDecimalDigits( int digits )
-{
-  d->decimalDigits = digits;
 }
 
 void Editor::appendHistory( const QString& text )

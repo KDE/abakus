@@ -20,12 +20,59 @@
 #include <QPixmap>
 #include <QImage>
 #include <QPainter>
+#include <QPointF>
+#include <QPainterPath>
 #include <QColor>
 #include <QFont>
 #include <QBrush>
 #include <QFontMetrics>
+#include <QRectF>
 
 #include "dragsupport.h"
+
+/**
+ * Draws a rectangle with rounded corners to fill rectangle r.  Unlike
+ * QPainter::drawRoundRect, the rounded corners have the same radius in both
+ * the x and y directions.
+ *
+ * The current pen is used for stroking the line, and the rectangle is
+ * filled using the current brush.
+ */
+static void drawCircularRoundRect(QPainter &p, const QRect &r, int radius)
+{
+    QRectF rect, rf(r);
+    QPointF start(rf.topLeft());
+
+    // Move down by radius.
+    start.ry() += radius + 1;
+
+    QPainterPath path(start);
+
+    // This stuff doesn't seem to line up exactly right, but whatever.  It's
+    // close enough.
+
+    rect = QRectF(r.left(), r.top(), 2 * radius, 2 * radius);
+    path.arcTo(rect, 180.0, -90.0);
+    path.lineTo(r.right() - radius, r.top());
+
+    rect.setHeight(rect.height() - 1);
+    rect.translate(rf.width() - 2 * radius, 0.0);
+    path.arcTo(rect, 90.0, -90.0);
+    path.lineTo(r.right() + 1, r.bottom() - radius + 1);
+
+    rect.setWidth(rect.width() - 1);
+    rect.translate(1.0, rf.height() - 2 * radius + 1);
+    path.arcTo(rect, 0.0, -90.0);
+    path.lineTo(r.left() + radius - 1, r.bottom() + 1);
+
+    rect.setHeight(rect.height() + 1);
+    rect.setWidth(rect.width() + 1);
+    rect.translate(-(rf.width() - 2 * radius) - 1.0, 0.0);
+    path.arcTo(rect, -90.0, -90.0);
+    path.lineTo(r.left(), r.top() + radius + 1);
+
+    p.drawPath(path);
+}
 
 namespace DragSupport
 {
@@ -54,16 +101,20 @@ QPixmap makePixmap(const QString &text, const QFont &font)
 
 	painter.setBrush(background);
 	painter.setPen(Qt::black);
-	painter.setRenderHint(QPainter::Antialiasing, true);
 
-	// roundRect is annoying in that the four "pies" in each corner aren't
-	// circular, they're elliptical.  Try to make the radii force it circular
-	// again.
+	// XCURSOR doesn't support anti-aliased pixmaps or something? Either
+	// way it doesn't really look that great.
+	painter.setRenderHint(QPainter::Antialiasing, false);
+
 	QRect r = image.rect();
 	r.setRight(r.right() - 1);
 	r.setBottom(r.bottom() - 1);
 
-	painter.drawRoundRect(r, 75 * image.height() / image.width(), 75);
+	drawCircularRoundRect(painter, r, 9);
+	// roundRect is annoying in that the four "pies" in each corner aren't
+	// circular, they're elliptical.  Try to make the radii force it circular
+	// again.
+//	painter.drawRoundRect(r, 75 * image.height() / image.width(), 75);
 
 	// Alias better names for some constants.
 	int textLeft = height / 2;
