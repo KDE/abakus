@@ -81,12 +81,12 @@ kde4_add_ui_files(abakus_SRCS "MainWindow.ui")
 kde4_add_executable(abakus ${abakus_SRCS} ${math_srcs} ${parser_srcs})
 target_link_libraries(abakus ${KDE4_KDEUI_LIBS} ${math_libs} m )
 
-install_targets(/bin abakus)
+install(TARGETS abakus DESTINATION ${BIN_INSTALL_DIR})
 
 ########### install files ###############
 
-install_files(${XDG_APPS_DIR} FILES abakus.desktop)
-install_files(${DATA_INSTALL_DIR}/abakus FILES abakusui.rc)
+install( FILES abakus.desktop DESTINATION ${XDG_APPS_DIR} )
+install( FILES abakusui.rc DESTINATION ${DATA_INSTALL_DIR}/abakus )
 
 kde4_install_icons(${ICON_INSTALL_DIR} hicolor)
 
