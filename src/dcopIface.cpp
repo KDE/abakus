@@ -19,7 +19,7 @@
 
 #include <QString>
 #include <QByteArray>
-#include <dbus/qdbus.h>
+#include <QtDBus>
 
 #include "numerictypes.h"
 #include "lexer.h"
