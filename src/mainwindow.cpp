@@ -28,7 +28,6 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kconfigbase.h>
-#include <kactionclasses.h>
 #include <kinputdialog.h>
 
 #include <QContextMenuEvent>
