@@ -29,7 +29,7 @@
 #include <kglobal.h>
 #include <kconfigbase.h>
 #include <kinputdialog.h>
-
+#include <kicon.h>
 #include <QContextMenuEvent>
 #include <QAction>
 #include <QActionGroup>
