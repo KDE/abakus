@@ -76,7 +76,7 @@ else(HAVE_FLEX_BISON)
 endif(HAVE_FLEX_BISON)
 
 kde4_automoc(${abakus_SRCS})
-kde4_add_ui_files(abakus_SRCS "MainWindow.ui")
+kde4_add_ui_files(abakus_SRCS MainWindow.ui)
 
 kde4_add_executable(abakus ${abakus_SRCS} ${math_srcs} ${parser_srcs})
 target_link_libraries(abakus ${KDE4_KDEUI_LIBS} ${math_libs} m )
@@ -88,6 +88,6 @@ install(TARGETS abakus DESTINATION ${BIN_INSTALL_DIR})
 install( FILES abakus.desktop DESTINATION ${XDG_APPS_DIR} )
 install( FILES abakusui.rc DESTINATION ${DATA_INSTALL_DIR}/abakus )
 
-kde4_install_icons(${ICON_INSTALL_DIR} hicolor)
+kde4_install_icons(${ICON_INSTALL_DIR})
 
 
