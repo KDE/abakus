@@ -9,4 +9,5 @@ Comment=
 Terminal=0
 Name=Abakus
 GenericName=Calculator
+GenericName[el]=Υπολογιστής
 Categories=Qt;KDE;Utility
