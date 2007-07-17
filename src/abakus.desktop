@@ -38,5 +38,6 @@ GenericName[sr]=Рачунаљка
 GenericName[sr@Latn]=Računaljka
 GenericName[sv]=Miniräknare
 GenericName[tr]=Hesap Makinesi
+GenericName[uk]=Калькулятор
 GenericName[xx]=xxCalculatorxx
 Categories=Qt;KDE;Utility
