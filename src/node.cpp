@@ -196,7 +196,7 @@ Abakus::number_t DerivativeFunction::value() const
 
 Abakus::number_t DerivativeFunction::derivative() const
 {
-    kdError() << k_funcinfo << endl;
+    kdError() << endl;
     kdError() << "This function is never supposed to be called!\n";
 
     return m_operand->derivative();

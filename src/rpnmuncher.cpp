@@ -212,7 +212,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
 
         default:
             // Impossible case happened.
-            kdError() << "Impossible case happened in " << k_funcinfo << endl;
+            kdError() << "Impossible case happened in " << endl;
             m_error = true;
             m_errorStr = "Bug found in program, please report.";
             return Abakus::number_t::nan();

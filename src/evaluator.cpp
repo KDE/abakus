@@ -46,18 +46,18 @@ Evaluator::~Evaluator()
 
 void Evaluator::setExpression(const QString &expr)
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kdError() << " not implemented.\n";
 }
 
 QString Evaluator::expression() const
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kdError() << " not implemented.\n";
     return QString();
 }
 
 void Evaluator::clear()
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kdError() << " not implemented.\n";
     // Yeah, whatever.
 }
 
@@ -68,7 +68,7 @@ bool Evaluator::isValid() const
 
 Tokens Evaluator::tokens() const
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kdError() << " not implemented.\n";
     return Tokens();
 }
 
@@ -120,7 +120,7 @@ Tokens Evaluator::scan(const QString &expr)
 
 QString Evaluator::error() const
 {
-    kdError() << k_funcinfo << " not implemented.\n";
+    kdError() << " not implemented.\n";
     return "No Error Yet";
 }
 
