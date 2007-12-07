@@ -260,7 +260,7 @@ public:
     explicit number(const QByteArray &str)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
-        mpfr_init_set_str (m_tr, str.constData(), 10, RoundDirection);
+        mpfr_init_set_str (m_t, str.constData(), 10, RoundDirection);
     }
 
     explicit number(int i)

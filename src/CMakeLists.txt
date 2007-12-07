@@ -123,8 +123,8 @@ set(abakus_SRCS
     )
 
 set(MPFR_LIBS)
-set(HAVE_MPFR 0)
 IF(HAVE_MPFR)
+    MESSAGE("Using the MPFR high-precision mathematics library")
     SET(MPFR_LIBS mpfr gmp)
 ELSE(HAVE_MPFR)
     SET(abakus_SRCS ${abakus_SRCS} hmath.cpp number.c)
