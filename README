@@ -1,5 +1,5 @@
 abakus, by Michael Pyne <michael.pyne@kdemail.net>
-Version: 0.91
+Version: 0.92
 
 This is my attempt at creating a light-calculator based on Roberto Alsina's
 initial usability suggestions, and based on the ideas of a few other KDE
@@ -10,10 +10,15 @@ This software is distributed under the terms of the GNU GPL v2.
 Synopsis:
  $ tar xvjf abakus-0.91.tar.bz2
  $ cd abakus-0.91
- $ ./configure && make && make install
+ $ mkdir build && cd build
+ $ cmake -DCMAKE_INSTALL_PREFIX=/path/to/kde ../ && make && make install
  $ abakus
 
 Type away, and press Enter to see the result.
+
+Changes since 0.91:
+* (Almost) everything is broken, it crashes quite a bit, it looks worse, lots of
+  previously working features are disabled, but it compiles and runs under KDE 4 now.
 
 Changes since 0.90:
 * Add ability to remove all functions and variables to the context menus of

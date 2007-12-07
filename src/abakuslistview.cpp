@@ -17,36 +17,40 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <klocale.h>
-#include <kpopupmenu.h>
 #include <kdebug.h>
 
-#include <qdragobject.h>
-#include <qcursor.h>
-#include <qheader.h>
+#include <QtGui/QCursor>
+#include <QtGui/QMenu>
+#include <QtGui/QAction>
+#include <QtGui/QTreeWidgetItem>
+#include <QtCore/QList>
+//#include <qdragobject.h>
+//#include <qheader.h>
 
 #include "dragsupport.h"
 #include "abakuslistview.h"
 #include "valuemanager.h"
 #include "function.h"
 
-ListView::ListView(QWidget *parent, const char *name) :
-    KListView(parent, name), m_menu(0), m_usePopup(false), m_removeSingleId(0),
+ListView::ListView(QWidget *parent) :
+    QTreeWidget(parent), m_menu(0), m_usePopup(false), m_removeSingleId(0),
     m_removeAllId(0)
 {
-    setResizeMode(LastColumn);
-    setDragEnabled(true);
+//    setResizeMode(LastColumn);
+//    setDragEnabled(true);
 
-    connect(this, SIGNAL(contextMenuRequested(QListViewItem *, const QPoint &, int)),
-	          SLOT(rightClicked(QListViewItem *, const QPoint &)));
+    connect(this, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+                  SLOT(slotItemClicked(QTreeWidgetItem *)));
 }
 
+#if 0
 QDragObject *ListView::dragObject()
 {
     QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
-    QListViewItem *item = itemAt(viewportPos);
+    QTreeWidgetItem *item = itemAt(viewportPos);
 
     if(!item)
-	return 0;
+        return 0;
 
     int column = header()->sectionAt(viewportPos.x());
     QString dragText = item->text(column);
@@ -56,26 +60,27 @@ QDragObject *ListView::dragObject()
 
     return drag;
 }
+#endif
 
 void ListView::enablePopupHandler(bool enable)
 {
     if(enable == m_usePopup)
-	return;
+        return;
 
     m_usePopup = enable;
 
     if(m_usePopup) {
-	if(m_menu)
-	    kdError() << "ListView menu shouldn't exist here!\n";
+        if(m_menu)
+            kError() << "ListView menu shouldn't exist here!\n";
 
-	m_menu = new KPopupMenu(this);
+        m_menu = new QMenu(this);
 
-	m_removeSingleId = m_menu->insertItem(removeItemString(), this, SLOT(removeSelected()));
-	m_removeAllId = m_menu->insertItem("Placeholder", this, SLOT(removeAllItems()));
+        m_removeSingleId = m_menu->addAction(removeItemString(), this, SLOT(removeSelected()));
+        m_removeAllId = m_menu->addAction("Placeholder", this, SLOT(removeAllItems()));
     }
     else {
-	delete m_menu;
-	m_menu = 0;
+        delete m_menu;
+        m_menu = 0;
     }
 }
 
@@ -91,7 +96,7 @@ QString ListView::removeAllItemsString(unsigned count) const
     return QString();
 }
 
-void ListView::removeSelectedItem(QListViewItem *item)
+void ListView::removeSelectedItem(QTreeWidgetItem *item)
 {
     Q_UNUSED(item);
 }
@@ -100,55 +105,61 @@ void ListView::removeAllItems()
 {
 }
 
-bool ListView::isItemRemovable(QListViewItem *item) const
+bool ListView::isItemRemovable(QTreeWidgetItem *item) const
 {
     Q_UNUSED(item);
 
     return false;
 }
 
-void ListView::rightClicked(QListViewItem *item, const QPoint &pt)
+void ListView::slotItemClicked(QTreeWidgetItem *item)
 {
     if(!m_usePopup)
-	return;
+        return;
 
-    m_menu->setItemEnabled(m_removeSingleId, item && isItemRemovable(item));
-    m_menu->changeItem(m_removeAllId, removeAllItemsString(childCount()));
+    QPoint pt = QCursor::pos();
+
+    m_removeSingleId->setEnabled(isItemRemovable(item));
+    m_removeAllId->setText(removeAllItemsString(topLevelItemCount()));
+
     m_menu->popup(pt);
 }
 
 void ListView::removeSelected()
 {
-    removeSelectedItem(selectedItem());
+    QList<QTreeWidgetItem *> items = selectedItems();
+
+    // We should only be able to select one.
+    if(!items.isEmpty())
+        removeSelectedItem(items.at(0));
 }
 
-ValueListViewItem::ValueListViewItem(QListView *listView, const QString &name,
-	const Abakus::number_t &value) :
-    KListViewItem(listView, name), m_value(value)
+ValueTreeWidgetItem::ValueTreeWidgetItem(
+    QTreeWidget *listView, const QString &name, const Abakus::number_t &value
+)
+: QTreeWidgetItem(listView, QStringList(name)), m_value(value)
 {
     valueChanged();
 }
 
-void ValueListViewItem::valueChanged()
+void ValueTreeWidgetItem::valueChanged()
 {
     setText(1, m_value.toString());
-    repaint();
 }
 
-void ValueListViewItem::valueChanged(const Abakus::number_t &newValue)
+void ValueTreeWidgetItem::valueChanged(const Abakus::number_t &newValue)
 {
     m_value = newValue;
 
     valueChanged();
 }
 
-Abakus::number_t ValueListViewItem::itemValue() const
+Abakus::number_t ValueTreeWidgetItem::itemValue() const
 {
     return m_value;
 }
 
-VariableListView::VariableListView(QWidget *parent, const char *name) :
-    ListView(parent, name)
+VariableListView::VariableListView(QWidget *parent) : ListView(parent)
 {
     enablePopupHandler(true);
 }
@@ -165,22 +176,29 @@ QString VariableListView::removeAllItemsString(unsigned count) const
     count = 0;
     QStringList values = ValueManager::instance()->valueNames();
 
-    for(QStringList::ConstIterator value = values.constBegin(); value != values.constEnd(); ++value)
-	if(!ValueManager::instance()->isValueReadOnly(*value))
-	    ++count;
+    foreach(QString value, values) {
+        if(!ValueManager::instance()->isValueReadOnly(value))
+            ++count;
+    }
 
-    return i18n("Remove all variables (1 variable)",
-	        "Remove all variables (%n variables)",
-		count);
+    return i18np("Remove all variables (1 variable)",
+                "Remove all variables (%1 variables)",
+                count);
 }
 
-bool VariableListView::isItemRemovable(QListViewItem *item) const
+bool VariableListView::isItemRemovable(QTreeWidgetItem *item) const
 {
+    if(!item)
+        return false;
+
     return !ValueManager::instance()->isValueReadOnly(item->text(0));
 }
 
-void VariableListView::removeSelectedItem(QListViewItem *item)
+void VariableListView::removeSelectedItem(QTreeWidgetItem *item)
 {
+    if(!item)
+        return;
+
     ValueManager::instance()->removeValue(item->text(0));
 }
 
@@ -189,8 +207,7 @@ void VariableListView::removeAllItems()
     ValueManager::instance()->slotRemoveUserVariables();
 }
 
-FunctionListView::FunctionListView(QWidget *parent, const char *name) :
-    ListView(parent, name)
+FunctionListView::FunctionListView(QWidget *parent) : ListView(parent)
 {
     enablePopupHandler(true);
 }
@@ -202,18 +219,22 @@ QString FunctionListView::removeItemString() const
 
 QString FunctionListView::removeAllItemsString(unsigned count) const
 {
-    return i18n("Remove all functions (1 function)",
-	        "Remove all functions (%n functions)",
-		count);
+    return i18np("Remove all functions (1 function)",
+                "Remove all functions (%1 functions)",
+                count);
 }
 
-bool FunctionListView::isItemRemovable(QListViewItem *item) const
+bool FunctionListView::isItemRemovable(QTreeWidgetItem *item) const
 {
-    return true;
+    // Hurry up, null_ptr. :)
+    return item != static_cast<QTreeWidgetItem *>(0);
 }
 
-void FunctionListView::removeSelectedItem(QListViewItem *item)
+void FunctionListView::removeSelectedItem(QTreeWidgetItem *item)
 {
+    if(!item)
+        return;
+
     // Use section to get the beginning of the string up to (and not
     // including) the first (
     QString name = item->text(0).section('(', 0, 0);
@@ -225,8 +246,10 @@ void FunctionListView::removeAllItems()
 {
     QStringList fns = FunctionManager::instance()->functionList(FunctionManager::UserDefined);
 
-    for(QStringList::ConstIterator fn = fns.constBegin(); fn != fns.constEnd(); ++fn)
-       FunctionManager::instance()->removeFunction(*fn);
+    foreach(QString fn, fns)
+       FunctionManager::instance()->removeFunction(fn);
 }
 
 #include "abakuslistview.moc"
+
+// vim: set et sw=4 ts=8:

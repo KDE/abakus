@@ -19,31 +19,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 
 #include "numerictypes.h"
 
 class QPoint;
-class QVBox;
+class QLineEdit;
 class QCheckBox;
 class QRadioButton;
 class QBoxLayout;
 class QListViewItem;
 class QSplitter;
 class QTimer;
+class QMenu;
+class QTreeWidget;
+class QAction;
 
 //class KComboBox;
-class Editor;
-class KPopupMenu;
-class KAction;
-class KListView;
+//class Editor;
+class KVBox;
+
 class ResultListView;
 class ResultListViewText;
 
 class AbakusIface;
 
 // Main window class, handles events and layout and stuff
-class MainWindow : public KMainWindow
+class MainWindow : public KXmlGuiWindow
 {
     Q_OBJECT
     public:
@@ -52,10 +54,8 @@ class MainWindow : public KMainWindow
     bool inRPNMode() const;
 
     protected:
-    virtual void contextMenuEvent(QContextMenuEvent *e);
-    virtual bool eventFilter(QObject *o, QEvent *e);
+    virtual void contextMenuEvent(QContextMenuEvent *);
     virtual bool queryExit();
-    virtual void polish();
 
     private slots:
     void slotReturnPressed();
@@ -104,27 +104,27 @@ class MainWindow : public KMainWindow
     QString interpolateExpression(const QString &text, ResultListViewText *after);
 
     // Donated via JuK
-    KAction *action(const char *key) const;
+    QAction *action(const char *key) const;
 
     template <class T> T *action(const char *key) const
     {
-	return dynamic_cast<T *>(action(key));
+        return dynamic_cast<T *>(action(key));
     }
 
     private:
-    QVBox *m_history;
+    KVBox *m_history;
     QRadioButton *m_degrees;
     QRadioButton *m_radians;
-    Editor *m_edit;
-    KPopupMenu *m_popup;
+    QLineEdit *m_edit;
+    QMenu *m_popup;
     ResultListView *m_result;
     QString m_lastError;
     QBoxLayout *m_layout;
-    KListView *m_fnList, *m_varList;
+    QTreeWidget *m_fnList, *m_varList;
     QSplitter *m_mainSplitter, *m_listSplitter;
     QSize m_newSize, m_oldSize;
 
-    AbakusIface *m_dcopInterface;
+//    AbakusIface *m_dcopInterface;
 
     bool m_wasFnShown, m_wasVarShown, m_wasHistoryShown;
     bool m_compactMode;
@@ -133,3 +133,5 @@ class MainWindow : public KMainWindow
 };
 
 #endif
+
+// vim: set et ts=8 sw=4:

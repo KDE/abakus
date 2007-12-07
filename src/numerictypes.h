@@ -22,14 +22,14 @@
 #include <sstream>
 #include <string>
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qregexp.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QRegExp>
 
 #include "hmath.h"
-#include "config.h"
+#include "config-abakus.h"
 
-#if HAVE_MPFR
+#ifdef HAVE_MPFR
 #include <mpfr.h>
 #endif
 
@@ -71,6 +71,9 @@ public:
     /// Create number from textual representation, useful for ginormously
     /// precise numbers.
     number(const char *str);
+
+    /// Likewise
+    explicit number(const QByteArray &str);
 
     /// Convienience constructor to create a number from an integer.
     explicit number(int i);
@@ -192,7 +195,7 @@ inline number<T> operator/(const number<T> &l, const number<T> &r)
     return number<T>(l.value() / r.value());
 }
 
-#if HAVE_MPFR
+#ifdef HAVE_MPFR
 
 /**
  * Utility function to convert a MPFR number to a string.  This is declared
@@ -252,6 +255,12 @@ public:
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str, 10, RoundDirection);
+    }
+
+    explicit number(const QByteArray &str)
+    {
+        m_t = (mpfr_ptr) new __mpfr_struct;
+        mpfr_init_set_str (m_tr, str.constData(), 10, RoundDirection);
     }
 
     explicit number(int i)
@@ -525,6 +534,9 @@ public:
     }
     explicit number(int i) : m_t(i) { }
     number(const number<HNumber> &other) : m_t(other.m_t) { }
+
+    /// Likewise
+    explicit number(const QByteArray &str) : m_t(str.constData()) { }
 
     number(const char *s) : m_t(s) { }
 

@@ -19,10 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <qobject.h>
-#include <qmap.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QMap>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 #include "numerictypes.h"
 
@@ -58,7 +58,7 @@ class ValueManager : public QObject
     void slotRemoveUserVariables();
 
     private:
-    ValueManager(QObject *parent = 0, const char *name = "value manager");
+    ValueManager(QObject *parent = 0);
 
     static ValueManager *m_manager;
     valueMap m_values;

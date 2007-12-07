@@ -19,10 +19,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <klistview.h>
+#include <QtGui/QTreeWidget>
+
 #include "numerictypes.h"
 
-class KPopupMenu;
+class QMenu;
 class QLabel;
 class QDragObject;
 class ResultListViewText;
@@ -31,12 +32,12 @@ namespace ResultList {
     enum { ExpressionColumn = 0, ResultColumn, ShortcutColumn };
 }
 
-class ResultListView : public KListView
+class ResultListView : public QTreeWidget
 {
     Q_OBJECT
 
     public:
-    ResultListView(QWidget *parent = 0, const char *name = "result list view");
+    ResultListView(QWidget *parent = 0);
 
     bool getStackValue(unsigned stackPosition, Abakus::number_t &result);
 
@@ -44,21 +45,23 @@ class ResultListView : public KListView
 
     protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
-    virtual QDragObject *dragObject();
+//    virtual QDragObject *dragObject();
 
     signals:
     void signalEntrySelected(const QString &text);
     void signalResultSelected(const QString &text);
 
     private slots:
-    void slotDoubleClicked(QListViewItem *item, const QPoint & /* Ignored */, int c);
+    void slotDoubleClicked(QTreeWidgetItem *item, const QPoint & /* Ignored */, int c);
     void slotCopyResult();
 
     private:
-    KPopupMenu *constructPopupMenu(const ResultListViewText *item);
+    QMenu *constructPopupMenu(const ResultListViewText *item);
     ResultListViewText *itemUnderCursor() const;
 
     ResultListViewText *m_itemRightClicked;
 };
 
 #endif
+
+// vim: set et sw=4 ts=8:

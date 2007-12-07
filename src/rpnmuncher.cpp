@@ -21,10 +21,10 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <qvaluestack.h>
-#include <qregexp.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QStack>
+#include <QtCore/QRegExp>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 #include "rpnmuncher.h"
 #include "valuemanager.h"
@@ -79,7 +79,7 @@ struct Counter
 
 Abakus::number_t RPNParser::rpnParseString(const QString &text)
 {
-    QStringList tokens = QStringList::split(QRegExp("\\s"), text);
+    QStringList tokens = text.split(QRegExp("\\s"));
     Counter counter; // Will update stack count when we leave proc.
     (void) counter;  // Avoid warnings about it being unused.
 
@@ -95,7 +95,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         switch(tokenize(*it))
         {
         case Number:
-            m_stack.push(Abakus::number_t((*it).latin1()));
+            m_stack.push(Abakus::number_t((*it).toLatin1()));
         break;
 
         case Pop:
@@ -212,7 +212,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
 
         default:
             // Impossible case happened.
-            kdError() << "Impossible case happened in " << endl;
+            kError() << "Impossible case happened in " << endl;
             m_error = true;
             m_errorStr = "Bug found in program, please report.";
             return Abakus::number_t::nan();
@@ -240,26 +240,26 @@ static int tokenize (const QString &token)
     if(FunctionManager::instance()->isFunction(token))
         return Func;
 
-    if(token.lower() == "set")
+    if(token.toLower() == "set")
         return Set;
 
-    if(token.lower() == "pop")
+    if(token.toLower() == "pop")
         return Pop;
 
-    if(token.lower() == "clear")
+    if(token.toLower() == "clear")
         return Clear;
 
-    if(token.lower() == "remove")
+    if(token.toLower() == "remove")
         return Remove;
 
-    if(QRegExp("^\\w+$").search(token) != -1 &&
-       QRegExp("\\d").search(token) == -1)
+    if(QRegExp("^\\w+$").indexIn(token) != -1 &&
+       QRegExp("\\d").indexIn(token) == -1)
     {
         return Ident;
     }
 
-    if(QRegExp("^[-+*/=]$").search(token) != -1)
-        return token[0];
+    if(QRegExp("^[-+*/=]$").indexIn(token) != -1)
+        return token[0].toAscii();
 
     return Unknown;
 }

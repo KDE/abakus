@@ -19,21 +19,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <klistview.h>
+#include <QtGui/QTreeWidget>
 
 #include "numerictypes.h"
 
-class KPopupMenu;
+class QMenu;
+class QAction;
 
-class ListView : public KListView
+class ListView : public QTreeWidget
 {
     Q_OBJECT
 
     public:
-    ListView(QWidget *parent, const char *name = 0);
+    ListView(QWidget *parent);
 
     protected:
-    virtual QDragObject *dragObject();
+//    virtual QDragObject *dragObject();
 
     /**
      * Used to enable fancy popup handling support in subclasses.  Subclasses
@@ -63,7 +64,7 @@ class ListView : public KListView
      * function to remove the selected item, which is passed in as a
      * parameter.
      */
-    virtual void removeSelectedItem(QListViewItem *item);
+    virtual void removeSelectedItem(QTreeWidgetItem *item);
 
     /**
      * If using the popup menu handling, the subclass needs to reimplement this
@@ -75,24 +76,24 @@ class ListView : public KListView
      * If using the popup menu handling, this function may be called to
      * determine whether the selected item given by @p item is removable.
      */
-    virtual bool isItemRemovable(QListViewItem *item) const;
+    virtual bool isItemRemovable(QTreeWidgetItem *item) const;
 
     private slots:
-    void rightClicked(QListViewItem *item, const QPoint &pt);
+    void slotItemClicked(QTreeWidgetItem *item);
     void removeSelected();
 
     private:
-    KPopupMenu *m_menu;
+    QMenu *m_menu;
     bool m_usePopup;
 
-    int m_removeSingleId;
-    int m_removeAllId;
+    QAction *m_removeSingleId;
+    QAction *m_removeAllId;
 };
 
-class ValueListViewItem : public KListViewItem
+class ValueTreeWidgetItem : public QTreeWidgetItem
 {
     public:
-    ValueListViewItem (QListView *listView, const QString &name, const Abakus::number_t &value);
+    ValueTreeWidgetItem (QTreeWidget *listView, const QString &name, const Abakus::number_t &value);
 
     // Will cause the list item to rethink the text.
     void valueChanged();
@@ -112,15 +113,15 @@ class VariableListView : public ListView
     Q_OBJECT
     public:
 
-    VariableListView(QWidget *parent, const char *name = 0);
+    VariableListView(QWidget *parent);
 
     protected:
     virtual QString removeItemString() const;
     virtual QString removeAllItemsString(unsigned count) const;
-    virtual bool isItemRemovable(QListViewItem *item) const;
+    virtual bool isItemRemovable(QTreeWidgetItem *item) const;
 
     protected slots:
-    virtual void removeSelectedItem(QListViewItem *item);
+    virtual void removeSelectedItem(QTreeWidgetItem *item);
     virtual void removeAllItems();
 };
 
@@ -132,15 +133,15 @@ class FunctionListView : public ListView
     Q_OBJECT
     public:
 
-    FunctionListView(QWidget *parent, const char *name = 0);
+    FunctionListView(QWidget *parent);
 
     protected:
     virtual QString removeItemString() const;
     virtual QString removeAllItemsString(unsigned count) const;
-    virtual bool isItemRemovable(QListViewItem *item) const;
+    virtual bool isItemRemovable(QTreeWidgetItem *item) const;
 
     protected slots:
-    virtual void removeSelectedItem(QListViewItem *item);
+    virtual void removeSelectedItem(QTreeWidgetItem *item);
     virtual void removeAllItems();
 };
 

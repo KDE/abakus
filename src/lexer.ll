@@ -117,9 +117,9 @@ HEX [0-9A-Fa-f]+
     yyThisTokenLength = yyleng;
 
     if(FunctionManager::instance()->isFunction(yytext))
-	return FN;
+        return FN;
     else {
-	return ID;
+        return ID;
     }
 }
 
@@ -149,12 +149,12 @@ public:
 Lexer::Lexer(const QString &expr) :
     m_private(new Private)
 {
-    const char *exprString = expr.latin1();
+    QByteArray exprString = expr.toLatin1();
 
     yyCurTokenPos = 0;
     yyThisTokenLength = 0;
 
-    m_private->buffer = yy_scan_string(exprString ? exprString : "");
+    m_private->buffer = yy_scan_string(exprString.data() ? exprString.data() : "");
     m_private->lastToken = -1;
     m_private->lastPos = -1;
 
@@ -163,7 +163,7 @@ Lexer::Lexer(const QString &expr) :
 
     if(yyCurTokenPos != 0)
     {
-	kdError() << "yyCurTokenPos should be 0!!\n";
+        kError() << "yyCurTokenPos should be 0!!\n";
     }
 
     m_private->thisPos = yyCurTokenPos;
@@ -217,7 +217,9 @@ Abakus::number_t parseString(const char *str)
     yy_delete_buffer(buffer);
 
     if(Result::lastResult()->type() != Result::Value)
-	return Abakus::number_t();
+        return Abakus::number_t();
 
     return Result::lastResult()->result()->value();
 }
+
+/* vim: set et sw=4 ts=8: */

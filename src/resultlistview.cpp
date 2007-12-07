@@ -17,15 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <kdebug.h>
-#include <kpopupmenu.h>
 #include <klocale.h>
 
-#include <qclipboard.h>
-#include <qapplication.h>
-#include <qevent.h>
-#include <qcursor.h>
-#include <qdragobject.h>
-#include <qheader.h>
+#include <QtGui/QHeaderView>
+#include <QtGui/QMenu>
+#include <QtGui/QTreeWidgetItem>
+#include <QtGui/QClipboard>
+#include <QtGui/QApplication>
+#include <QtGui/QCursor>
+#include <QtGui/QContextMenuEvent>
 
 #include "resultlistview.h"
 #include "resultlistviewtext.h"
@@ -34,92 +34,96 @@
 using DragSupport::makePixmap;
 using namespace ResultList;
 
-ResultListView::ResultListView(QWidget *parent, const char *name) :
-    KListView(parent, name), m_itemRightClicked(0)
+ResultListView::ResultListView(QWidget *parent) :
+    QTreeWidget(parent), m_itemRightClicked(0)
 {
-    connect(this, SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),
-                  SLOT(slotDoubleClicked(QListViewItem *, const QPoint &, int)));
+    connect(this, SIGNAL(doubleClicked(QTreeWidgetItem *, const QPoint &, int)),
+                  SLOT(slotDoubleClicked(QTreeWidgetItem *, const QPoint &, int)));
 
-    addColumn(i18n("Expression"));
-    addColumn(i18n("Result"));
-    addColumn(i18n("Shortcut"));
+    QStringList labels;
+    labels << i18n("Expression") << i18n("Result") << i18n("Shortcut");
+    setHeaderLabels(labels);
 
     header()->hide(); // I hate that header
-    header()->setStretchEnabled(ResultColumn, true);
+    header()->setStretchLastSection(false);
+    header()->setResizeMode(ResultColumn, QHeaderView::Stretch);
 
-    setDragEnabled(true);
-    setItemMargin(2);
-    setColumnAlignment(ResultColumn, AlignLeft);
-    setColumnAlignment(ShortcutColumn, AlignHCenter);
-    setColumnWidthMode(ResultColumn, Maximum);
-    setSortColumn(-1);
+//    setDragEnabled(true);
+//    setItemMargin(2);
+//    setColumnAlignment(ResultColumn, AlignLeft);
+//    setColumnAlignment(ShortcutColumn, AlignHCenter);
+//    setColumnWidthMode(ResultColumn, Maximum);
+    setSortingEnabled(false);
 }
 
 bool ResultListView::getStackValue(unsigned stackPosition, Abakus::number_t &result)
 {
-    QListViewItem *it = firstChild();
-    for(; it; it = it->itemBelow()) {
-	ResultListViewText *resultItem = dynamic_cast<ResultListViewText *>(it);
-	if(!resultItem->wasError() && resultItem->stackPosition() == stackPosition) {
-	    result = Abakus::number_t(resultItem->resultText().latin1());
-	    return true;
-	}
+    QTreeWidgetItem *it = topLevelItem(0);
+    for(; it; it = itemBelow(it)) {
+        ResultListViewText *resultItem = dynamic_cast<ResultListViewText *>(it);
+        if(!resultItem->wasError() && resultItem->stackPosition() == stackPosition) {
+            QByteArray resultText = resultItem->resultText().toLatin1();
+            result = Abakus::number_t(resultText.data());
+            return true;
+        }
     }
 
     return false;
 }
 
+#if 0
 QDragObject *ResultListView::dragObject()
 {
     QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
     ResultListViewText *item = itemUnderCursor();
 
     if(item) {
-	QString text = item->resultText();
+        QString text = item->resultText();
 
-	int column = header()->sectionAt(viewportPos.x());
+        int column = header()->sectionAt(viewportPos.x());
 
-	if(column == ExpressionColumn)
-	    text = item->expressionText();
+        if(column == ExpressionColumn)
+            text = item->expressionText();
 
-	QDragObject *drag = new QTextDrag(text, this);
-	drag->setPixmap(makePixmap(text, font()));
+        QDragObject *drag = new QTextDrag(text, this);
+        drag->setPixmap(makePixmap(text, font()));
 
-	return drag;
+        return drag;
     }
 
     return 0;
 }
+#endif
 
 void ResultListView::contextMenuEvent(QContextMenuEvent *e)
 {
     m_itemRightClicked = itemUnderCursor();
-    KPopupMenu *menu = constructPopupMenu(m_itemRightClicked);
+    QMenu *menu = constructPopupMenu(m_itemRightClicked);
 
     menu->popup(e->globalPos());
 }
 
-void ResultListView::slotDoubleClicked(QListViewItem *item, const QPoint &, int c)
+void ResultListView::slotDoubleClicked(QTreeWidgetItem *item, const QPoint &, int c)
 {
     ResultListViewText *textItem = dynamic_cast<ResultListViewText *>(item);
     if(!textItem)
-	return;
+        return;
 
     if(c == ExpressionColumn)
-	emit signalEntrySelected(textItem->expressionText());
+        emit signalEntrySelected(textItem->expressionText());
     else if(c == ResultColumn)
-	emit signalResultSelected(textItem->resultText());
+        emit signalResultSelected(textItem->resultText());
 }
 
-KPopupMenu *ResultListView::constructPopupMenu(const ResultListViewText *item)
+QMenu *ResultListView::constructPopupMenu(const ResultListViewText *item)
 {
-    KPopupMenu *menu = new KPopupMenu(this, "list view context menu");
+    QMenu *menu = new QMenu(this);
 
-    menu->insertItem(i18n("Clear &History"), this, SLOT(clear()), ALT+Key_R);
+    menu->addAction(i18n("Clear &History"), this, SLOT(clear()), Qt::Key_Alt + Qt::Key_R);
 
-    int id = menu->insertItem(i18n("Copy Result to Clipboard"), this, SLOT(slotCopyResult()));
+    QAction *a = menu->addAction(i18n("Copy Result to Clipboard"), this, SLOT(slotCopyResult()));
     if(!item || item->wasError())
-	menu->setItemEnabled(id, false);
+        a->setEnabled(false);
 
     return menu;
 }
@@ -127,7 +131,7 @@ KPopupMenu *ResultListView::constructPopupMenu(const ResultListViewText *item)
 void ResultListView::slotCopyResult()
 {
     if(!m_itemRightClicked)
-	return;
+        return;
 
     QClipboard *clipboard = QApplication::clipboard();
 
@@ -136,14 +140,16 @@ void ResultListView::slotCopyResult()
 
 ResultListViewText *ResultListView::lastItem() const
 {
-    return static_cast<ResultListViewText *>(KListView::lastItem());
+    return static_cast<ResultListViewText *>(topLevelItem(topLevelItemCount() - 1));
 }
 
 ResultListViewText *ResultListView::itemUnderCursor() const
 {
     QPoint viewportPos = viewport()->mapFromGlobal(QCursor::pos());
-    QListViewItem *underCursor = itemAt(viewportPos);
+    QTreeWidgetItem *underCursor = itemAt(viewportPos);
     return static_cast<ResultListViewText *>(underCursor);
 }
 
 #include "resultlistview.moc"
+
+// vim: set et sw=4 ts=8:

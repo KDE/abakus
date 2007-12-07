@@ -8,12 +8,11 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcombobox.h>
-#include <kpopupmenu.h>
 #include <kaction.h>
 
-#include <qlabel.h>
-#include <qregexp.h>
-#include <qtimer.h>
+#include <QtGui/QLabel>
+#include <QtCore/QRegExp>
+#include <QtCore/QTimer>
 
 #include "function.h"
 #include "node.h"

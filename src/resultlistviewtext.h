@@ -22,25 +22,27 @@
 #include "resultlistview.h"
 #include "numerictypes.h"
 
+#include <QtGui/QTreeWidgetItem>
+
 class QPainter;
 class QColorGroup;
 class QFontMetrics;
 
 // This class shows the results shown in the MainWindow result pane.
-class ResultListViewText : public KListViewItem
+class ResultListViewText : public QTreeWidgetItem
 {
     public:
-    ResultListViewText(KListView *listView,
+    ResultListViewText(QTreeWidget *listView,
                       const QString &text,
-		      const QString &result,
-		      ResultListViewText *after,
-		      bool isError = false);
+                      const QString &result,
+                      ResultListViewText *after,
+                      bool isError = false);
 
-    ResultListViewText(KListView *listView,
+    ResultListViewText(QTreeWidget *listView,
                       const QString &text,
-		      const Abakus::number_t &result,
-		      ResultListViewText *after,
-		      bool isError = false);
+                      const Abakus::number_t &result,
+                      ResultListViewText *after,
+                      bool isError = false);
 
     QString expressionText() const { return m_text; }
     QString resultText() const { return m_result; }
@@ -54,8 +56,8 @@ class ResultListViewText : public KListViewItem
     void precisionChanged();
 
     // Reimplemented from KListViewItem
-    virtual void paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int align);
-    virtual int width(const QFontMetrics &fm, const QListView *lv, int c) const;
+//    virtual void paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int align);
+//    virtual int width(const QFontMetrics &fm, const QListView *lv, int c) const;
 
     // Reimplemented to remove trailing zeroes from results.
     virtual void setText(int column, const QString &text);
@@ -68,3 +70,5 @@ class ResultListViewText : public KListViewItem
 };
 
 #endif
+
+// vim: set et sw=4 ts=8:

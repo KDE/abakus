@@ -18,50 +18,52 @@
  */
 #include <kdebug.h>
 
-#include <qregexp.h>
-#include <qpainter.h>
-#include <qfontmetrics.h>
-#include <qfont.h>
-#include <qpalette.h>
+#include <QtCore/QRegExp>
+#include <QtGui/QPainter>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QFont>
+#include <QtGui/QPalette>
 
 #include "resultlistviewtext.h"
 
 using namespace ResultList;
 
-ResultListViewText::ResultListViewText(KListView *listView,
+ResultListViewText::ResultListViewText(QTreeWidget *listView,
                                      const QString &text,
-				     const QString &result,
-				     ResultListViewText *after,
-				     bool isError)
-    : KListViewItem(listView, after, text, result), m_text(text),
+                                     const QString &result,
+                                     ResultListViewText *after,
+                                     bool isError)
+    : QTreeWidgetItem(listView, after), m_text(text),
       m_result(result), m_wasError(isError), m_stackPosition(0)
 {
     // This is some kind of non-result answer, don't bother worrying about the
     // stack status, it hasn't changed.
+    setText(ExpressionColumn, text);
+    setText(ResultColumn, result);
 }
 
-ResultListViewText::ResultListViewText(KListView *listView,
+ResultListViewText::ResultListViewText(QTreeWidget *listView,
                                      const QString &text,
-				     const Abakus::number_t &result,
-				     ResultListViewText *after,
-				     bool isError)
-    : KListViewItem(listView, after, text), m_text(text),
+                                     const Abakus::number_t &result,
+                                     ResultListViewText *after,
+                                     bool isError)
+    : QTreeWidgetItem(listView, after), m_text(text),
       m_result(result.toString()), m_wasError(isError), m_stackPosition(0),
       m_value(result)
 {
     if(after) {
-	ResultListViewText *item = static_cast<ResultListViewText *>(listView->firstChild());
-	for (; item && item != this; item = static_cast<ResultListViewText *>(item->itemBelow())) {
-	    if(!item->wasError()) {
-		item->setStackPosition(item->stackPosition() + 1);
-		item->repaint();
-	    }
-	}
+        ResultListViewText *item = static_cast<ResultListViewText *>(listView->topLevelItem(0));
+        for (; item && item != this; item = static_cast<ResultListViewText *>(listView->itemBelow(item))) {
+            if(!item->wasError()) {
+                item->setStackPosition(item->stackPosition() + 1);
+            }
+        }
     }
 
     setStackPosition(0);
 
     // Call this manually to be rid of trailing zeroes.
+    setText(ExpressionColumn, text);
     setText(ResultColumn, m_value.toString());
 }
 
@@ -74,12 +76,13 @@ void ResultListViewText::setStackPosition(unsigned pos)
 void ResultListViewText::precisionChanged()
 {
     if(m_wasError)
-	return;
+        return;
 
     m_result = m_value.toString();
     setText(ResultColumn, m_result);
 }
 
+#if 0
 void ResultListViewText::paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int align)
 {
     QColorGroup group(cg);
@@ -87,49 +90,52 @@ void ResultListViewText::paintCell(QPainter *p, const QColorGroup &cg, int colum
     // XXX: The Qt::red may not provide good contrast with weird color schemes.
     // If so I apologize.
     if(m_wasError && column == ResultColumn)
-	group.setColor(QColorGroup::Text, m_result == "OK" ? cg.link() : Qt::red);
+        group.setColor(QColorGroup::Text, m_result == "OK" ? cg.link() : Qt::red);
 
     if(column == ResultColumn) {
-	QFont f = p->font();
-	f.setBold(true);
-	p->setFont(f);
+        QFont f = p->font();
+        f.setBold(true);
+        p->setFont(f);
     }
 
     if(column == ShortcutColumn) {
-	QFont f = p->font();
-	f.setItalic(true);
-	f.setPointSize(QMIN(f.pointSize() * 9 / 11, 10));
-	p->setFont(f);
+        QFont f = p->font();
+        f.setItalic(true);
+        f.setPointSize(QMIN(f.pointSize() * 9 / 11, 10));
+        p->setFont(f);
     }
 
-    KListViewItem::paintCell(p, group, column, width, align);
+    QTreeWidgetItem::paintCell(p, group, column, width, align);
 }
 
 int ResultListViewText::width(const QFontMetrics &fm, const QListView *lv, int c) const
 {
     // Simulate painting the text to get accurate results.
     if(c == ResultColumn) {
-	QFont f = lv->font();
-	f.setBold(true);
-	return KListViewItem::width(QFontMetrics(f), lv, c);
+        QFont f = lv->font();
+        f.setBold(true);
+        return QTreeWidgetItem::width(QFontMetrics(f), lv, c);
     }
 
     if(c == ShortcutColumn) {
-	QFont f = lv->font();
-	f.setItalic(true);
-	f.setPointSize(QMIN(f.pointSize() * 9 / 11, 10));
-	return KListViewItem::width(QFontMetrics(f), lv, c);
+        QFont f = lv->font();
+        f.setItalic(true);
+        f.setPointSize(QMIN(f.pointSize() * 9 / 11, 10));
+        return QTreeWidgetItem::width(QFontMetrics(f), lv, c);
     }
 
-    return KListViewItem::width(fm, lv, c);
+    return QTreeWidgetItem::width(fm, lv, c);
 }
+#endif
 
 void ResultListViewText::setText(int column, const QString &text)
 {
     if(!m_wasError && column == ResultColumn) {
-	KListViewItem::setText(column, m_value.toString());
-	return;
+        QTreeWidgetItem::setText(column, m_value.toString());
+        return;
     }
 
-    KListViewItem::setText(column, text);
+    QTreeWidgetItem::setText(column, text);
 }
+
+// vim: set et sw=4 ts=8:

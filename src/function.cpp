@@ -20,9 +20,9 @@
 
 #include <kdebug.h>
 
-#include <qvaluevector.h>
-#include <qstring.h>
-#include <qregexp.h>
+#include <QtCore/QVector>
+#include <QtCore/QString>
+#include <QtCore/QRegExp>
 
 #include <math.h>
 
@@ -46,12 +46,12 @@ class DupFinder : public NodeFunctor
 
     virtual void operator()(const Node *node)
     {
-	if(!m_valid)
-	    return;
+        if(!m_valid)
+            return;
 
-	const BaseFunction *fn = dynamic_cast<const BaseFunction *>(node);
-	if(fn && fn->name() == m_name)
-	    m_valid = false; // Duplicate detected
+        const BaseFunction *fn = dynamic_cast<const BaseFunction *>(node);
+        if(fn && fn->name() == m_name)
+            m_valid = false; // Duplicate detected
     }
 
     private:
@@ -65,15 +65,21 @@ FunctionManager *FunctionManager::m_manager = 0;
 FunctionManager *FunctionManager::instance()
 {
     if(!m_manager)
-	m_manager = new FunctionManager;
+        m_manager = new FunctionManager;
 
     return m_manager;
 }
 
-FunctionManager::FunctionManager(QObject *parent, const char *name) :
-    QObject(parent, name)
+FunctionManager::FunctionManager(QObject *parent) :
+    QObject(parent)
 {
-    m_dict.setAutoDelete(true);
+    setObjectName("FunctionManager");
+}
+
+FunctionManager::~FunctionManager()
+{
+    qDeleteAll(m_dict);
+    m_dict.clear();
 }
 
 // Dummy return value to enable static initialization in the DECL_*()
@@ -158,9 +164,9 @@ bool FunctionManager::addFunction(BaseFunction *fn, const QString &dependantVar)
     DupFinder dupFinder(fn->name());
     UnaryFunction *unFunction = dynamic_cast<UnaryFunction *>(fn);
     if(unFunction && unFunction->operand()) {
-	unFunction->operand()->applyMap(dupFinder);
-	if(!dupFinder.isValid())
-	    return false;
+        unFunction->operand()->applyMap(dupFinder);
+        if(!dupFinder.isValid())
+            return false;
     }
 
     // Structure holds extra data needed to call the user defined
@@ -179,10 +185,16 @@ bool FunctionManager::addFunction(BaseFunction *fn, const QString &dependantVar)
     fnTabEntry->needsTrig = false;
     fnTabEntry->userDefined = true;
 
-    if(m_dict.find(fn->name()))
-	emit signalFunctionRemoved(fn->name());
+    foreach(Function *func, m_dict) {
+        kDebug() << "Function " << func->name << " present.\n";
+    }
 
-    m_dict.replace(fn->name(), fnTabEntry);
+    if(m_dict.contains(fn->name())) {
+        Q_ASSERT(m_dict[fn->name()] != 0);
+        emit signalFunctionRemoved(fn->name());
+    }
+
+    m_dict.insert(fn->name(), fnTabEntry);
     emit signalFunctionAdded(fn->name());
 
     return true;
@@ -195,65 +207,72 @@ void FunctionManager::removeFunction(const QString &name)
     // If we remove a function, we need to decrement the sequenceNumber of
     // functions after this one.
     if(fn && fn->userDefined) {
-	int savedSeqNum = fn->userFn->sequenceNumber;
+        int savedSeqNum = fn->userFn->sequenceNumber;
 
-	// Emit before we actually remove it so that the info on the function
-	// can still be looked up.
-	emit signalFunctionRemoved(name);
+        // Emit before we actually remove it so that the info on the function
+        // can still be looked up.
+        emit signalFunctionRemoved(name);
 
-	delete fn->userFn;
-	fn->userFn = 0;
-	m_dict.remove(name);
+        delete fn->userFn;
+        fn->userFn = 0;
 
-	QDictIterator<Function> it(m_dict);
-	for (; it.current(); ++it) {
-	    UserFunction *userFn = it.current()->userDefined ? it.current()->userFn : 0;
-	    if(userFn && userFn->sequenceNumber > savedSeqNum)
-		--it.current()->userFn->sequenceNumber;
-	}
+        delete fn;
+        m_dict.remove(name);
+
+        foreach(Function *fn, m_dict) {
+            UserFunction *userFn = fn->userDefined ? fn->userFn : 0;
+            if(userFn && userFn->sequenceNumber > savedSeqNum)
+                --fn->userFn->sequenceNumber;
+        }
     }
 }
 
 QStringList FunctionManager::functionList(FunctionManager::FunctionType type)
 {
-    QDictIterator<Function> it(m_dict);
+    functionDict::const_iterator it(m_dict.constBegin());
     QStringList functions;
 
     switch(type) {
-	case Builtin:
-	    for(; it.current(); ++it)
-		if(!it.current()->userDefined)
-		    functions += it.current()->name;
-	break;
+        case Builtin:
+            while(it != m_dict.constEnd()) {
+                if(!it.value()->userDefined)
+                    functions += it.value()->name;
+                ++it;
+            }
+        break;
 
-	case UserDefined:
-	    // We want to return the function names in the order they were
-	    // added.
-	    {
-		QValueVector<Function *> fnTable(m_dict.count(), 0);
-		QValueVector<int> sequenceNumberTable(m_dict.count(), -1);
+        case UserDefined:
+            // We want to return the function names in the order they were
+            // added.
+            {
+                QVector<Function *> fnTable(m_dict.count(), 0);
+                QVector<int> sequenceNumberTable(m_dict.count(), -1);
 
-		// First find out what sequence numbers we have.
-		for(; it.current(); ++it)
-		    if(it.current()->userDefined) {
-			int id = it.current()->userFn->sequenceNumber;
-			fnTable[id] = it.current();
-			sequenceNumberTable.append(id);
-		    }
+                // First find out what sequence numbers we have.
+                while(it != m_dict.constEnd()) {
+                    if(it.value()->userDefined) {
+                        int id = it.value()->userFn->sequenceNumber;
+                        fnTable[id] = it.value();
+                        sequenceNumberTable.append(id);
+                    }
 
-		// Now sort the sequence numbers and return the ordered list
-		qHeapSort(sequenceNumberTable.begin(), sequenceNumberTable.end());
+                    ++it;
+                }
 
-		for(unsigned i = 0; i < sequenceNumberTable.count(); ++i)
-		    if(sequenceNumberTable[i] >= 0)
-			functions += fnTable[sequenceNumberTable[i]]->name;
-	    }
-	break;
+                // Now sort the sequence numbers and return the ordered list
+                qSort(sequenceNumberTable.begin(), sequenceNumberTable.end());
 
-	case All:
-	    functions += functionList(Builtin);
-	    functions += functionList(UserDefined);
-	break;
+                foreach(int sequenceNumber, sequenceNumberTable) {
+                    if(sequenceNumber >= 0)
+                        functions += fnTable[sequenceNumber]->name;
+                }
+            }
+        break;
+
+        case All:
+            functions += functionList(Builtin);
+            functions += functionList(UserDefined);
+        break;
     }
 
     return functions;
@@ -263,23 +282,23 @@ QStringList FunctionManager::functionList(FunctionManager::FunctionType type)
 Abakus::number_t evaluateFunction(const Function *func, const Abakus::number_t value)
 {
     if(func->userDefined) {
-	// Pull real entry from userFunctionTable
-	UserFunction *realFunction = func->userFn;
+        // Pull real entry from userFunctionTable
+        UserFunction *realFunction = func->userFn;
 
-	bool wasSet = ValueManager::instance()->isValueSet(realFunction->varName);
-	Abakus::number_t oldValue;
-	if(wasSet)
-	    oldValue = ValueManager::instance()->value(realFunction->varName);
+        bool wasSet = ValueManager::instance()->isValueSet(realFunction->varName);
+        Abakus::number_t oldValue;
+        if(wasSet)
+            oldValue = ValueManager::instance()->value(realFunction->varName);
 
-	ValueManager::instance()->setValue(realFunction->varName, value);
-	Abakus::number_t result = realFunction->fn->value();
+        ValueManager::instance()->setValue(realFunction->varName, value);
+        Abakus::number_t result = realFunction->fn->value();
 
-	if(wasSet)
-	    ValueManager::instance()->setValue(realFunction->varName, oldValue);
-	else
-	    ValueManager::instance()->removeValue(realFunction->varName);
+        if(wasSet)
+            ValueManager::instance()->setValue(realFunction->varName, oldValue);
+        else
+            ValueManager::instance()->removeValue(realFunction->varName);
 
-	return result;
+        return result;
     }
 
     return (value.*(func->fn))();
@@ -296,3 +315,5 @@ Abakus::TrigMode trigMode()
 }
 
 #include "function.moc"
+
+// vim: set et sw=4 ts=8:

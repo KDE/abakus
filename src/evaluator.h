@@ -22,8 +22,8 @@
 #ifndef ABAKUS_EVALUATOR_H
 #define ABAKUS_EVALUATOR_H
 
-#include <qstring.h>
-#include <qvaluevector.h>
+#include <QtCore/QString>
+#include <QtCore/QVector>
 
 #include "numerictypes.h"
 
@@ -34,7 +34,7 @@ public:
     {
       Unknown,
       Number,
-      Operator,  
+      Operator,
       Identifier
     } Type;
 
@@ -53,11 +53,11 @@ public:
       Equal           // variable assignment
     } Op;
 
-    Token( Type type = Unknown, const QString& text = QString::null, int pos = -1 );
-    
+    Token( Type type = Unknown, const QString& text = QString(), int pos = -1 );
+
     Token( const Token& );
     Token& operator=( const Token& );
-    
+
     Type type() const { return m_type; }
     QString text() const { return m_text; }
     int pos() const { return m_pos; };
@@ -70,7 +70,7 @@ public:
     Op asOperator() const;
 
     QString description() const;
-    
+
     static const Token null;
 
 protected:
@@ -80,10 +80,10 @@ protected:
 };
 
 
-class Tokens: public QValueVector<Token>
+class Tokens: public QVector<Token>
 {
 public:
-    Tokens(): QValueVector<Token>(), m_valid(true) {};
+    Tokens(): QVector<Token>(), m_valid(true) {};
 
     bool valid() const { return m_valid; }
     void setValid( bool v ) { m_valid = v; }
@@ -106,7 +106,7 @@ public:
     ~Evaluator();
 
     void setExpression( const QString& expr );
-    QString expression() const;    
+    QString expression() const;
 
     void clear();
     bool isValid() const;
@@ -114,12 +114,12 @@ public:
     Tokens tokens() const;
     static Tokens scan( const QString& expr );
 
-    QString error() const;    
-    
+    QString error() const;
+
     // Abakus::number_t eval();
-    
+
     static QString autoFix( const QString& expr );
-    
+
 private:
     Evaluator( const Evaluator& );
     Evaluator& operator=( const Evaluator& );

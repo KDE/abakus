@@ -21,13 +21,9 @@
 
 #include "numerictypes.h"
 
-#include <qobject.h>
-#include <qstringlist.h>
-#include <qstring.h>
-#include <qmap.h>
-#include <qdict.h>
-
-
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
+#include <QHash>
 
 class BaseFunction;
 
@@ -48,8 +44,8 @@ struct Function {
     // A function is either builtin or user defined, this union is
     // used for both cases.
     union {
-	function_t fn;       // Builtin.
-	UserFunction *userFn; // User defined
+        function_t fn;       // Builtin.
+        UserFunction *userFn; // User defined
     };
 
     bool returnsTrig;
@@ -65,7 +61,9 @@ class FunctionManager : public QObject
 {
     Q_OBJECT
     public:
-    typedef QDict<Function> functionDict;
+    typedef QHash<QString, Function *> functionDict;
+
+    ~FunctionManager();
 
     static FunctionManager *instance();
 
@@ -87,7 +85,7 @@ class FunctionManager : public QObject
     void signalFunctionRemoved(const QString &name);
 
     private:
-    FunctionManager(QObject *parent = 0, const char *name = "function manager");
+    FunctionManager(QObject *parent = 0);
 
     static FunctionManager *m_manager;
     functionDict m_dict;
@@ -120,3 +118,5 @@ private:
 };
 
 #endif
+
+// vim: set et sw=4 ts=8:

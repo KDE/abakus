@@ -1,0 +1,144 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+# I can't believe I'm having to cut and paste code from a Wiki for basic stuff
+# like bison and flex support...
+#
+# http://www.cmake.org/Wiki/CMakeUserUseBison
+# http://www.cmake.org/Wiki/CMakeUserUseFlex
+IF(NOT DEFINED BISON_PREFIX_OUTPUTS)
+  SET(BISON_PREFIX_OUTPUTS FALSE)
+ENDIF(NOT DEFINED BISON_PREFIX_OUTPUTS)
+
+IF(NOT DEFINED BISON_GENERATE_DEFINES)
+  SET(BISON_GENERATE_DEFINES FALSE)
+ENDIF(NOT DEFINED BISON_GENERATE_DEFINES)
+
+IF(NOT BISON_EXECUTABLE)
+  MESSAGE(STATUS "Looking for bison")
+  FIND_PROGRAM(BISON_EXECUTABLE bison)
+  IF(BISON_EXECUTABLE)
+    MESSAGE(STATUS "Looking for bison -- ${BISON_EXECUTABLE}")
+  ENDIF(BISON_EXECUTABLE)
+ENDIF(NOT BISON_EXECUTABLE)
+
+set(BISON_GENERATE_DEFINES true)
+
+IF(BISON_EXECUTABLE)
+  MACRO(BISON_FILE FILENAME)
+    GET_FILENAME_COMPONENT(PATH "${FILENAME}" PATH)
+    GET_FILENAME_COMPONENT(HEAD "${FILENAME}" NAME_WE)
+    IF(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${PATH}")
+      FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${PATH}")
+    ENDIF(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${PATH}")
+    IF(BISON_PREFIX_OUTPUTS)
+      SET(PREFIX "${HEAD}")
+    ELSE(BISON_PREFIX_OUTPUTS)
+      SET(PREFIX "yy")
+    ENDIF(BISON_PREFIX_OUTPUTS)
+    SET(OUTFILE "${CMAKE_CURRENT_BINARY_DIR}/parser_yacc.cpp")
+    IF(BISON_GENERATE_DEFINES)
+      SET(HEADER "${CMAKE_CURRENT_BINARY_DIR}/parser_yacc.hpp")
+      ADD_CUSTOM_COMMAND(
+        OUTPUT "${OUTFILE}" "${HEADER}"
+        COMMAND "${BISON_EXECUTABLE}"
+        ARGS "--name-prefix=${PREFIX}"
+        "--defines"
+        "--output-file=${OUTFILE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
+      SET_SOURCE_FILES_PROPERTIES("${OUTFILE}" "${HEADER}" PROPERTIES GENERATED TRUE)
+      SET_SOURCE_FILES_PROPERTIES("${HEADER}" PROPERTIES HEADER_FILE_ONLY TRUE)
+    ELSE(BISON_GENERATE_DEFINES)
+      ADD_CUSTOM_COMMAND(
+        OUTPUT "${OUTFILE}"
+        COMMAND "${BISON_EXECUTABLE}"
+        ARGS "--name-prefix=${PREFIX}"
+        "--output-file=${OUTFILE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
+      SET_SOURCE_FILES_PROPERTIES("${OUTFILE}" PROPERTIES GENERATED TRUE)
+    ENDIF(BISON_GENERATE_DEFINES)
+  ENDMACRO(BISON_FILE)
+
+  BISON_FILE(parser.yy)
+ENDIF(BISON_EXECUTABLE)
+
+IF(NOT DEFINED FLEX_PREFIX_OUTPUTS)
+  SET(FLEX_PREFIX_OUTPUTS FALSE)
+ENDIF(NOT DEFINED FLEX_PREFIX_OUTPUTS)
+
+IF(NOT FLEX_EXECUTABLE)
+  MESSAGE(STATUS "Looking for flex")
+  FIND_PROGRAM(FLEX_EXECUTABLE flex)
+  IF(FLEX_EXECUTABLE)
+    MESSAGE(STATUS "Looking for flex -- ${FLEX_EXECUTABLE}")
+  ENDIF(FLEX_EXECUTABLE)
+ENDIF(NOT FLEX_EXECUTABLE)
+
+IF(FLEX_EXECUTABLE)
+  MACRO(FLEX_FILE FILENAME)
+    GET_FILENAME_COMPONENT(PATH "${FILENAME}" PATH)
+    IF(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${PATH}")
+      FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${PATH}")
+    ENDIF(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${PATH}")
+    IF(FLEX_PREFIX_OUTPUTS)
+      GET_FILENAME_COMPONENT(PREFIX "${FILENAME}" NAME_WE)
+    ELSE(FLEX_PREFIX_OUTPUTS)
+      SET(PREFIX "yy")
+    ENDIF(FLEX_PREFIX_OUTPUTS)
+    SET(OUTFILE "${CMAKE_CURRENT_BINARY_DIR}/lexer_lex.cpp")
+    ADD_CUSTOM_COMMAND(
+      OUTPUT "${OUTFILE}"
+      COMMAND "${FLEX_EXECUTABLE}"
+      ARGS "--prefix=${PREFIX}"
+      "--outfile=${OUTFILE}"
+      "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}"
+      DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
+    SET_SOURCE_FILES_PROPERTIES("${OUTFILE}" PROPERTIES GENERATED TRUE)
+  ENDMACRO(FLEX_FILE)
+
+  FLEX_FILE(lexer.ll)
+ENDIF(FLEX_EXECUTABLE)
+
+# Continuing with normally schedule CMake action...
+set(abakus_SRCS
+    abakus.cpp
+    abakuslistview.cpp
+    dragsupport.cpp
+    #editor.cpp
+    evaluator.cpp
+    function.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/lexer_lex.cpp
+    mainwindow.cpp
+    node.cpp
+    numerictypes.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/parser_yacc.cpp
+    result.cpp
+    resultlistview.cpp
+    resultlistviewtext.cpp
+    rpnmuncher.cpp
+    valuemanager.cpp
+    #    dcopIface.skel
+    )
+
+set(MPFR_LIBS)
+set(HAVE_MPFR 0)
+IF(HAVE_MPFR)
+    SET(MPFR_LIBS mpfr gmp)
+ELSE(HAVE_MPFR)
+    SET(abakus_SRCS ${abakus_SRCS} hmath.cpp number.c)
+    SET(MPFR_LIBS m)
+ENDIF(HAVE_MPFR)
+
+kde4_add_executable(abakus ${abakus_SRCS})
+target_link_libraries(abakus ${MPFR_LIBS} ${KDE4_KDEUI_LIBS})
+
+install(TARGETS abakus DESTINATION ${BIN_INSTALL_DIR})
+install(FILES abakus.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
+install(FILES abakusui.rc DESTINATION ${DATA_INSTALL_DIR}/abakus)
+
+kde4_install_icons(${ICON_INSTALL_DIR})
+
+configure_file(config-abakus.h.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/config-abakus.h)

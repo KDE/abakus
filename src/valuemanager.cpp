@@ -19,7 +19,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 #include "numerictypes.h"
 #include "valuemanager.h"
@@ -34,11 +34,12 @@ ValueManager *ValueManager::instance()
     return m_manager;
 }
 
-ValueManager::ValueManager(QObject *parent, const char *name) :
-    QObject(parent, name)
+ValueManager::ValueManager(QObject *parent) : QObject(parent)
 {
     m_values.insert("pi", Abakus::number_t::PI);
     m_values.insert("e", Abakus::number_t::E);
+
+    setObjectName ("ValueManager");
 }
 
 Abakus::number_t ValueManager::value(const QString &name) const
@@ -55,7 +56,7 @@ bool ValueManager::isValueReadOnly(const QString &name) const
 {
     QRegExp readOnlyValues("^(ans|pi|e|stackCount)$");
 
-    return name.find(readOnlyValues) != -1;
+    return readOnlyValues.indexIn(name) != -1;
 }
 
 void ValueManager::setValue(const QString &name, const Abakus::number_t value)
@@ -65,7 +66,7 @@ void ValueManager::setValue(const QString &name, const Abakus::number_t value)
     else if(!m_values.contains(name))
         emit signalValueAdded(name, value);
 
-    m_values.replace(name, value);
+    m_values.insert(name, value);
 }
 
 void ValueManager::removeValue(const QString &name)
@@ -80,9 +81,9 @@ void ValueManager::slotRemoveUserVariables()
 {
     QStringList vars = valueNames();
 
-    for(QStringList::ConstIterator var = vars.constBegin(); var != vars.constEnd(); ++var)
-        if(!isValueReadOnly(*var))
-            removeValue(*var);
+    foreach(QString var, vars)
+        if(!isValueReadOnly(var))
+            removeValue(var);
 }
 
 QStringList ValueManager::valueNames() const

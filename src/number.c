@@ -41,8 +41,8 @@
 #define bc_rt_error rt_error
 #define bc_out_of_memory out_of_memory
 
-_PROTOTYPE(void rt_warn, (char *mesg ,...));
-_PROTOTYPE(void rt_error, (char *mesg ,...));
+_PROTOTYPE(void rt_warn, (const char *mesg ,...));
+_PROTOTYPE(void rt_error, (const char *mesg ,...));
 _PROTOTYPE(void out_of_memory, (void));
 
 
@@ -50,11 +50,11 @@ void out_of_memory(void){
   return;
 }
 
-void rt_warn(char *mesg ,...){
+void rt_warn(const char *mesg ,...){
   return;
 }
 
-void rt_error(char *mesg ,...){
+void rt_error(const char *mesg ,...){
   return;
 }
 
@@ -1806,4 +1806,4 @@ pv (name, num, len)
   printf ("\n");
 }
 
-// vim: set et sw=2 ts=8:
+/* vim: set et sw=2 ts=8: */

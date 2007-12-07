@@ -75,8 +75,8 @@ BuiltinFunction::BuiltinFunction(const char *name, Node *operand) :
 Abakus::number_t BuiltinFunction::value() const
 {
     if(function() && operand()) {
-	Abakus::number_t fnValue = operand()->value();
-	return evaluateFunction(function(), fnValue);
+        Abakus::number_t fnValue = operand()->value();
+        return evaluateFunction(function(), fnValue);
     }
 
     return Abakus::number_t(0);
@@ -196,8 +196,8 @@ Abakus::number_t DerivativeFunction::value() const
 
 Abakus::number_t DerivativeFunction::derivative() const
 {
-    kdError() << endl;
-    kdError() << "This function is never supposed to be called!\n";
+    kError() << endl;
+    kError() << "This function is never supposed to be called!\n";
 
     return m_operand->derivative();
 }
@@ -241,24 +241,24 @@ QString UnaryOperator::infixString() const
 Abakus::number_t UnaryOperator::derivative() const
 {
     switch(type()) {
-	case Negation:
-	    return -(operand()->derivative());
+        case Negation:
+            return -(operand()->derivative());
 
-	default:
-	    kdError() << "Impossible case encountered for UnaryOperator!\n";
-	    return Abakus::number_t(0);
+        default:
+            kError() << "Impossible case encountered for UnaryOperator!\n";
+            return Abakus::number_t(0);
     }
 }
 
 Abakus::number_t UnaryOperator::value() const
 {
     switch(type()) {
-	case Negation:
-	    return -(operand()->value());
+        case Negation:
+            return -(operand()->value());
 
-	default:
-	    kdError() << "Impossible case encountered for UnaryOperator!\n";
-	    return Abakus::number_t(0);
+        default:
+            kError() << "Impossible case encountered for UnaryOperator!\n";
+            return Abakus::number_t(0);
     }
 }
 
@@ -321,8 +321,8 @@ QString BinaryOperator::infixString() const
 Abakus::number_t BinaryOperator::derivative() const
 {
     if(!leftNode() || !rightNode()) {
-	kdError() << "Can't evaluate binary operator!\n";
-	return Abakus::number_t(0);
+        kError() << "Can't evaluate binary operator!\n";
+        return Abakus::number_t(0);
     }
 
     Abakus::number_t f = leftNode()->value();
@@ -331,56 +331,56 @@ Abakus::number_t BinaryOperator::derivative() const
     Abakus::number_t gPrime = rightNode()->derivative();
 
     switch(type()) {
-	case Addition:
-	    return fPrime + gPrime;
+        case Addition:
+            return fPrime + gPrime;
 
-	case Subtraction:
-	    return fPrime - gPrime;
+        case Subtraction:
+            return fPrime - gPrime;
 
-	case Multiplication:
-	    return f * gPrime + fPrime * g;
+        case Multiplication:
+            return f * gPrime + fPrime * g;
 
-	case Division:
-	    return (g * fPrime - f * gPrime) / (g * g);
+        case Division:
+            return (g * fPrime - f * gPrime) / (g * g);
 
-	case Exponentiation:
+        case Exponentiation:
             return f.pow(g) * ((g / f) * fPrime + gPrime * f.ln());
 
-	default:
-	    kdError() << "Impossible case encountered evaluating binary operator!\n";
-	    return Abakus::number_t(0);
+        default:
+            kError() << "Impossible case encountered evaluating binary operator!\n";
+            return Abakus::number_t(0);
     }
 }
 
 Abakus::number_t BinaryOperator::value() const
 {
     if(!leftNode() || !rightNode()) {
-	kdError() << "Can't evaluate binary operator!\n";
-	return Abakus::number_t(0);
+        kError() << "Can't evaluate binary operator!\n";
+        return Abakus::number_t(0);
     }
 
     Abakus::number_t lValue = leftNode()->value();
     Abakus::number_t rValue = rightNode()->value();
 
     switch(type()) {
-	case Addition:
-	    return lValue + rValue;
+        case Addition:
+            return lValue + rValue;
 
-	case Subtraction:
-	    return lValue - rValue;
+        case Subtraction:
+            return lValue - rValue;
 
-	case Multiplication:
-	    return lValue * rValue;
+        case Multiplication:
+            return lValue * rValue;
 
-	case Division:
-	    return lValue / rValue;
+        case Division:
+            return lValue / rValue;
 
-	case Exponentiation:
+        case Exponentiation:
             return lValue.pow(rValue);
 
-	default:
-	    kdError() << "Impossible case encountered evaluating binary operator!\n";
-	    return Abakus::number_t(0);
+        default:
+            kError() << "Impossible case encountered evaluating binary operator!\n";
+            return Abakus::number_t(0);
     }
 }
 

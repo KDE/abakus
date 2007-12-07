@@ -17,14 +17,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <qstring.h>
-#include <qpixmap.h>
-#include <qimage.h>
-#include <qpainter.h>
-#include <qcolor.h>
-#include <qfont.h>
-#include <qbrush.h>
-#include <qfontmetrics.h>
+#include <QtCore/QString>
+#include <QtGui/QPixmap>
+#include <QtGui/QImage>
+#include <QtGui/QPainter>
+#include <QtGui/QColor>
+#include <QtGui/QFont>
+#include <QtGui/QBrush>
+#include <QtGui/QFontMetrics>
 
 #include "dragsupport.h"
 
@@ -39,16 +39,9 @@ QPixmap makePixmap(const QString &text, const QFont &font)
     int height = 2 * fm.height();
     QSize bonusSize (height, 0);
     QSize size(fm.width(text), height);
-    QImage image(size + bonusSize, 32);
+    QImage image(size + bonusSize, QImage::Format_ARGB32_Premultiplied);
 
-    image.setAlphaBuffer(false);
-    image.fill(0); // All transparent pixels
-    image.setAlphaBuffer(true);
-
-    QPixmap pix(size + bonusSize);
-    pix.fill(Qt::magenta); // Watch for incoming hacks
-
-    QPainter painter(&pix);
+    QPainter painter(&image);
     painter.setFont(font);
 
     // Outline black, background white
@@ -58,7 +51,7 @@ QPixmap makePixmap(const QString &text, const QFont &font)
     // roundRect is annoying in that the four "pies" in each corner aren't
     // circular, they're elliptical.  Try to make the radii force it circular
     // again.
-    painter.drawRoundRect(pix.rect(), 75 * pix.height() / pix.width(), 75);
+    painter.drawRoundRect(image.rect(), 75 * image.height() / image.width(), 75);
 
     // Alias better names for some constants.
     int textLeft = height / 2;
@@ -67,21 +60,9 @@ QPixmap makePixmap(const QString &text, const QFont &font)
     painter.setPen(Qt::black);
     painter.drawText(textLeft, height / 4, size.width(), size.height(), 0, text);
 
-    QImage overlay(pix.convertToImage());
-
-    // The images should have the same size, copy pixels from overlay to the
-    // bottom unless the pixel is called magenta.  The pixels we don't copy
-    // are transparent in the QImage, and will remain transparent when
-    // converted to a QPixmap.
-
-    for(int i = 0; i < image.width(); ++i)
-	for(int j = 0; j < image.height(); ++j) {
-	    if(QColor(overlay.pixel(i, j)) != Qt::magenta)
-		image.setPixel(i, j, overlay.pixel(i, j));
-	}
-
-    pix.convertFromImage(image);
-    return pix;
+    return QPixmap::fromImage(image);
 }
 
 } // DragSupport
+
+// vim: set et sw=4 ts=8:

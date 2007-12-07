@@ -27,7 +27,7 @@
 Abakus::TrigMode Abakus::m_trigMode = Abakus::Degrees;
 int Abakus::m_prec = -1;
 
-#if HAVE_MPFR
+#ifdef HAVE_MPFR
 
 namespace Abakus
 {
@@ -178,7 +178,7 @@ QString convertToString(const HNumber &num)
     QString decimalSymbol = KGlobal::locale()->decimalSymbol();
     str.replace('.', decimalSymbol);
 
-    QStringList parts = QStringList::split("e", str);
+    QStringList parts = str.split('e');
     QRegExp zeroKiller("(" + QRegExp::escape(decimalSymbol) +
                        "\\d*[1-9])0*$"); // Remove trailing zeroes.
     QRegExp zeroKiller2("(" + QRegExp::escape(decimalSymbol) + ")0*$");

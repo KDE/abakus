@@ -18,6 +18,9 @@
  */
 %{
 
+#define QT_NO_ASCII_CAST
+#include <QtCore/QString>
+
 /* Add necessary includes here. */
 #include <kdebug.h>
 #include <klocale.h>
@@ -100,7 +103,7 @@ S: error '=' {
 
 // Can't assign to a function.
 S: FUNC '=' {
-    QString s(i18n("You can't assign to function %1").arg($1->name()));
+    QString s(i18n("You can't assign to function %1", QString($1->name())));
     Result::setLastResult(s);
 
     YYABORT;
@@ -116,14 +119,14 @@ ASSIGN: '(' { --gCheckIdents; } IDENT ')' '=' {
 // since normally functions and variables with the same name can coexist, but
 // I don't want to duplicate code all over the place.
 S: SET DERIV {
-    QString s(i18n("Function %1 is built-in and cannot be overridden.").arg("deriv"));
+    QString s(i18n("Function %1 is built-in and cannot be overridden.", QLatin1String("deriv")));
     Result::setLastResult(s);
 
     YYABORT;
 }
 
 S: DERIV '=' {
-    QString s(i18n("Function %1 is built-in and cannot be overridden.").arg("deriv"));
+    QString s(i18n("Function %1 is built-in and cannot be overridden.", QLatin1String("deriv")));
     Result::setLastResult(s);
 
     YYABORT;
@@ -139,21 +142,22 @@ S: SET FUNC ASSIGN EXP {
     FunctionManager *manager = FunctionManager::instance();
 
     if(manager->isFunction(funcName) && !manager->isFunctionUserDefined(funcName)) {
-	QString s(i18n("Function %1 is built-in and cannot be overridden.").arg(funcName));
-	Result::setLastResult(s);
+        QString s(i18n("Function %1 is built-in and cannot be overridden.", funcName));
+        Result::setLastResult(s);
 
-	YYABORT;
+        YYABORT;
     }
 
     if(manager->isFunction(funcName))
-	manager->removeFunction(funcName);
+        manager->removeFunction(funcName);
 
-    BaseFunction *newFn = new UserDefinedFunction(funcName, $4);
+    QByteArray fnName = funcName.toLatin1();
+    BaseFunction *newFn = new UserDefinedFunction(fnName.data(), $4);
     if(!manager->addFunction(newFn, ident)) {
-	QString s(i18n("Unable to define function %1 because it is recursive.").arg(funcName));
-	Result::setLastResult(s);
+        QString s(i18n("Unable to define function %1 because it is recursive.", funcName));
+        Result::setLastResult(s);
 
-	YYABORT;
+        YYABORT;
     }
 
     Result::setLastResult(Result::Null);
@@ -170,7 +174,8 @@ S: SET IDENT ASSIGN EXP {
 
     // No need to check if the function is already defined, because the
     // lexer checked for us before returning the IDENT token.
-    BaseFunction *newFn = new UserDefinedFunction(funcName, $4);
+    QByteArray fnName = funcName.toLatin1();
+    BaseFunction *newFn = new UserDefinedFunction(fnName.data(), $4);
     FunctionManager::instance()->addFunction(newFn, ident);
 
     Result::setLastResult(Result::Null);
@@ -188,36 +193,36 @@ S: REMOVE FUNC '(' ')' {
 // Can't remove an ident using remove-func syntax.
 S: REMOVE IDENT '(' ')' {
     // This is an error
-    Result::setLastResult(Result(i18n("Function %1 is not defined.").arg($2->name())));
+    Result::setLastResult(Result(i18n("Function %1 is not defined.", QString($2->name()))));
     YYABORT;
 }
 
 // This happens when the user tries to remove a function that's not defined.
 S: REMOVE IDENT '(' IDENT ')' {
     // This is an error
-    Result::setLastResult(Result(i18n("Function %1 is not defined.").arg($2->name())));
+    Result::setLastResult(Result(i18n("Function %1 is not defined.", QString($2->name()))));
     YYABORT;
 }
 
 S: REMOVE IDENT {
     ValueManager *manager = ValueManager::instance();
-    
-    if(manager->isValueSet($2->name()) && !manager->isValueReadOnly($2->name())) {
-	manager->removeValue($2->name());
 
-	Result::setLastResult(Result::Null);
-	YYACCEPT;
+    if(manager->isValueSet($2->name()) && !manager->isValueReadOnly($2->name())) {
+        manager->removeValue($2->name());
+
+        Result::setLastResult(Result::Null);
+        YYACCEPT;
     }
     else {
-	QString s;
-	if(manager->isValueSet($2->name()))
-	    s = i18n("Can't remove predefined variable %1.").arg($2->name());
-	else
-	    s = i18n("Can't remove undefined variable %1.").arg($2->name());
+        QString s;
+        if(manager->isValueSet($2->name()))
+            s = i18n("Can't remove predefined variable %1.", QString($2->name()));
+        else
+            s = i18n("Can't remove undefined variable %1.", QString($2->name()));
 
-	Result::setLastResult(s);
+        Result::setLastResult(s);
 
-	YYABORT;
+        YYABORT;
     }
 }
 
@@ -225,12 +230,12 @@ S: SET IDENT '=' EXP {
     ValueManager *vm = ValueManager::instance();
 
     if(vm->isValueReadOnly($2->name())) {
-	if($2->name() == "pi" && $4->value() == Abakus::number_t("3.0"))
-	    Result::setLastResult(i18n("This isn't Indiana, you can't just change pi"));
-	else
-	    Result::setLastResult(i18n("%1 is a constant").arg($2->name()));
+        if($2->name() == "pi" && $4->value() == Abakus::number_t("3.0"))
+            Result::setLastResult(i18n("This isn't Indiana, you can't just change pi"));
+        else
+            Result::setLastResult(i18n("%1 is a constant", QString($2->name())));
 
-	YYABORT;
+        YYABORT;
     }
 
     ValueManager::instance()->setValue($2->name(), $4->value());
@@ -244,12 +249,12 @@ S: IDENT '=' EXP {
     ValueManager *vm = ValueManager::instance();
 
     if(vm->isValueReadOnly($1->name())) {
-	if($1->name() == "pi" && $3->value() == Abakus::number_t("3.0"))
-	    Result::setLastResult(i18n("This isn't Indiana, you can't just change pi"));
-	else
-	    Result::setLastResult(i18n("%1 is a constant").arg($1->name()));
+        if($1->name() == "pi" && $3->value() == Abakus::number_t("3.0"))
+            Result::setLastResult(i18n("This isn't Indiana, you can't just change pi"));
+        else
+            Result::setLastResult(i18n("%1 is a constant", QString($1->name())));
 
-	YYABORT;
+        YYABORT;
     }
 
     ValueManager::instance()->setValue($1->name(), $3->value());
@@ -259,13 +264,13 @@ S: IDENT '=' EXP {
 }
 
 S: NUMBER '=' {
-    Result::setLastResult(i18n("Can't assign to %1").arg($1->value().toString()));
+    Result::setLastResult(i18n("Can't assign to %1", $1->value().toString()));
     YYABORT;
 }
 
 // Can't call this as a function.
 TERM: IDENT '(' {
-    Result::setLastResult(i18n("%1 isn't a function (or operator expected)").arg($1->name()));
+    Result::setLastResult(i18n("%1 isn't a function (or operator expected)", QString($1->name())));
     YYABORT;
 }
 
@@ -322,8 +327,8 @@ NUMBER: NUM {
     // evil.
     unsigned len = strlen(yytext);
     for(unsigned i = 0; i < len; ++i)
-	if(yytext[i] == decimal)
-	    yytext[i] = '.';
+        if(yytext[i] == decimal)
+            yytext[i] = '.';
 
     Abakus::number_t value(yytext);
 
@@ -351,8 +356,8 @@ TERM: NUMBER '(' EXP ')' {
 
 TERM: NUMBER IDENT {
     if(gCheckIdents > 0 && !ValueManager::instance()->isValueSet($2->name())) {
-	Result::setLastResult(i18n("Unknown variable %1").arg($2->name()));
-	YYABORT;
+        Result::setLastResult(i18n("Unknown variable %1", QString($2->name())));
+        YYABORT;
     }
 
     $$ = new BinaryOperator(BinaryOperator::Multiplication, $1, $2);
@@ -360,10 +365,10 @@ TERM: NUMBER IDENT {
 
 VALUE: IDENT {
     if(gCheckIdents <= 0 || ValueManager::instance()->isValueSet($1->name()))
-	$$ = $1;
+        $$ = $1;
     else {
-	Result::setLastResult(i18n("Unknown variable %1").arg($1->name()));
-	YYABORT;
+        Result::setLastResult(i18n("Unknown variable %1", QString($1->name())));
+        YYABORT;
     }
 }
 
@@ -384,3 +389,5 @@ int yyerror(const char *)
 {
     return 0;
 }
+
+// vim: set et ts=8 sw=4:

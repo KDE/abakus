@@ -166,4 +166,4 @@ _PROTOTYPE(void bc_out_num, (bc_num num, int o_base, void (* out_char)(int),
 
 #endif
 
-// vim: set et sw=2 ts=8:
+/* vim: set et sw=2 ts=8: */

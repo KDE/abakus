@@ -18,17 +18,17 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
+
 #include "evaluator.h"
 #include "function.h"
 #include "node.h" // For parser_yacc.hpp below
 #include "parser_yacc.hpp"
 
-#include <qapplication.h>
-#include <qmap.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qvaluevector.h>
+//#include <QtCore/QCoreApplication>
+#include <QtCore/QMap>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QVector>
 
 #include <kdebug.h>
 
@@ -46,18 +46,18 @@ Evaluator::~Evaluator()
 
 void Evaluator::setExpression(const QString &expr)
 {
-    kdError() << " not implemented.\n";
+    kError() << " not implemented.\n";
 }
 
 QString Evaluator::expression() const
 {
-    kdError() << " not implemented.\n";
+    kError() << " not implemented.\n";
     return QString();
 }
 
 void Evaluator::clear()
 {
-    kdError() << " not implemented.\n";
+    kError() << " not implemented.\n";
     // Yeah, whatever.
 }
 
@@ -68,7 +68,7 @@ bool Evaluator::isValid() const
 
 Tokens Evaluator::tokens() const
 {
-    kdError() << " not implemented.\n";
+    kError() << " not implemented.\n";
     return Tokens();
 }
 
@@ -120,7 +120,7 @@ Tokens Evaluator::scan(const QString &expr)
 
 QString Evaluator::error() const
 {
-    kdError() << " not implemented.\n";
+    kError() << " not implemented.\n";
     return "No Error Yet";
 }
 
@@ -136,7 +136,7 @@ const Token Token::null;
 static Token::Op matchOperator( const QString& text )
 {
   Token::Op result = Token::InvalidOp;
-  
+
   if( text.length() == 1 )
   {
     QChar p = text[0];
@@ -155,12 +155,12 @@ static Token::Op matchOperator( const QString& text )
         default : result = Token::InvalidOp; break;
     }
   }
-  
+
   if( text.length() == 2 )
   {
     if( text == "**" ) result = Token::Caret;
   }
-  
+
   return result;
 }
 
@@ -191,9 +191,11 @@ Token& Token::operator=( const Token& token )
 
 Abakus::number_t Token::asNumber() const
 {
-  if( isNumber() ) 
-    return Abakus::number_t( m_text.latin1() );
-  else 
+  if( isNumber() ) {
+    QByteArray numString(m_text.toLatin1());
+    return Abakus::number_t( numString.data() );
+  }
+  else
     return Abakus::number_t();
 }
 
@@ -228,23 +230,23 @@ QString Evaluator::autoFix( const QString& expr )
 {
   int par = 0;
   QString result;
-  
+
   // strip off all funny characters
-  for( unsigned c = 0; c < expr.length(); c++ )
+  for( int c = 0; c < expr.length(); c++ )
     if( expr[c] >= QChar(32) )
       result.append( expr[c] );
-  
+
   // automagically close all parenthesis
   Tokens tokens = Evaluator::scan( result );
-  for( unsigned i=0; i<tokens.count(); i++ )
+  for( int i=0; i<tokens.count(); i++ )
     if( tokens[i].asOperator() == Token::LeftPar ) par++;
     else if( tokens[i].asOperator() == Token::RightPar ) par--;
   for(; par > 0; par-- )
-    result.append( ')' );  
-    
-  // special treatment for simple function 
+    result.append( ')' );
+
+  // special treatment for simple function
   // e.g. "cos" is regarded as "cos(ans)"
-  if( !result.isEmpty() ) 
+  if( !result.isEmpty() )
   {
     Tokens tokens = Evaluator::scan( result );
     if( (tokens.count() == 1) &&
@@ -254,8 +256,8 @@ QString Evaluator::autoFix( const QString& expr )
       result.append( "(ans)" );
     }
   }
-  
-  return result;  
+
+  return result;
 }
 
 // vim: set et ts=8 sw=4:

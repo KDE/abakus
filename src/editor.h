@@ -37,14 +37,14 @@ class Evaluator;
 class Editor : public QTextEdit
 {
   Q_OBJECT
-  
+
   public:
-  
-    typedef enum 
+
+    typedef enum
     {
       Number, FunctionName, Variable, MatchedPar
     } ColorType;
-  
+
     Editor( QWidget* parent = 0, const char* name = 0 );
     ~Editor();
 
@@ -53,20 +53,20 @@ class Editor : public QTextEdit
 
     QStringList history() const;
     void setHistory( const QStringList& history );
-    
+
     bool autoCompleteEnabled() const;
     void setAutoCompleteEnabled( bool enable );
-    
+
     bool autoCalcEnabled() const;
     void setAutoCalcEnabled( bool enable );
     void setFormat( char format );
     void setDecimalDigits( int digits );
-    
+
     void setSyntaxHighlight( bool enable );
     bool isSyntaxHighlightEnabled() const;
     void setHighlightColor( ColorType type, QColor color );
     QColor highlightColor( ColorType type );
-    
+
   public slots:
     void appendHistory( const QString& text );
     void clearHistory();
@@ -75,8 +75,8 @@ class Editor : public QTextEdit
     void squelchNextAutoCalc();
 
     void setText(const QString &txt);
-    
-  protected slots:   
+
+  protected slots:
     void checkAutoComplete();
     void triggerAutoComplete();
     void autoComplete( const QString& item );
@@ -87,12 +87,12 @@ class Editor : public QTextEdit
     void doMatchingRight();
     void historyBack();
     void historyForward();
-    
+
   protected:
     void keyPressEvent( QKeyEvent* );
     void wheelEvent( QWheelEvent* );
     QString formatNumber( const Abakus::number_t &value ) const;
-    
+
   private:
     class Private;
     Private* d;
@@ -104,26 +104,26 @@ class Editor : public QTextEdit
 class EditorCompletion : public QObject
 {
   Q_OBJECT
-  
+
   public:
     EditorCompletion( Editor* editor );
     ~EditorCompletion();
-    
+
     bool eventFilter( QObject *o, QEvent *e );
     void doneCompletion();
     void showCompletion( const QStringList &choices );
 
   protected slots:
     void moveCompletionPopup();
-    
+
   signals:
     void selectedCompletion( const QString& item );
-    
+
   private:
     class Private;
     Private* d;
     EditorCompletion( const EditorCompletion& );
-    EditorCompletion& operator=( const EditorCompletion& );    
+    EditorCompletion& operator=( const EditorCompletion& );
 };
 
 #endif // ABAKUS_EDITOR_H
