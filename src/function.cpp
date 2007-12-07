@@ -143,7 +143,10 @@ DECLARE_FUNC1(frac, "Fractional part of number");
 
 Function *FunctionManager::function(const QString &name)
 {
-    return m_dict[name];
+    if(!m_dict.contains(name))
+        return 0;
+
+    return m_dict.value(name, 0);
 }
 
 // Returns true if the named identifier is a function, false otherwise.
@@ -185,14 +188,8 @@ bool FunctionManager::addFunction(BaseFunction *fn, const QString &dependantVar)
     fnTabEntry->needsTrig = false;
     fnTabEntry->userDefined = true;
 
-    foreach(Function *func, m_dict) {
-        kDebug() << "Function " << func->name << " present.\n";
-    }
-
-    if(m_dict.contains(fn->name())) {
-        Q_ASSERT(m_dict[fn->name()] != 0);
+    if(m_dict.contains(fn->name()))
         emit signalFunctionRemoved(fn->name());
-    }
 
     m_dict.insert(fn->name(), fnTabEntry);
     emit signalFunctionAdded(fn->name());

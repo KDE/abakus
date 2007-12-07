@@ -23,7 +23,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-#include <QHash>
+#include <QtCore/QHash>
 
 class BaseFunction;
 
