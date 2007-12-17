@@ -504,39 +504,39 @@ void MainWindow::setupLayout()
 
     KToggleAction *ta = ac->add<KToggleAction>("setDegreesMode", this, SLOT(slotDegrees()));
     ta->setText(i18n("&Degrees"));
-    ta->setShortcut(Qt::Key_Shift | Qt::Key_Alt | Qt::Key_D);
+    ta->setShortcut(Qt::SHIFT | Qt::ALT | Qt::Key_D);
     ta->setActionGroup(trigModeGroup);
     ta->setChecked(trigMode() == Abakus::Degrees);
 
     ta = ac->add<KToggleAction>("setRadiansMode", this, SLOT(slotRadians()));
     ta->setText(i18n("&Radians"));
-    ta->setShortcut(Qt::Key_Shift + Qt::Key_Alt + Qt::Key_R);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_R);
     ta->setActionGroup(trigModeGroup);
     ta->setChecked(trigMode() == Abakus::Radians);
 
     ta = ac->add<KToggleAction>("toggleHistoryList", this, SLOT(slotToggleHistoryList()));
     ta->setText(i18n("Show &History List"));
-    ta->setShortcut(Qt::Key_Shift + Qt::Key_Alt + Qt::Key_H);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_H);
     ta->setChecked(true);
 
     ta = ac->add<KToggleAction>("toggleVariableList", this, SLOT(slotToggleVariableList()));
     ta->setText(i18n("Show &Variables"));
-    ta->setShortcut(Qt::Key_Shift + Qt::Key_Alt + Qt::Key_V);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_V);
     ta->setChecked(true);
 
     ta = ac->add<KToggleAction>("toggleFunctionList", this, SLOT(slotToggleFunctionList()));
     ta->setText(i18n("Show &Functions"));
-    ta->setShortcut(Qt::Key_Shift + Qt::Key_Alt + Qt::Key_F);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_F);
     ta->setChecked(true);
 
     ta = ac->add<KToggleAction>("toggleCompactMode", this, SLOT(slotToggleCompactMode()));
     ta->setText(i18n("Activate &Compact Mode"));
-    ta->setShortcut(Qt::Key_Shift + Qt::Key_Alt + Qt::Key_C);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_C);
     ta->setChecked(false);
 
     ta = ac->add<KToggleAction>("toggleExpressionMode", this, SLOT(slotToggleExpressionMode()));
     ta->setText(i18n("Use R&PN Mode"));
-    ta->setShortcut(Qt::Key_Shift + Qt::Key_Alt + Qt::Key_P);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_P);
     ta->setChecked(false);
 
     QActionGroup *precisionGroup = new QActionGroup(ac);
@@ -570,7 +570,7 @@ void MainWindow::setupLayout()
     QAction *a = ac->addAction("clearHistory", m_result, SLOT(clear()));
     a->setText(i18n("Clear &History"));
     a->setIcon(KIcon("editclear"));
-    ta->setShortcut(Qt::Key_Shift + Qt::Key_Alt + Qt::Key_L);
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_L);
 
     a = ac->addAction("select_edit", m_edit, SLOT(setFocus()));
     a->setIcon(KIcon("goto"));
