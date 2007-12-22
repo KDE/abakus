@@ -1,6 +1,6 @@
 /*
  * abakuslistview.cpp - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2007 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QAction>
 #include <QtGui/QTreeWidgetItem>
+#include <QtGui/QTreeWidgetItemIterator>
 #include <QtCore/QList>
 //#include <qdragobject.h>
 //#include <qheader.h>
@@ -41,6 +42,21 @@ ListView::ListView(QWidget *parent) :
 
     connect(this, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
                   SLOT(slotItemClicked(QTreeWidgetItem *)));
+}
+
+void ListView::redrawItems()
+{
+    QTreeWidgetItemIterator it(this);
+
+    while(*it) {
+        ValueTreeWidgetItem *item = dynamic_cast<ValueTreeWidgetItem *>(*it);
+        ++it;
+
+        if(!item)
+            continue;
+
+        item->valueChanged();
+    }
 }
 
 #if 0

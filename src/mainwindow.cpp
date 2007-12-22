@@ -34,24 +34,18 @@
 #include <kvbox.h>
 #include <khbox.h>
 
-#include <qlayout.h>
-#include <qradiobutton.h>
-#include <qbuttongroup.h>
-#include <qsplitter.h>
-#include <QtGui/QLineEdit>
-#include <QtGui/QContextMenuEvent>
+#include <QtGui>
 
 #include "editor.h"
 #include "evaluator.h"
 #include "function.h"
-#include "resultlistview.h"
-#include "resultlistviewtext.h"
 #include "valuemanager.h"
 #include "node.h"
 #include "rpnmuncher.h"
 //#include "dcopIface.h"
 #include "abakuslistview.h"
 #include "result.h"
+#include "resultmodel.h"
 
 MainWindow::MainWindow() : KXmlGuiWindow(0), m_popup(0), m_insert(false)
 {
@@ -62,7 +56,7 @@ MainWindow::MainWindow() : KXmlGuiWindow(0), m_popup(0), m_insert(false)
     QVBoxLayout *layout = new QVBoxLayout(box);
     m_layout = layout;
     layout->setSpacing(6);
-    layout->setMargin(6);
+    layout->setMargin(0);
 
     QWidget *configBox = new QWidget(box);
     layout->addWidget(configBox);
@@ -99,15 +93,20 @@ MainWindow::MainWindow() : KXmlGuiWindow(0), m_popup(0), m_insert(false)
     m_history->setSpacing(6);
     m_history->setMargin(0);
 
-    m_result = new ResultListView(m_history);
-    m_result->setSelectionMode(ResultListView::NoSelection);
-    m_result->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    connect(m_result, SIGNAL(signalEntrySelected(const QString &)),
-                      SLOT(slotEntrySelected(const QString &)));
-    connect(m_result, SIGNAL(signalResultSelected(const QString &)),
-                      SLOT(slotResultSelected(const QString &)));
+    m_resultItemModel = new ResultModel(this);
+    QTreeView *resultList = new QTreeView(m_history);
+    resultList->setSelectionMode(QTreeView::NoSelection);
+    resultList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    resultList->setModel(m_resultItemModel->model());
+    resultList->header()->setResizeMode(QHeaderView::ResizeToContents);
+    resultList->setAlternatingRowColors(true);
+    resultList->setRootIsDecorated(false);
+    connect(m_resultItemModel, SIGNAL(signalColumnChanged(int)),
+            resultList, SLOT(resizeColumnToContents(int)));
+    connect(resultList,  SIGNAL(clicked(const QModelIndex &)),
+            this, SLOT(itemClicked(const QModelIndex &)));
 
-    m_history->setStretchFactor(m_result, 1);
+    m_history->setStretchFactor(resultList, 1);
     layout->setStretchFactor(m_history, 1);
 
     KHBox *editBox = new KHBox(box);
@@ -123,7 +122,8 @@ MainWindow::MainWindow() : KXmlGuiWindow(0), m_popup(0), m_insert(false)
     connect(evalButton, SIGNAL(clicked()), SLOT(slotEvaluate()));
 
     connect(m_edit, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
-    connect(m_edit, SIGNAL(textChanged()), SLOT(slotTextChanged()));
+    connect(m_edit, SIGNAL(textChanged(const QString &)),
+            this,   SLOT(slotTextChanged(const QString &)));
 
     m_listSplitter = new QSplitter(Qt::Vertical, m_mainSplitter);
     m_fnList = new FunctionListView(m_listSplitter);
@@ -183,21 +183,19 @@ void MainWindow::slotReturnPressed()
     QString text = m_edit->text();
 
     text.replace("\n", "");
+    if(text.isEmpty())
+        return;
 
     // TODO: Put this back in, used to be Editor.
     // m_edit->appendHistory(text);
 
-    // Item to insert after
-    ResultListViewText *after = m_result->lastItem();
-
     // Expand $foo references.
-    QString str = interpolateExpression(text, after);
+    QString str = interpolateExpression(text);
+
+    if(str.isEmpty())
+        return; // Error already has been posted
 
     QString resultVal;
-    ResultListViewText *item;
-
-    if(str.isNull())
-        return; // Error already has been posted
 
     m_insert = false; // Assume we failed
 
@@ -223,7 +221,7 @@ void MainWindow::slotReturnPressed()
             return;
         }
 
-        item = new ResultListViewText(m_result, str, resultVal, after, false);
+        m_resultItemModel->addResult(str, result);
     }
     else {
 
@@ -246,22 +244,19 @@ void MainWindow::slotReturnPressed()
                 resultVal = result.toString();
 
                 ValueManager::instance()->setValue("ans", result);
-                if(!compact)
-                    item = new ResultListViewText(m_result, str, result, after, false);
 
+                m_resultItemModel->addResult(str, result);
                 m_insert = true;
             break;
 
             case Result::Null: // OK, no result to speak of
                 resultVal = "OK";
-                if(!compact)
-                    item = new ResultListViewText(m_result, str, resultVal, after, true);
+                m_resultItemModel->addMessage(resultVal);
             break;
 
             default:
                 resultVal = Result::lastResult()->message();
-                if(!compact)
-                    item = new ResultListViewText(m_result, str, resultVal, after, true);
+                m_resultItemModel->addMessage(resultVal);
         }
 
         // Skip creating list view items if in compact mode.
@@ -275,16 +270,11 @@ void MainWindow::slotReturnPressed()
 
     m_edit->setText(text);
 
-    m_result->setCurrentItem(item);
-    m_result->scrollToItem(item);
-
     QTimer::singleShot(0, m_edit, SLOT(selectAll()));
 }
 
-void MainWindow::slotTextChanged()
+void MainWindow::slotTextChanged(const QString &str)
 {
-    QString str = m_edit->text();
-
     if(str.length() == 1 && m_insert) {
         m_insert = false;
 
@@ -567,7 +557,7 @@ void MainWindow::setupLayout()
     ta->setText(i18n("C&ustom Precision..."));
     ta->setActionGroup(precisionGroup);
 
-    QAction *a = ac->addAction("clearHistory", m_result, SLOT(clear()));
+    QAction *a = ac->addAction("clearHistory", m_resultItemModel, SLOT(clear()));
     a->setText(i18n("Clear &History"));
     a->setIcon(KIcon("editclear"));
     ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_L);
@@ -728,7 +718,7 @@ void MainWindow::slotToggleExpressionMode()
 {
 }
 
-QString MainWindow::interpolateExpression(const QString &text, ResultListViewText *after)
+QString MainWindow::interpolateExpression(const QString &text)
 {
     QString str(text);
     QRegExp stackRE("\\$\\d+");
@@ -739,9 +729,9 @@ QString MainWindow::interpolateExpression(const QString &text, ResultListViewTex
         Abakus::number_t value;
         unsigned numPos = stackStr.mid(1).toUInt();
 
-        if(!m_result->getStackValue(numPos, value)) {
-            new ResultListViewText(m_result, text, i18n("Marker %1 isn't set").arg(stackStr), after, true);
-            return QString::null;
+        if(!m_resultItemModel->stackValue(numPos, value)) {
+            m_resultItemModel->addMessage(i18n("Marker %1 isn't set", stackStr));
+            return QString();
         }
 
         str.replace(pos, stackStr.length(), value.toString());
@@ -796,19 +786,8 @@ void MainWindow::slotPrecisionCustom()
 
 void MainWindow::redrawResults()
 {
-    QTreeWidgetItemIterator it(m_result);
-
-    while(*it) {
-        static_cast<ResultListViewText *>(*it)->precisionChanged();
-        ++it;
-    }
-
-    it = QTreeWidgetItemIterator(m_varList);
-
-    while(*it) {
-        static_cast<ValueTreeWidgetItem *>(*it)->valueChanged();
-        ++it;
-    }
+    m_resultItemModel->slotRedrawItems();
+    m_varList->redrawItems();
 
     // Because of the way we implemented the menu, it is possible to deselect
     // every possibility, so make sure we have at least one selected.
@@ -844,6 +823,18 @@ void MainWindow::selectCorrectPrecisionAction()
         default:
             action<KToggleAction>("precisionCustom")->setChecked(true);
     }
+}
+
+void MainWindow::itemClicked(const QModelIndex &index)
+{
+    QStandardItem *item = m_resultItemModel->model()->itemFromIndex(index);
+    if(!item)
+        return;
+
+    if(item->column() == 0)
+        slotEntrySelected(item->text());
+    else if(item->column() == 1)
+        slotResultSelected(item->text());
 }
 
 #include "mainwindow.moc"

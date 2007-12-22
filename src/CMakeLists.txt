@@ -115,8 +115,7 @@ set(abakus_SRCS
     numerictypes.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/parser_yacc.cpp
     result.cpp
-    resultlistview.cpp
-    resultlistviewtext.cpp
+    resultmodel.cpp
     rpnmuncher.cpp
     valuemanager.cpp
     #    dcopIface.skel

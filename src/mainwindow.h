@@ -32,15 +32,15 @@ class QListViewItem;
 class QSplitter;
 class QTimer;
 class QMenu;
-class QTreeWidget;
+class QModelIndex;
 class QAction;
 
 //class KComboBox;
 //class Editor;
 class KVBox;
 
-class ResultListView;
-class ResultListViewText;
+class ResultModel;
+class ListView;
 
 class AbakusIface;
 
@@ -59,7 +59,7 @@ class MainWindow : public KXmlGuiWindow
 
     private slots:
     void slotReturnPressed();
-    void slotTextChanged();
+    void slotTextChanged(const QString &);
     void slotEvaluate();
 
     void slotPrecisionAuto();
@@ -74,6 +74,7 @@ class MainWindow : public KXmlGuiWindow
     void slotDegrees();
     void slotRadians();
 
+    void itemClicked(const QModelIndex &);
     void slotEntrySelected(const QString &text);
     void slotResultSelected(const QString &text);
 
@@ -101,7 +102,7 @@ class MainWindow : public KXmlGuiWindow
     void saveConfig();
     void setupLayout();
     void populateListViews();
-    QString interpolateExpression(const QString &text, ResultListViewText *after);
+    QString interpolateExpression(const QString &text);
 
     // Donated via JuK
     QAction *action(const char *key) const;
@@ -117,10 +118,10 @@ class MainWindow : public KXmlGuiWindow
     QRadioButton *m_radians;
     QLineEdit *m_edit;
     QMenu *m_popup;
-    ResultListView *m_result;
+    ResultModel *m_resultItemModel;
     QString m_lastError;
     QBoxLayout *m_layout;
-    QTreeWidget *m_fnList, *m_varList;
+    ListView *m_fnList, *m_varList;
     QSplitter *m_mainSplitter, *m_listSplitter;
     QSize m_newSize, m_oldSize;
 

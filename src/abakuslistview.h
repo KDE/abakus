@@ -2,7 +2,7 @@
 #define ABAKUS_LISTVIEW_H
 /*
  * abakuslistview.h - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2007 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,14 @@ class ListView : public QTreeWidget
 
     public:
     ListView(QWidget *parent);
+
+    public slots:
+    /**
+     * Causes all items to be redrawn.  Should be used for when the precision of a value
+     * changes for example, or other actions that would cause the display of all items
+     * to become inaccurate.
+     */
+    void redrawItems();
 
     protected:
 //    virtual QDragObject *dragObject();
