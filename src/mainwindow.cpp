@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "mainwindow.h"
-#include "abakuscommon.h"
 
 #include <kmenubar.h>
 #include <kstandardaction.h>
@@ -26,6 +25,9 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <klocale.h>
+#include <kapplication.h>
+#include <kpushbutton.h>
 #include <kconfigbase.h>
 #include <kactioncollection.h>
 #include <kconfiggroup.h>
