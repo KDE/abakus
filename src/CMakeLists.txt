@@ -130,6 +130,10 @@ ELSE(HAVE_MPFR)
     SET(MPFR_LIBS m)
 ENDIF(HAVE_MPFR)
 
+kde4_add_ui_files(abakus_SRCS
+    mainwindow.ui
+)
+
 kde4_add_executable(abakus ${abakus_SRCS})
 target_link_libraries(abakus ${MPFR_LIBS} ${KDE4_KDEUI_LIBS})
 

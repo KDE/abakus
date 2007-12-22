@@ -2,7 +2,7 @@
 #define ABAKUS_MAINWINDOW_H
 /*
  * mainwindow.h - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2007 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,10 @@ class ListView;
 
 class AbakusIface;
 
+namespace Ui {
+    class MainWindow;
+}
+
 // Main window class, handles events and layout and stuff
 class MainWindow : public KXmlGuiWindow
 {
@@ -58,7 +62,6 @@ class MainWindow : public KXmlGuiWindow
     virtual bool queryExit();
 
     private slots:
-    void slotReturnPressed();
     void slotTextChanged(const QString &);
     void slotEvaluate();
 
@@ -113,16 +116,10 @@ class MainWindow : public KXmlGuiWindow
     }
 
     private:
-    KVBox *m_history;
-    QRadioButton *m_degrees;
-    QRadioButton *m_radians;
-    QLineEdit *m_edit;
+    Ui::MainWindow *m_ui;
     QMenu *m_popup;
     ResultModel *m_resultItemModel;
     QString m_lastError;
-    QBoxLayout *m_layout;
-    ListView *m_fnList, *m_varList;
-    QSplitter *m_mainSplitter, *m_listSplitter;
     QSize m_newSize, m_oldSize;
 
 //    AbakusIface *m_dcopInterface;

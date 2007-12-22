@@ -1,6 +1,6 @@
 /*
  * mainwindow.cpp - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2007 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,16 +27,22 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kapplication.h>
-#include <kpushbutton.h>
 #include <kconfigbase.h>
 #include <kactioncollection.h>
 #include <kconfiggroup.h>
 #include <kinputdialog.h>
 #include <ktoggleaction.h>
-#include <kvbox.h>
-#include <khbox.h>
 
-#include <QtGui>
+#include <QtGui/QLineEdit>
+#include <QtGui/QTreeView>
+#include <QtGui/QTreeWidgetItem>
+#include <QtGui/QTreeWidget>
+#include <QtGui/QTreeWidgetItemIterator>
+#include <QtGui/QStandardItem>
+#include <QtGui/QStandardItemModel>
+#include <QtGui/QContextMenuEvent>
+#include <QtGui/QHeaderView>
+#include <QtCore/QTimer>
 
 #include "editor.h"
 #include "evaluator.h"
@@ -45,94 +51,38 @@
 #include "node.h"
 #include "rpnmuncher.h"
 //#include "dcopIface.h"
+#include "ui_mainwindow.h"
 #include "abakuslistview.h"
 #include "result.h"
 #include "resultmodel.h"
 
-MainWindow::MainWindow() : KXmlGuiWindow(0), m_popup(0), m_insert(false)
+MainWindow::MainWindow() :
+    KXmlGuiWindow(0), m_ui(new Ui::MainWindow), m_popup(0), m_insert(false)
 {
     setObjectName("abakusMainWindow");
+    QWidget *w = new QWidget(this);
+    setCentralWidget(w);
 
-    m_mainSplitter = new QSplitter(this);
-    QWidget *box = new QWidget(m_mainSplitter);
-    QVBoxLayout *layout = new QVBoxLayout(box);
-    m_layout = layout;
-    layout->setSpacing(6);
-    layout->setMargin(0);
+    m_ui->setupUi(w);
 
-    QWidget *configBox = new QWidget(box);
-    layout->addWidget(configBox);
-
-    QHBoxLayout *configLayout = new QHBoxLayout(configBox);
-
-    configLayout->addWidget(new QWidget(configBox));
-
-    QLabel *label = new QLabel(i18n("History: "), configBox);
-    label->setAlignment(Qt::AlignCenter);
-    configLayout->addWidget(label);
-
-    QButtonGroup *buttonGroup = new QButtonGroup(0);
-
-    QWidget *buttonGroupBox = new QWidget(configBox);
-    QHBoxLayout *buttonGroupLayout = new QHBoxLayout(buttonGroupBox);
-    buttonGroupLayout->addStretch(0);
-
-    configLayout->addWidget(buttonGroupBox);
-
-    m_degrees = new QRadioButton(i18n("&Degrees"), buttonGroupBox);
-    buttonGroup->addButton(m_degrees);
-    buttonGroupLayout->addWidget(m_degrees);
     slotDegrees();
-    connect(m_degrees, SIGNAL(clicked()), SLOT(slotDegrees()));
-
-    m_radians = new QRadioButton(i18n("&Radians"), buttonGroupBox);
-    buttonGroup->addButton(m_radians);
-    buttonGroupLayout->addWidget(m_radians);
-    connect(m_radians, SIGNAL(clicked()), SLOT(slotRadians()));
-
-    m_history = new KVBox(box);
-    layout->addWidget(m_history);
-    m_history->setSpacing(6);
-    m_history->setMargin(0);
+    connect(m_ui->degreesButton, SIGNAL(clicked()), SLOT(slotDegrees()));
+    connect(m_ui->radiansButton, SIGNAL(clicked()), SLOT(slotRadians()));
 
     m_resultItemModel = new ResultModel(this);
-    QTreeView *resultList = new QTreeView(m_history);
-    resultList->setSelectionMode(QTreeView::NoSelection);
-    resultList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    resultList->setModel(m_resultItemModel->model());
-    resultList->header()->setResizeMode(QHeaderView::ResizeToContents);
-    resultList->setAlternatingRowColors(true);
-    resultList->setRootIsDecorated(false);
+    m_ui->resultList->setModel(m_resultItemModel->model());
+    m_ui->resultList->header()->setResizeMode(QHeaderView::ResizeToContents);
     connect(m_resultItemModel, SIGNAL(signalColumnChanged(int)),
-            resultList, SLOT(resizeColumnToContents(int)));
-    connect(resultList,  SIGNAL(clicked(const QModelIndex &)),
+            m_ui->resultList, SLOT(resizeColumnToContents(int)));
+    connect(m_ui->resultList,  SIGNAL(clicked(const QModelIndex &)),
             this, SLOT(itemClicked(const QModelIndex &)));
 
-    m_history->setStretchFactor(resultList, 1);
-    layout->setStretchFactor(m_history, 1);
+    m_ui->expression->setFocus();
 
-    KHBox *editBox = new KHBox(box);
-    layout->addWidget(editBox);
-    editBox->setSpacing(6);
-
-    m_edit = new QLineEdit(editBox);
-    m_edit->setFocus();
-    editBox->setStretchFactor(m_edit, 1);
-
-    KPushButton *evalButton = new KPushButton(i18n("&Evaluate"), editBox);
-
-    connect(evalButton, SIGNAL(clicked()), SLOT(slotEvaluate()));
-
-    connect(m_edit, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
-    connect(m_edit, SIGNAL(textChanged(const QString &)),
-            this,   SLOT(slotTextChanged(const QString &)));
-
-    m_listSplitter = new QSplitter(Qt::Vertical, m_mainSplitter);
-    m_fnList = new FunctionListView(m_listSplitter);
-    m_fnList->setHeaderLabels(QStringList() << "Functions" << "Value");
-
-    m_varList = new VariableListView(m_listSplitter);
-    m_varList->setHeaderLabels(QStringList() << "Variables" << "Value");
+    connect(m_ui->evaluateButton, SIGNAL(clicked()), SLOT(slotEvaluate()));
+    connect(m_ui->expression, SIGNAL(returnPressed()), SLOT(slotEvaluate()));
+    connect(m_ui->expression, SIGNAL(textChanged(const QString &)),
+            this,         SLOT(slotTextChanged(const QString &)));
 
     connect(FunctionManager::instance(), SIGNAL(signalFunctionAdded(const QString &)),
             this, SLOT(slotNewFunction(const QString &)));
@@ -147,9 +97,6 @@ MainWindow::MainWindow() : KXmlGuiWindow(0), m_popup(0), m_insert(false)
             this, SLOT(slotRemoveValue(const QString &)));
 
     setupLayout();
-
-    setCentralWidget(m_mainSplitter);
-
     setupGUI(QSize(450, 400), Keys | StatusBar | Save | Create);
 
     loadConfig();
@@ -180,16 +127,16 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *e)
         popup->popup(e->globalPos());
 }
 
-void MainWindow::slotReturnPressed()
+void MainWindow::slotEvaluate()
 {
-    QString text = m_edit->text();
+    QString text = m_ui->expression->text();
 
     text.replace("\n", "");
     if(text.isEmpty())
         return;
 
     // TODO: Put this back in, used to be Editor.
-    // m_edit->appendHistory(text);
+    // m_ui->expression->appendHistory(text);
 
     // Expand $foo references.
     QString str = interpolateExpression(text);
@@ -216,9 +163,9 @@ void MainWindow::slotReturnPressed()
         }
 
         // Skip creating list view items if in compact mode.
-        if(m_history->isHidden()) {
-            m_edit->setText(resultVal);
-            QTimer::singleShot(0, m_edit, SLOT(selectAll()));
+        if(m_compactMode) {
+            m_ui->expression->setText(resultVal);
+            QTimer::singleShot(0, m_ui->expression, SLOT(selectAll()));
 
             return;
         }
@@ -238,8 +185,6 @@ void MainWindow::slotReturnPressed()
 
         QByteArray cStr = str.toLatin1();
         Abakus::number_t result = parseString(cStr.data());
-
-        bool compact = m_history->isHidden();
 
         switch(Result::lastResult()->type()) {
             case Result::Value:
@@ -262,17 +207,17 @@ void MainWindow::slotReturnPressed()
         }
 
         // Skip creating list view items if in compact mode.
-        if(compact) {
-            m_edit->setText(resultVal);
-            QTimer::singleShot(0, m_edit, SLOT(selectAll()));
+        if(m_compactMode) {
+            m_ui->expression->setText(resultVal);
+            QTimer::singleShot(0, m_ui->expression, SLOT(selectAll()));
 
             return;
         }
     }
 
-    m_edit->setText(text);
+    m_ui->expression->setText(text);
 
-    QTimer::singleShot(0, m_edit, SLOT(selectAll()));
+    QTimer::singleShot(0, m_ui->expression, SLOT(selectAll()));
 }
 
 void MainWindow::slotTextChanged(const QString &str)
@@ -285,15 +230,10 @@ void MainWindow::slotTextChanged(const QString &str)
             return;
 
         if(QRegExp("^[-+*/^]").indexIn(str) != -1) {
-            m_edit->setText("ans " + str + " ");
-            m_edit->setCursorPosition(m_edit->text().length() - 1);
+            m_ui->expression->setText("ans " + str + " ");
+            m_ui->expression->setCursorPosition(m_ui->expression->text().length());
         }
     }
-}
-
-void MainWindow::slotEvaluate()
-{
-    slotReturnPressed();
 }
 
 void MainWindow::slotUpdateSize()
@@ -307,7 +247,7 @@ void MainWindow::slotUpdateSize()
 void MainWindow::slotDegrees()
 {
     setTrigMode(Abakus::Degrees);
-    m_degrees->setChecked(true);
+    m_ui->degreesButton->setChecked(true);
     if(action("setDegreesMode"))
         action<KToggleAction>("setDegreesMode")->setChecked(true);
 }
@@ -315,7 +255,7 @@ void MainWindow::slotDegrees()
 void MainWindow::slotRadians()
 {
     setTrigMode(Abakus::Radians);
-    m_radians->setChecked(true);
+    m_ui->radiansButton->setChecked(true);
     if(action("setRadiansMode"))
         action<KToggleAction>("setRadiansMode")->setChecked(true);
 }
@@ -341,11 +281,11 @@ void MainWindow::loadConfig()
         QString mode = config.readEntry("Trigonometric mode", "Degrees");
         if(mode == "Degrees") {
             setTrigMode(Abakus::Degrees);
-            m_degrees->setChecked(true);
+            m_ui->degreesButton->setChecked(true);
         }
         else {
             setTrigMode(Abakus::Radians);
-            m_radians->setChecked(true);
+            m_ui->radiansButton->setChecked(true);
         }
 
         bool useRPN = config.readEntry("Use RPN Mode", false);
@@ -380,15 +320,15 @@ void MainWindow::loadConfig()
 
         bool showHistory = config.readEntry("ShowHistory", true);
         action<KToggleAction>("toggleHistoryList")->setChecked(showHistory);
-        m_history->setShown(showHistory);
+        m_ui->resultList->setShown(showHistory);
 
         bool showFunctions = config.readEntry("ShowFunctions", true);
         action<KToggleAction>("toggleFunctionList")->setChecked(showFunctions);
-        m_fnList->setShown(showFunctions);
+        m_ui->fnList->setShown(showFunctions);
 
         bool showVariables = config.readEntry("ShowVariables", true);
         action<KToggleAction>("toggleVariableList")->setChecked(showVariables);
-        m_varList->setShown(showVariables);
+        m_ui->varList->setShown(showVariables);
 
         bool compactMode = config.readEntry("InCompactMode", false);
         compactMode = compactMode || !showHistory;
@@ -454,9 +394,9 @@ void MainWindow::saveConfig()
         config.writeEntry("InCompactMode", inCompactMode);
 
         if(!inCompactMode) {
-            config.writeEntry("ShowHistory", !m_history->isHidden());
-            config.writeEntry("ShowFunctions", !m_fnList->isHidden());
-            config.writeEntry("ShowVariables", !m_varList->isHidden());
+            config.writeEntry("ShowHistory", !m_ui->resultList->isHidden());
+            config.writeEntry("ShowFunctions", !m_ui->fnList->isHidden());
+            config.writeEntry("ShowVariables", !m_ui->varList->isHidden());
         }
         else {
             config.writeEntry("ShowHistory", m_wasHistoryShown);
@@ -564,7 +504,7 @@ void MainWindow::setupLayout()
     a->setIcon(KIcon("editclear"));
     ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_L);
 
-    a = ac->addAction("select_edit", m_edit, SLOT(setFocus()));
+    a = ac->addAction("select_edit", m_ui->expression, SLOT(setFocus()));
     a->setIcon(KIcon("goto"));
     a->setText(i18n("Select Editor"));
     a->setShortcut(Qt::Key_F6);
@@ -575,10 +515,10 @@ void MainWindow::populateListViews()
     QStringList values = ValueManager::instance()->valueNames();
 
     Abakus::number_t value = ValueManager::instance()->value("pi");
-    new ValueTreeWidgetItem(m_varList, "pi", value);
+    new ValueTreeWidgetItem(m_ui->varList, "pi", value);
 
     value = ValueManager::instance()->value("e");
-    new ValueTreeWidgetItem(m_varList, "e", value);
+    new ValueTreeWidgetItem(m_ui->varList, "e", value);
 }
 
 QAction *MainWindow::action(const char *key) const
@@ -588,13 +528,13 @@ QAction *MainWindow::action(const char *key) const
 
 void MainWindow::slotEntrySelected(const QString &text)
 {
-    m_edit->setText(text);
-    m_edit->setCursorPosition(m_edit->text().length());
+    m_ui->expression->setText(text);
+    m_ui->expression->setCursorPosition(m_ui->expression->text().length());
 }
 
 void MainWindow::slotResultSelected(const QString &text)
 {
-    m_edit->insert(text);
+    m_ui->expression->insert(text);
 }
 
 void MainWindow::slotToggleMenuBar()
@@ -605,10 +545,9 @@ void MainWindow::slotToggleMenuBar()
 void MainWindow::slotToggleFunctionList()
 {
     bool show = action<KToggleAction>("toggleFunctionList")->isChecked();
-    m_fnList->setShown(show);
+    m_ui->fnList->setShown(show);
 
-    if(m_history->isHidden()) {
-        m_history->setShown(true);
+    if(m_compactMode) {
         action<KToggleAction>("toggleHistoryList")->setChecked(true);
         slotToggleHistoryList();
     }
@@ -619,10 +558,9 @@ void MainWindow::slotToggleFunctionList()
 void MainWindow::slotToggleVariableList()
 {
     bool show = action<KToggleAction>("toggleVariableList")->isChecked();
-    m_varList->setShown(show);
+    m_ui->varList->setShown(show);
 
-    if(m_history->isHidden()) {
-        m_history->setShown(true);
+    if(m_compactMode) {
         action<KToggleAction>("toggleHistoryList")->setChecked(true);
         slotToggleHistoryList();
     }
@@ -633,7 +571,7 @@ void MainWindow::slotToggleVariableList()
 void MainWindow::slotToggleHistoryList()
 {
     bool show = action<KToggleAction>("toggleHistoryList")->isChecked();
-    m_history->setShown(show);
+    m_ui->resultList->setShown(show);
 
     action<KToggleAction>("toggleCompactMode")->setChecked(false);
 }
@@ -645,7 +583,7 @@ void MainWindow::slotNewFunction(const QString &name)
     QString fnName = QString("%1(%2)").arg(name, userFn->varName);
     QString expr = fn->operand()->infixString();
 
-    QTreeWidgetItem *item = new QTreeWidgetItem(m_fnList);
+    QTreeWidgetItem *item = new QTreeWidgetItem(m_ui->fnList);
     item->setText(0, fnName);
     item->setText(1, expr);
 }
@@ -656,7 +594,7 @@ void MainWindow::slotRemoveFunction(const QString &name)
     QString fnName = QString("%1(%2)").arg(name, userFn->varName);
 
     QList<QTreeWidgetItem *> markedForDeath
-        = m_fnList->findItems(fnName, Qt::MatchFixedString, 0);
+        = m_ui->fnList->findItems(fnName, Qt::MatchFixedString, 0);
 
     foreach(QTreeWidgetItem *item, markedForDeath)
         delete item;
@@ -664,12 +602,12 @@ void MainWindow::slotRemoveFunction(const QString &name)
 
 void MainWindow::slotNewValue(const QString &name, Abakus::number_t value)
 {
-    new ValueTreeWidgetItem(m_varList, name, value);
+    new ValueTreeWidgetItem(m_ui->varList, name, value);
 }
 
 void MainWindow::slotChangeValue(const QString &name, Abakus::number_t value)
 {
-    QList<QTreeWidgetItem *> items = m_varList->findItems(name, Qt::MatchFixedString, 0);
+    QList<QTreeWidgetItem *> items = m_ui->varList->findItems(name, Qt::MatchFixedString, 0);
 
     foreach(QTreeWidgetItem *item, items)
         static_cast<ValueTreeWidgetItem *>(item)->valueChanged(value);
@@ -677,7 +615,7 @@ void MainWindow::slotChangeValue(const QString &name, Abakus::number_t value)
 
 void MainWindow::slotRemoveValue(const QString &name)
 {
-    QList<QTreeWidgetItem *> items = m_varList->findItems(name, Qt::MatchFixedString, 0);
+    QList<QTreeWidgetItem *> items = m_ui->varList->findItems(name, Qt::MatchFixedString, 0);
 
     foreach(QTreeWidgetItem *item, items)
         delete item;
@@ -686,13 +624,14 @@ void MainWindow::slotRemoveValue(const QString &name)
 void MainWindow::slotToggleCompactMode()
 {
     if(action<KToggleAction>("toggleCompactMode")->isChecked()) {
-        m_wasFnShown = !m_fnList->isHidden();
-        m_wasVarShown = !m_varList->isHidden();
-        m_wasHistoryShown = !m_history->isHidden();
+        m_wasFnShown = !m_ui->fnList->isHidden();
+        m_wasVarShown = !m_ui->varList->isHidden();
+        m_wasHistoryShown = !m_ui->resultList->isHidden();
+        m_compactMode = true;
 
-        m_fnList->setShown(false);
-        m_varList->setShown(false);
-        m_history->setShown(false);
+        m_ui->fnList->setShown(false);
+        m_ui->varList->setShown(false);
+        m_ui->resultList->setShown(false);
 
         action<KToggleAction>("toggleFunctionList")->setChecked(false);
         action<KToggleAction>("toggleVariableList")->setChecked(false);
@@ -703,9 +642,10 @@ void MainWindow::slotToggleCompactMode()
         QTimer::singleShot(0, this, SLOT(slotUpdateSize()));
     }
     else {
-        m_fnList->setShown(m_wasFnShown);
-        m_varList->setShown(m_wasVarShown);
-        m_history->setShown(m_wasHistoryShown);
+        m_ui->fnList->setShown(m_wasFnShown);
+        m_ui->varList->setShown(m_wasVarShown);
+        m_ui->resultList->setShown(m_wasHistoryShown);
+        m_compactMode = false;
 
         action<KToggleAction>("toggleFunctionList")->setChecked(m_wasFnShown);
         action<KToggleAction>("toggleVariableList")->setChecked(m_wasVarShown);
@@ -789,7 +729,7 @@ void MainWindow::slotPrecisionCustom()
 void MainWindow::redrawResults()
 {
     m_resultItemModel->slotRedrawItems();
-    m_varList->redrawItems();
+    m_ui->varList->redrawItems();
 
     // Because of the way we implemented the menu, it is possible to deselect
     // every possibility, so make sure we have at least one selected.
