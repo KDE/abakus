@@ -137,7 +137,7 @@ kde4_add_ui_files(abakus_SRCS
 kde4_add_executable(abakus ${abakus_SRCS})
 target_link_libraries(abakus ${MPFR_LIBS} ${KDE4_KDEUI_LIBS})
 
-install(TARGETS abakus DESTINATION ${BIN_INSTALL_DIR})
+install(TARGETS abakus ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES abakus.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
 install(FILES abakusui.rc DESTINATION ${DATA_INSTALL_DIR}/abakus)
 
