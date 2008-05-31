@@ -1,6 +1,6 @@
 /*
  * parser.yy - part of abakus
- * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2008 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ int yyerror(const char *);
 }
 
 %token <value> NUM
-%type <node> EXP FACTOR TERM S EXPONENT NUMBER VALUE FINAL
+%type <node> EXP FACTOR TERM S NUMBER VALUE FINAL
 %type <fn> FUNC
 %token <fn> FN
 %token <ident> ID
@@ -303,17 +303,19 @@ EXP: EXP '+' FACTOR { $$ = new BinaryOperator(BinaryOperator::Addition, $1, $3);
 EXP: EXP '-' FACTOR { $$ = new BinaryOperator(BinaryOperator::Subtraction, $1, $3); }
 EXP: FACTOR { $$ = $1; }
 
-FACTOR: FACTOR '*' EXPONENT { $$ = new BinaryOperator(BinaryOperator::Multiplication, $1, $3); }
-FACTOR: FACTOR '/' EXPONENT { $$ = new BinaryOperator(BinaryOperator::Division, $1, $3); }
-FACTOR: EXPONENT { $$ = $1; }
+FACTOR: FACTOR '*' TERM { $$ = new BinaryOperator(BinaryOperator::Multiplication, $1, $3); }
+FACTOR: FACTOR '/' TERM { $$ = new BinaryOperator(BinaryOperator::Division, $1, $3); }
+FACTOR: TERM { $$ = $1; }
 
-EXPONENT: TERM POWER EXPONENT { $$ = new BinaryOperator(BinaryOperator::Exponentiation, $1, $3); }
-EXPONENT: TERM { $$ = $1; }
-
-TERM: '+' VALUE { $$ = $2; }
-TERM: '-' VALUE { $$ = new UnaryOperator(UnaryOperator::Negation, $2); }
+/*
+ * Handle exponentiation by making them TERMs, which makes the POWER operator bind very
+ * tightly.  Make unary negation a lower precendence so that -2^2 == -4, as 2^2 will be
+ * reduced to a TERM before the -TERM reduction is applied.
+ */
+TERM: VALUE POWER TERM { $$ = new BinaryOperator(BinaryOperator::Exponentiation, $1, $3); }
+TERM: '+' TERM { $$ = $2; }
+TERM: '-' TERM { $$ = new UnaryOperator(UnaryOperator::Negation, $2); }
 TERM: '(' EXP ')' { $$ = $2; }
-TERM: '-' '(' EXP ')' { $$ = new UnaryOperator(UnaryOperator::Negation, $3); }
 
 TERM: VALUE { $$ = $1; }
 
