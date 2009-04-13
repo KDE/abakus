@@ -1,12 +1,10 @@
-# KDE Config File
 [Desktop Entry]
-Encoding=UTF-8
 Type=Application
 X-KDE-StartupNotify=true
-Exec=abakus -caption "%c" %i %m
+Exec=abakus -caption "%c" %i
 Icon=abakus
 Comment=
-Terminal=0
+Terminal=false
 Name=Abakus
 Name[he]=חשבוניה
 Name[pa]=ਅਬਾਕੁਸ
@@ -41,4 +39,4 @@ GenericName[sv]=Miniräknare
 GenericName[tr]=Hesap Makinesi
 GenericName[uk]=Калькулятор
 GenericName[x-test]=xxCalculatorxx
-Categories=Qt;KDE;Utility
+Categories=Qt;KDE;Utility;
