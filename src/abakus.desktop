@@ -38,4 +38,5 @@ GenericName[sv]=Miniräknare
 GenericName[tr]=Hesap Makinesi
 GenericName[uk]=Калькулятор
 GenericName[x-test]=xxCalculatorxx
+GenericName[zh_TW]=計算機
 Categories=Qt;KDE;Utility;
