@@ -74,7 +74,6 @@ int main(int argc, char **argv)
     MainWindow *win = new MainWindow;
 
     win->show();
-    win->resize(500, 300);
 
     return app.exec();
 }

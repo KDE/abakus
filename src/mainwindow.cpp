@@ -1,6 +1,6 @@
 /*
  * mainwindow.cpp - part of abakus
- * Copyright (C) 2004, 2005, 2007 Michael Pyne <michael.pyne@kdemail.net>
+ * Copyright (C) 2004, 2005, 2007, 2009 Michael Pyne <mpyne@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,7 @@ MainWindow::MainWindow() :
             this, SLOT(slotRemoveValue(const QString &)));
 
     setupLayout();
+    setAutoSaveSettings();
     setupGUI(QSize(450, 400), Keys | StatusBar | Save | Create);
 
     loadConfig();
