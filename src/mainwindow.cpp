@@ -97,8 +97,8 @@ MainWindow::MainWindow() :
             this, SLOT(slotRemoveValue(const QString &)));
 
     setupLayout();
-    setAutoSaveSettings();
     setupGUI(QSize(450, 400), Keys | StatusBar | Save | Create);
+    setAutoSaveSettings();
 
     loadConfig();
 //    m_dcopInterface = new AbakusIface();
