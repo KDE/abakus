@@ -2,6 +2,7 @@
 #define ABAKUS_RESULTMODEL_H
 /*
  * resultlistmodel.h - part of abakus
+ * Copyright (C) 2012 Mathias Kraus <k.hias@gmx.net>
  * Copyright (C) 2007 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,26 +20,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <QtCore/QObject>
+#include <QAbstractListModel>
 
 #include "numerictypes.h"
+#include "resultmodelitem.h"
 
-class QStandardItemModel;
 class QString;
-class QModelIndex;
 
-class ResultModel : public QObject
+class ResultModel : public QAbstractListModel
 {
     Q_OBJECT
     public:
+    enum ResultRoles {
+        ExpressionRole = Qt::UserRole + 1,
+        ResultRole,
+        TagRole
+    };
 
     ResultModel(QObject *parent);
-
-    QStandardItemModel *model();
+    ~ResultModel();
+    
     void addResult(const QString &expr, const Abakus::number_t &result);
     void addMessage(const QString &msg);
 
+    int rowCount(const QModelIndex & parent = QModelIndex()) const;
     bool stackValue(unsigned position, Abakus::number_t &result);
+    
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
     signals:
     /// Only emitted when the result column changes in width due to the user
@@ -53,7 +61,7 @@ class ResultModel : public QObject
     void updateStackMarkers(); ///< Called to update stack positions.
 
     private:
-    QStandardItemModel *m_model;
+    QList<ResultModelItem*> m_resultModelItems;
 };
 
 #endif

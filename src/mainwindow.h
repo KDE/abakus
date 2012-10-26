@@ -2,6 +2,7 @@
 #define ABAKUS_MAINWINDOW_H
 /*
  * mainwindow.h - part of abakus
+ * Copyright (C) 2012 Mathias Kraus <k.hias@gmx.net>
  * Copyright (C) 2004, 2005, 2007 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,6 +35,8 @@ class QTimer;
 class QMenu;
 class QModelIndex;
 class QAction;
+class QDeclarativeView;
+class QDeclarativeContext;
 
 //class KComboBox;
 //class Editor;
@@ -60,11 +63,14 @@ class MainWindow : public KXmlGuiWindow
     protected:
     virtual void contextMenuEvent(QContextMenuEvent *);
     virtual bool queryExit();
-
+    
+    Q_INVOKABLE void slotEvaluate(const QString &expression);
+    Q_INVOKABLE void slotTextChanged(const QString &str);
+    
+    signals:
+    void setInputText(const QString &inputText);
+    
     private slots:
-    void slotTextChanged(const QString &);
-    void slotEvaluate();
-
     void slotPrecisionAuto();
     void slotPrecision3();
     void slotPrecision8();
@@ -76,10 +82,6 @@ class MainWindow : public KXmlGuiWindow
 
     void slotDegrees();
     void slotRadians();
-
-    void itemClicked(const QModelIndex &);
-    void slotEntrySelected(const QString &text);
-    void slotResultSelected(const QString &text);
 
     void slotToggleMenuBar();
     void slotToggleFunctionList();
@@ -122,6 +124,9 @@ class MainWindow : public KXmlGuiWindow
     QSize m_newSize, m_oldSize;
 
 //    AbakusIface *m_dcopInterface;
+    
+    QDeclarativeView* m_declarativeView;
+    QDeclarativeContext *m_declarativeContext;
 
     bool m_wasFnShown, m_wasVarShown, m_wasHistoryShown;
     bool m_compactMode;

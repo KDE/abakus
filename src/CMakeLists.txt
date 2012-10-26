@@ -102,6 +102,7 @@ IF(FLEX_EXECUTABLE)
 ENDIF(FLEX_EXECUTABLE)
 
 # Continuing with normally schedule CMake action...
+add_subdirectory(qml)
 set(abakus_SRCS
     abakus.cpp
     abakuslistview.cpp
@@ -116,6 +117,7 @@ set(abakus_SRCS
     ${CMAKE_CURRENT_BINARY_DIR}/parser_yacc.cpp
     result.cpp
     resultmodel.cpp
+    resultmodelitem.cpp
     rpnmuncher.cpp
     valuemanager.cpp
     #    dcopIface.skel
@@ -135,7 +137,7 @@ kde4_add_ui_files(abakus_SRCS
 )
 
 kde4_add_executable(abakus ${abakus_SRCS})
-target_link_libraries(abakus ${MPFR_LIBS} ${KDE4_KDEUI_LIBS})
+target_link_libraries(abakus ${MPFR_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTDECLARATIVE_LIBRARIES} ${KDECLARATIVE_LIBRARY})
 
 install(TARGETS abakus ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES abakus.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})

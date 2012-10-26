@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>MainWindow</class>
- <widget class="QWidget" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QWidget" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,25 +10,25 @@
     <height>338</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>abakus</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout">
    <item>
-    <widget class="QSplitter" name="splitter_2" >
-     <property name="orientation" >
+    <widget class="QSplitter" name="splitter_2">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="layoutWidget" >
-      <layout class="QVBoxLayout" >
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout">
        <item>
-        <layout class="QHBoxLayout" >
+        <layout class="QHBoxLayout">
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
              <height>20</height>
@@ -36,15 +37,15 @@
           </spacer>
          </item>
          <item>
-          <widget class="QRadioButton" name="degreesButton" >
-           <property name="text" >
+          <widget class="QRadioButton" name="degreesButton">
+           <property name="text">
             <string>&amp;Degrees</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QRadioButton" name="radiansButton" >
-           <property name="text" >
+          <widget class="QRadioButton" name="radiansButton">
+           <property name="text">
             <string>&amp;Radians</string>
            </property>
           </widget>
@@ -52,85 +53,55 @@
         </layout>
        </item>
        <item>
-        <widget class="QTreeView" name="resultList" >
-         <property name="horizontalScrollBarPolicy" >
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="alternatingRowColors" >
-          <bool>true</bool>
-         </property>
-         <property name="rootIsDecorated" >
-          <bool>false</bool>
-         </property>
-         <property name="uniformRowHeights" >
-          <bool>true</bool>
-         </property>
-         <property name="itemsExpandable" >
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" >
-         <item>
-          <widget class="QLineEdit" name="expression" />
-         </item>
-         <item>
-          <widget class="QPushButton" name="evaluateButton" >
-           <property name="text" >
-            <string>&amp;Evaluate</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <layout class="QHBoxLayout"/>
        </item>
       </layout>
      </widget>
-     <widget class="QSplitter" name="splitter" >
-      <property name="orientation" >
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="FunctionListView" name="fnList" >
-       <property name="alternatingRowColors" >
+      <widget class="FunctionListView" name="fnList">
+       <property name="alternatingRowColors">
         <bool>true</bool>
        </property>
-       <property name="rootIsDecorated" >
+       <property name="rootIsDecorated">
         <bool>false</bool>
        </property>
-       <property name="uniformRowHeights" >
+       <property name="uniformRowHeights">
         <bool>true</bool>
        </property>
-       <property name="itemsExpandable" >
+       <property name="itemsExpandable">
         <bool>false</bool>
        </property>
        <column>
-        <property name="text" >
+        <property name="text">
          <string>Functions</string>
         </property>
        </column>
        <column>
-        <property name="text" >
+        <property name="text">
          <string>Value</string>
         </property>
        </column>
       </widget>
-      <widget class="VariableListView" name="varList" >
-       <property name="rootIsDecorated" >
+      <widget class="VariableListView" name="varList">
+       <property name="rootIsDecorated">
         <bool>false</bool>
        </property>
-       <property name="uniformRowHeights" >
+       <property name="uniformRowHeights">
         <bool>true</bool>
        </property>
-       <property name="itemsExpandable" >
+       <property name="itemsExpandable">
         <bool>false</bool>
        </property>
        <column>
-        <property name="text" >
+        <property name="text">
          <string>Variables</string>
         </property>
        </column>
        <column>
-        <property name="text" >
+        <property name="text">
          <string>Value</string>
         </property>
        </column>

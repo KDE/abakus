@@ -1,5 +1,6 @@
 /*
  * resultlistmodel.h - part of abakus
+ * Copyright (C) 2012 Mathias Kraus <k.hias@gmx.net>
  * Copyright (C) 2007 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,87 +25,72 @@
 
 #include <QtGui/QStandardItemModel>
 
-// Ensure Abakus::number_t is added to Qt's meta object system for QVariant use
-#include "numerictypes.h"
-Q_DECLARE_METATYPE(Abakus::number_t);
-#include <QtCore/QVariant>
-
-static const int ResultStatusType = QStandardItem::UserType + 2;
-
 ResultModel::ResultModel(QObject *parent)
-    : QObject(parent), m_model(new QStandardItemModel(0, 3, this))
+    : QAbstractListModel(parent)
 {
-    QStringList labels;
-
-    labels << i18nc("Typed in math formula", "Expression")
-           << i18nc("Result of math formula", "Result")
-           << i18nc("Placeholder of result for use in later formulas", "Tag");
-    m_model->setHorizontalHeaderLabels(labels);
+    QHash<int, QByteArray> roles;
+    roles[ExpressionRole] = "expression";
+    roles[ResultRole] = "result";
+    roles[TagRole] = "tag";
+    setRoleNames(roles);
 }
 
-QStandardItemModel *ResultModel::model()
+ResultModel::~ResultModel()
 {
-    return m_model;
+    beginRemoveRows(QModelIndex(), 0, rowCount()-1);
+    while(!m_resultModelItems.isEmpty())
+    {
+        delete m_resultModelItems.takeFirst();
+    }
+    endRemoveRows();
 }
 
 void ResultModel::addResult(const QString &expr, const Abakus::number_t &result)
 {
-    QStandardItemModel *m = model();
-
-    QList<QStandardItem *> items;
-    QStandardItem *item;
-
-    items << new QStandardItem(expr);
-
-    items << (item = new QStandardItem(result.toString()));
-    item->setData(QVariant::fromValue(result)); // Save the actual value for later.
-
-    items << (item = new QStandardItem("$0"));
-    item->setTextAlignment(Qt::AlignRight);
-
-    m->invisibleRootItem()->appendRow(items);
     updateStackMarkers();
+    
+    ResultModelItem* resultModelItem = new ResultModelItem(expr, result);
+    
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_resultModelItems << resultModelItem;
+    endInsertRows();
 }
-
-class ResultTextItem : public QStandardItem
-{
-    public:
-    ResultTextItem(const QString &text) : QStandardItem(text)
-    {
-    }
-
-    virtual int type() const
-    {
-        return ResultStatusType;
-    }
-};
 
 void ResultModel::addMessage(const QString &msg)
 {
-    QStandardItemModel *m = model();
+    ResultModelItem* resultModelItem = new ResultModelItem(msg);
+    
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_resultModelItems << resultModelItem;
+    endInsertRows();
+}
 
-    QStandardItem *item = new ResultTextItem(msg);
-
-    m->invisibleRootItem()->appendRow(item);
+int ResultModel::rowCount(const QModelIndex & parent) const
+{
+    return m_resultModelItems.count();
 }
 
 bool ResultModel::stackValue(unsigned position, Abakus::number_t &result)
 {
     if(position > 20) // Don't search forever
+    {
         return false;
+    }
 
     unsigned stackCount = 0;
-    for(int i = model()->invisibleRootItem()->rowCount() - 1; i >= 0; --i) {
-        QStandardItem *item = model()->invisibleRootItem()->child(i, 1);
-        if(!item || item->type() == ResultStatusType)
-            continue; // Don't increment stackCount for these.
-
-        if(stackCount == position) {
-            result = item->data().value<Abakus::number_t>();
-            return true;
+    
+    foreach(ResultModelItem* resultModelItem, m_resultModelItems)
+    {
+        if(resultModelItem->type() == ResultModelItem::Result)
+        {
+            if(stackCount == position)
+            {
+                result = resultModelItem->resultValue();
+                return true;
+            }
+            
+            ++stackCount;
         }
-
-        ++stackCount;
     }
 
     return false;
@@ -112,39 +98,63 @@ bool ResultModel::stackValue(unsigned position, Abakus::number_t &result)
 
 void ResultModel::updateStackMarkers()
 {
-    // Update stack stuff
-    unsigned stackCount = 0;
-    for(int i = model()->invisibleRootItem()->rowCount() - 1; i >= 0; --i) {
-        QStandardItem *item = model()->invisibleRootItem()->child(i, 2);
-        if(!item || item->type() == ResultStatusType) {
-            continue; // Don't increment stackCount for these.
-        }
-
-        item->setText(QString("$%1").arg(stackCount));
-        ++stackCount;
+    foreach(ResultModelItem* resultModelItem, m_resultModelItems)
+    {
+        resultModelItem->incrementTag();
     }
+    
+    emit dataChanged(index(0), index(rowCount() - 1));
+}
+
+QVariant ResultModel::data(const QModelIndex & index, int role) const
+{
+    if (index.row() < 0 || index.row() > m_resultModelItems.count())
+    {
+        return QVariant();
+    }
+    
+    ResultModelItem *resultModelItem = m_resultModelItems[index.row()];
+    if (role == ExpressionRole)
+    {
+        return resultModelItem->expression();
+    }
+    else if (role == ResultRole)
+    {
+        return resultModelItem->result();
+    }
+    else if (role == TagRole)
+    {
+        return resultModelItem->tag();
+    }
+    return QVariant();
 }
 
 void ResultModel::slotRedrawItems()
 {
-    if(model()->invisibleRootItem()->rowCount() == 0)
+    if(rowCount() == 0)
+    {
         return; // Don't emit signal if nothing changed.
-
-    for(int i = 0; i < model()->invisibleRootItem()->rowCount(); ++i) {
-        QStandardItem *item = model()->invisibleRootItem()->child(i, 1);
-        if(!item || item->type() == ResultStatusType)
-            continue;
-
-        Abakus::number_t value = item->data().value<Abakus::number_t>();
-        item->setText(value.toString());
     }
 
-    emit signalColumnChanged(1);
+    foreach(ResultModelItem* resultModelItem, m_resultModelItems)
+    {
+        if(resultModelItem->type() == ResultModelItem::Result)
+        {
+            resultModelItem->updateResult();
+        }
+    }
+
+    emit dataChanged(index(0), index(rowCount() - 1));
 }
 
 void ResultModel::clear()
 {
-    m_model->setRowCount(0);
+    beginRemoveRows(QModelIndex(), 0, rowCount()-1);
+    while(!m_resultModelItems.isEmpty())
+    {
+        delete m_resultModelItems.takeFirst();
+    }
+    endRemoveRows();
 }
 
 #include "resultmodel.moc"

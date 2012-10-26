@@ -1,5 +1,6 @@
 /*
  * mainwindow.cpp - part of abakus
+ * Copyright (C) 2012 Mathias Kraus <k.hias@gmx.net>
  * Copyright (C) 2004, 2005, 2007, 2009 Michael Pyne <mpyne@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -44,6 +45,10 @@
 #include <QtGui/QHeaderView>
 #include <QtCore/QTimer>
 
+#include <KStandardDirs>
+#include <QDeclarativeView>
+#include <QDeclarativeContext>
+
 #include "editor.h"
 #include "evaluator.h"
 #include "function.h"
@@ -76,19 +81,8 @@ MainWindow::MainWindow() :
     connect(m_ui->degreesButton, SIGNAL(clicked()), SLOT(slotDegrees()));
     connect(m_ui->radiansButton, SIGNAL(clicked()), SLOT(slotRadians()));
 
-    m_ui->resultList->setModel(m_resultItemModel->model());
-    m_ui->resultList->header()->setResizeMode(QHeaderView::ResizeToContents);
-    connect(m_resultItemModel, SIGNAL(signalColumnChanged(int)),
-            m_ui->resultList, SLOT(resizeColumnToContents(int)));
-    connect(m_ui->resultList,  SIGNAL(clicked(const QModelIndex &)),
-            this, SLOT(itemClicked(const QModelIndex &)));
-
-    m_ui->expression->setFocus();
-
-    connect(m_ui->evaluateButton, SIGNAL(clicked()), SLOT(slotEvaluate()));
-    connect(m_ui->expression, SIGNAL(returnPressed()), SLOT(slotEvaluate()));
-    connect(m_ui->expression, SIGNAL(textChanged(const QString &)),
-            this,         SLOT(slotTextChanged(const QString &)));
+    //connect(m_resultItemModel, SIGNAL(signalColumnChanged(int)),
+    //        m_ui->resultList, SLOT(resizeColumnToContents(int)));
 
     connect(FunctionManager::instance(), SIGNAL(signalFunctionAdded(const QString &)),
             this, SLOT(slotNewFunction(const QString &)));
@@ -102,6 +96,24 @@ MainWindow::MainWindow() :
     connect(ValueManager::instance(), SIGNAL(signalValueRemoved(const QString &)),
             this, SLOT(slotRemoveValue(const QString &)));
 
+    
+    
+    m_declarativeView = new QDeclarativeView(this);
+    m_declarativeContext = m_declarativeView->rootContext();
+    m_declarativeContext->setContextProperty("mainWindow", this);
+    m_declarativeContext->setContextProperty("resultModel", m_resultItemModel);
+    m_declarativeView->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    // Set view optimizations not already done for QDeclarativeView
+    m_declarativeView->setAttribute(Qt::WA_OpaquePaintEvent);
+    m_declarativeView->setAttribute(Qt::WA_NoSystemBackground);
+    
+    QString filePath = KStandardDirs::locate("appdata", "qml/main.qml");
+    m_declarativeView->setSource(QUrl::fromLocalFile(filePath));
+    
+    m_ui->vboxLayout1->addWidget(m_declarativeView);
+    
+    m_declarativeView->setFocus();
+    
     setupLayout();
     setupGUI(QSize(450, 400), Keys | StatusBar | Save | Create);
     setAutoSaveSettings();
@@ -134,9 +146,9 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *e)
         popup->popup(e->globalPos());
 }
 
-void MainWindow::slotEvaluate()
+void MainWindow::slotEvaluate(const QString &expression)
 {
-    QString text = m_ui->expression->text();
+    QString text = expression;
 
     text.replace("\n", "");
     if(text.isEmpty())
@@ -167,14 +179,6 @@ void MainWindow::slotEvaluate()
         else {
             m_insert = false;
             resultVal = i18n("Error: %1", RPNParser::errorString());
-        }
-
-        // Skip creating list view items if in compact mode.
-        if(m_compactMode) {
-            m_ui->expression->setText(resultVal);
-            QTimer::singleShot(0, m_ui->expression, SLOT(selectAll()));
-
-            return;
         }
 
         m_resultItemModel->addResult(str, result);
@@ -212,19 +216,12 @@ void MainWindow::slotEvaluate()
                 resultVal = Result::lastResult()->message();
                 m_resultItemModel->addMessage(resultVal);
         }
-
-        // Skip creating list view items if in compact mode.
-        if(m_compactMode) {
-            m_ui->expression->setText(resultVal);
-            QTimer::singleShot(0, m_ui->expression, SLOT(selectAll()));
-
-            return;
-        }
     }
-
-    m_ui->expression->setText(text);
-
-    QTimer::singleShot(0, m_ui->expression, SLOT(selectAll()));
+    
+    // set result in expression text edit if in compact mode
+    if(m_compactMode) {
+        emit setInputText(resultVal);
+    }
 }
 
 void MainWindow::slotTextChanged(const QString &str)
@@ -237,8 +234,7 @@ void MainWindow::slotTextChanged(const QString &str)
             return;
 
         if(QRegExp("^[-+*/^]").indexIn(str) != -1) {
-            m_ui->expression->setText("ans " + str + " ");
-            m_ui->expression->setCursorPosition(m_ui->expression->text().length());
+            emit setInputText("ans " + str + " ");
         }
     }
 }
@@ -327,7 +323,7 @@ void MainWindow::loadConfig()
 
         bool showHistory = config.readEntry("ShowHistory", true);
         action<KToggleAction>("toggleHistoryList")->setChecked(showHistory);
-        m_ui->resultList->setShown(showHistory);
+        //m_ui->resultList->setShown(showHistory);
 
         bool showFunctions = config.readEntry("ShowFunctions", true);
         action<KToggleAction>("toggleFunctionList")->setChecked(showFunctions);
@@ -401,7 +397,7 @@ void MainWindow::saveConfig()
         config.writeEntry("InCompactMode", inCompactMode);
 
         if(!inCompactMode) {
-            config.writeEntry("ShowHistory", !m_ui->resultList->isHidden());
+            //config.writeEntry("ShowHistory", !m_ui->resultList->isHidden());
             config.writeEntry("ShowFunctions", !m_ui->fnList->isHidden());
             config.writeEntry("ShowVariables", !m_ui->varList->isHidden());
         }
@@ -511,7 +507,7 @@ void MainWindow::setupLayout()
     a->setIcon(KIcon("editclear"));
     ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_L);
 
-    a = ac->addAction("select_edit", m_ui->expression, SLOT(setFocus()));
+    a = ac->addAction("select_edit", m_declarativeView, SLOT(setFocus()));
     a->setIcon(KIcon("goto"));
     a->setText(i18n("Select Editor"));
     a->setShortcut(Qt::Key_F6);
@@ -531,17 +527,6 @@ void MainWindow::populateListViews()
 QAction *MainWindow::action(const char *key) const
 {
     return actionCollection()->action(key);
-}
-
-void MainWindow::slotEntrySelected(const QString &text)
-{
-    m_ui->expression->setText(text);
-    m_ui->expression->setCursorPosition(m_ui->expression->text().length());
-}
-
-void MainWindow::slotResultSelected(const QString &text)
-{
-    m_ui->expression->insert(text);
 }
 
 void MainWindow::slotToggleMenuBar()
@@ -578,7 +563,7 @@ void MainWindow::slotToggleVariableList()
 void MainWindow::slotToggleHistoryList()
 {
     bool show = action<KToggleAction>("toggleHistoryList")->isChecked();
-    m_ui->resultList->setShown(show);
+    //m_ui->resultList->setShown(show);
 
     action<KToggleAction>("toggleCompactMode")->setChecked(false);
 }
@@ -633,12 +618,12 @@ void MainWindow::slotToggleCompactMode()
     if(action<KToggleAction>("toggleCompactMode")->isChecked()) {
         m_wasFnShown = !m_ui->fnList->isHidden();
         m_wasVarShown = !m_ui->varList->isHidden();
-        m_wasHistoryShown = !m_ui->resultList->isHidden();
+        //m_wasHistoryShown = !m_ui->resultList->isHidden();
         m_compactMode = true;
 
         m_ui->fnList->setShown(false);
         m_ui->varList->setShown(false);
-        m_ui->resultList->setShown(false);
+        //m_ui->resultList->setShown(false);
 
         action<KToggleAction>("toggleFunctionList")->setChecked(false);
         action<KToggleAction>("toggleVariableList")->setChecked(false);
@@ -651,7 +636,7 @@ void MainWindow::slotToggleCompactMode()
     else {
         m_ui->fnList->setShown(m_wasFnShown);
         m_ui->varList->setShown(m_wasVarShown);
-        m_ui->resultList->setShown(m_wasHistoryShown);
+        //m_ui->resultList->setShown(m_wasHistoryShown);
         m_compactMode = false;
 
         action<KToggleAction>("toggleFunctionList")->setChecked(m_wasFnShown);
@@ -772,18 +757,6 @@ void MainWindow::selectCorrectPrecisionAction()
         default:
             action<KToggleAction>("precisionCustom")->setChecked(true);
     }
-}
-
-void MainWindow::itemClicked(const QModelIndex &index)
-{
-    QStandardItem *item = m_resultItemModel->model()->itemFromIndex(index);
-    if(!item)
-        return;
-
-    if(item->column() == 0)
-        slotEntrySelected(item->text());
-    else if(item->column() == 1)
-        slotResultSelected(item->text());
 }
 
 #include "mainwindow.moc"
