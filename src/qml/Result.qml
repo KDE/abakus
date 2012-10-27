@@ -22,7 +22,7 @@ Row {
             
             MouseArea {
                 anchors.fill: parent
-                onClicked: listView.expressionSelected(expression)
+                onClicked: history.expressionSelected(expression)
                 onDoubleClicked: console.log("TODO")
             }
         }
@@ -44,7 +44,7 @@ Row {
             
             MouseArea  {
                 anchors.fill: parent
-                onClicked: listView.resultSelected(result)
+                onClicked: history.resultSelected(result)
                 onDoubleClicked: console.log("TODO")
             }
         }
@@ -67,7 +67,7 @@ Row {
             
             MouseArea  {
                 anchors.fill: parent
-                onClicked: listView.tagSelected(parent.text)
+                onClicked: history.tagSelected(tag)
                 onDoubleClicked: {}//do nothing
             }
         }
