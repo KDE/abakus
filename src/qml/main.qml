@@ -9,7 +9,7 @@ Item {
     ListView {
         id: history
         width: parent.width
-        height: parent.height - 30
+        height: parent.height - input.height
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         currentIndex: count -1
@@ -28,6 +28,9 @@ Item {
         highlight: Rectangle {
             width: baseItem.width
             color: "lightblue"
+            
+            opacity: 0.5
+            z: 10
         }
         highlightFollowsCurrentItem: true
     }

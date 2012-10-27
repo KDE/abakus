@@ -19,13 +19,20 @@
 
 #include "resultmodelitem.h"
 
+static int globalIndex = 0;
+
+void resetResultModelItemIndex()
+{
+    globalIndex = 0;
+}
+
 ResultModelItem::ResultModelItem(const QString &expression, const Abakus::number_t &result)
-    : m_expression(expression), m_resultValue(result), m_result(result.toString()), m_tag(0), m_type(Result)
+    : m_expression(expression), m_resultValue(result), m_result(result.toString()), m_tag(0), m_index(globalIndex++), m_type(Result)
 {
 }
 
 ResultModelItem::ResultModelItem(const QString &message)
-: m_expression(message), m_resultValue(0), m_result(""), m_tag(0), m_type(Message)
+: m_expression(message), m_resultValue(0), m_result(""), m_tag(0), m_index(globalIndex++), m_type(Message)
 {
 }
 
@@ -42,6 +49,11 @@ QString ResultModelItem::result() const
 QString ResultModelItem::tag() const
 {
     return m_type == Result ? QString("$%1").arg(m_tag) : "";
+}
+
+int ResultModelItem::index() const
+{
+    return m_index;
 }
 
 void ResultModelItem::incrementTag()

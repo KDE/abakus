@@ -23,6 +23,8 @@
 
 #include "numerictypes.h"
 
+void resetResultModelItemIndex();
+
 class ResultModelItem
 {
 public:
@@ -34,6 +36,7 @@ public:
     QString expression() const;
     QString result() const;
     QString tag() const;
+    int index() const;
 
     void incrementTag();
     void updateResult();
@@ -45,6 +48,7 @@ private:
     const Abakus::number_t m_resultValue;
     QString m_result;
     int m_tag;
+    const int m_index;
     ResultItemType m_type;
 };
 

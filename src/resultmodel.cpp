@@ -32,17 +32,13 @@ ResultModel::ResultModel(QObject *parent)
     roles[ExpressionRole] = "expression";
     roles[ResultRole] = "result";
     roles[TagRole] = "tag";
+    roles[IndexRole] = "index";
     setRoleNames(roles);
 }
 
 ResultModel::~ResultModel()
 {
-    beginRemoveRows(QModelIndex(), 0, rowCount()-1);
-    while(!m_resultModelItems.isEmpty())
-    {
-        delete m_resultModelItems.takeFirst();
-    }
-    endRemoveRows();
+    clear();
 }
 
 void ResultModel::addResult(const QString &expr, const Abakus::number_t &result)
@@ -126,6 +122,10 @@ QVariant ResultModel::data(const QModelIndex & index, int role) const
     {
         return resultModelItem->tag();
     }
+    else if (role == IndexRole)
+    {
+        return resultModelItem->index();
+    }
     return QVariant();
 }
 
@@ -154,6 +154,7 @@ void ResultModel::clear()
     {
         delete m_resultModelItems.takeFirst();
     }
+    resetResultModelItemIndex();
     endRemoveRows();
 }
 

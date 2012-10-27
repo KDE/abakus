@@ -34,7 +34,8 @@ class ResultModel : public QAbstractListModel
     enum ResultRoles {
         ExpressionRole = Qt::UserRole + 1,
         ResultRole,
-        TagRole
+        TagRole,
+        IndexRole
     };
 
     ResultModel(QObject *parent);
