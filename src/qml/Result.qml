@@ -6,10 +6,10 @@ Row {
 
     Text {
         id: expressionItem
-        width: parent.width * 0.5
+        width: parent.width - resultItem.width - tagItem.width
         height: parent.height
         horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
         font.pixelSize: 12
         color: "darkgrey"
         text: expression
@@ -23,11 +23,9 @@ Row {
 
     Text {
         id: resultItem
-        //width: parent.width * 0.3
-        width: parent.width - expressionItem.width - tagItem.width
         height: parent.height
         horizontalAlignment: Text.AlignRight
-        verticalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
         font.pixelSize: 12
         text: result
         
@@ -37,14 +35,13 @@ Row {
             onDoubleClicked: console.log("TODO")
         }
     }
-
+    
     Text {
         id: tagItem
-        //width: parent.width * 0.2
-        width: 36
+        width: 25
         height: parent.height
-        horizontalAlignment: Text.AlignRight
-        verticalAlignment: Text.AlignHCenter
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
         font.pixelSize: 12
         font.italic: true
         color: "darkgrey"
