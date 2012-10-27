@@ -66,6 +66,7 @@ class MainWindow : public KXmlGuiWindow
     
     Q_INVOKABLE void slotEvaluate(const QString &expression);
     Q_INVOKABLE void slotTextChanged(const QString &str);
+    Q_INVOKABLE QString getTag(const int &index);
     
     signals:
     void setInputText(const QString &inputText);

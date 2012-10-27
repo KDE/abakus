@@ -239,6 +239,11 @@ void MainWindow::slotTextChanged(const QString &str)
     }
 }
 
+QString MainWindow::getTag(const int &index)
+{
+    return m_resultItemModel->data(m_resultItemModel->index(index), ResultModel::TagRole).toString();
+}
+
 void MainWindow::slotUpdateSize()
 {
     if(m_newSize != QSize(0, 0))
