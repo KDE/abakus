@@ -68,20 +68,20 @@ int ResultModel::rowCount(const QModelIndex & parent) const
 
 bool ResultModel::stackValue(unsigned position, Abakus::number_t &result)
 {
-    if(position > 20) // Don't search forever
+    if(position > 1000) // Don't search forever
     {
         return false;
     }
 
     unsigned stackCount = 0;
     
-    foreach(ResultModelItem* resultModelItem, m_resultModelItems)
+    for(int i = m_resultModelItems.count() - 1; i >= 0; --i)
     {
-        if(resultModelItem->type() == ResultModelItem::Result)
+        if(m_resultModelItems.at(i)->type() == ResultModelItem::Result)
         {
             if(stackCount == position)
             {
-                result = resultModelItem->resultValue();
+                result = m_resultModelItems.at(i)->resultValue();
                 return true;
             }
             
