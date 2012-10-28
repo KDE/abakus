@@ -128,6 +128,7 @@ bool MainWindow::inRPNMode() const
 bool MainWindow::queryExit()
 {
     saveConfig();
+    m_resultItemModel->clear();
     return KXmlGuiWindow::queryExit();
 }
 
