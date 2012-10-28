@@ -166,7 +166,7 @@ void MainWindow::slotEvaluate()
         }
         else {
             m_insert = false;
-            resultVal = i18n("Error: %1").arg(RPNParser::errorString());
+            resultVal = i18n("Error: %1", RPNParser::errorString());
         }
 
         // Skip creating list view items if in compact mode.
@@ -204,7 +204,7 @@ void MainWindow::slotEvaluate()
             break;
 
             case Result::Null: // OK, no result to speak of
-                resultVal = "OK";
+                resultVal = i18n("OK");
                 m_resultItemModel->addMessage(resultVal);
             break;
 
@@ -679,7 +679,7 @@ QString MainWindow::interpolateExpression(const QString &text)
         unsigned numPos = stackStr.mid(1).toUInt();
 
         if(!m_resultItemModel->stackValue(numPos, value)) {
-            m_resultItemModel->addMessage(i18n("Marker %1 isn't set", stackStr));
+            m_resultItemModel->addMessage(i18n("Marker %1 is not set", stackStr));
             return QString();
         }
 

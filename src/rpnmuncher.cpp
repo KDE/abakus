@@ -101,7 +101,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         case Pop:
             if(m_stack.isEmpty()) {
                 m_error = true;
-                m_errorStr = i18n("Can't pop from an empty stack.");
+                m_errorStr = i18n("Cannot pop from an empty stack.");
                 return Abakus::number_t::nan();
             }
 
@@ -115,7 +115,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         case Func:
             if(m_stack.count() < 1) {
                 m_error = true;
-                m_errorStr = i18n("Insufficient operands for function %1").arg(*it);
+                m_errorStr = i18n("Insufficient operands for function %1", *it);
                 return Abakus::number_t::nan();
             }
 
@@ -150,7 +150,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
 
         case Unknown:
             m_error = true;
-            m_errorStr = i18n("Unknown token %1").arg(*it);
+            m_errorStr = i18n("Unknown token %1", *it);
             return Abakus::number_t::nan();
         break;
 

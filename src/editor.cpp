@@ -622,7 +622,7 @@ void Editor::autoCalc()
     Abakus::number_t result = parseString(str.latin1());
     if( Result::lastResult()->type() == Result::Value )
     {
-        QString ss = QString("Result: <b>%2</b>").arg(result.toString());
+        QString ss = i18n("Result: <b>%2</b>", result.toString());
         d->autoCalcLabel->setText( ss );
         d->autoCalcLabel->adjustSize();
 
