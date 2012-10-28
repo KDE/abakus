@@ -57,7 +57,14 @@
 #include "resultmodel.h"
 
 MainWindow::MainWindow() :
-    KXmlGuiWindow(0), m_ui(new Ui::MainWindow), m_popup(0), m_insert(false)
+    KXmlGuiWindow(0),
+    m_ui(new Ui::MainWindow),
+    m_popup(0),
+    m_resultItemModel (new ResultModel(this)),
+    m_newSize(QSize(600, 300)), m_oldSize(QSize(600, 300)),
+    m_wasFnShown(true), m_wasVarShown(true), m_wasHistoryShown(true),
+    m_compactMode(false),
+    m_insert(false)
 {
     setObjectName("abakusMainWindow");
     QWidget *w = new QWidget(this);
@@ -69,7 +76,6 @@ MainWindow::MainWindow() :
     connect(m_ui->degreesButton, SIGNAL(clicked()), SLOT(slotDegrees()));
     connect(m_ui->radiansButton, SIGNAL(clicked()), SLOT(slotRadians()));
 
-    m_resultItemModel = new ResultModel(this);
     m_ui->resultList->setModel(m_resultItemModel->model());
     m_ui->resultList->header()->setResizeMode(QHeaderView::ResizeToContents);
     connect(m_resultItemModel, SIGNAL(signalColumnChanged(int)),

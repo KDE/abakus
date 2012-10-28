@@ -119,7 +119,6 @@ class MainWindow : public KXmlGuiWindow
     Ui::MainWindow *m_ui;
     QMenu *m_popup;
     ResultModel *m_resultItemModel;
-    QString m_lastError;
     QSize m_newSize, m_oldSize;
 
 //    AbakusIface *m_dcopInterface;
