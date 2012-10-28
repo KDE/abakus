@@ -30,14 +30,6 @@ Item {
         
         model: resultModel
         delegate: Result { }
-        highlight: Rectangle {
-            width: baseItem.width
-            color: "lightblue"
-            
-            opacity: 0.5
-            z: 10
-        }
-        highlightFollowsCurrentItem: true
 
         Connections {
             target: mainWindow

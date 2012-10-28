@@ -5,12 +5,13 @@ Row {
     height: 20
     
     property string rowBackground: index % 2 == 0 ? "white" : "whitesmoke"
+    property string highlightColor: "lightblue"
 
     Rectangle {
         id: expressionItem
         width: parent.width - resultItem.width - tagItem.width
         height: parent.height
-        color: rowBackground
+        color: index == history.currentIndex ? highlightColor : rowBackground
         
         Text {
             height: parent.height
@@ -32,7 +33,7 @@ Row {
         id: resultItem
         width: resultItemText.width
         height: parent.height
-        color: rowBackground
+        color: index == history.currentIndex ? highlightColor : rowBackground
         
         Text {
             id: resultItemText
@@ -54,7 +55,7 @@ Row {
         id: tagItem
         width: tag == "" ? 0 : history.minTagSize
         height: parent.height
-        color: rowBackground
+        color: index == history.currentIndex ? highlightColor : rowBackground
         
         Text {
             height: parent.height
