@@ -5,12 +5,50 @@ Item {
     id: baseItem
     width: 500
     height: 300
+
+    PlasmaComponents.TabBar {
+        id: trigMode
+        height: 30
+        anchors.right: parent.right
+        z: 10
+        
+        PlasmaComponents.TabButton {
+            id: degrees
+            text: "Degrees"
+        }
+        PlasmaComponents.TabButton {
+            id: radians
+            text: "Radians"
+        }
+
+        onCurrentTabChanged: {
+            if(currentTab == degrees) {
+                mainWindow.setDegrees()
+            }
+            else {
+                mainWindow.setRadians()
+            }
+        }
+        
+        Connections {
+            target: mainWindow
+            
+            onTrigModeChanged: {
+                if(trigMode.currentTab == degrees && mode != 0) { //TODO: use the Abakus::TrigMode enum
+                    trigMode.currentTab = radians
+                }
+                else if(trigMode.currentTab == radians && mode != 1) {
+                    trigMode.currentTab = degrees
+                }
+            }
+        }
+    }
     
     ListView {
         id: history
         width: parent.width
-        height: parent.height - input.height
-        anchors.top: parent.top
+        height: parent.height - trigMode.height - input.height
+        anchors.top: trigMode.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         currentIndex: count -1
         visible: true

@@ -79,8 +79,6 @@ MainWindow::MainWindow() :
     m_ui->setupUi(w);
 
     slotDegrees();
-    connect(m_ui->degreesButton, SIGNAL(clicked()), SLOT(slotDegrees()));
-    connect(m_ui->radiansButton, SIGNAL(clicked()), SLOT(slotRadians()));
 
     connect(FunctionManager::instance(), SIGNAL(signalFunctionAdded(const QString &)),
             this, SLOT(slotNewFunction(const QString &)));
@@ -243,6 +241,16 @@ QString MainWindow::getTag(const int &index)
     return m_resultItemModel->data(m_resultItemModel->index(index), ResultModel::TagRole).toString();
 }
 
+void MainWindow::setDegrees()
+{
+    slotDegrees();
+}
+
+void MainWindow::setRadians()
+{
+    slotRadians();
+}
+
 void MainWindow::setHistoryVisible(const bool& visible)
 {
     m_historyVisible = visible;
@@ -260,7 +268,7 @@ void MainWindow::slotUpdateSize()
 void MainWindow::slotDegrees()
 {
     setTrigMode(Abakus::Degrees);
-    m_ui->degreesButton->setChecked(true);
+    emit trigModeChanged((int)Abakus::Degrees);
     if(action("setDegreesMode"))
         action<KToggleAction>("setDegreesMode")->setChecked(true);
 }
@@ -268,7 +276,7 @@ void MainWindow::slotDegrees()
 void MainWindow::slotRadians()
 {
     setTrigMode(Abakus::Radians);
-    m_ui->radiansButton->setChecked(true);
+    emit trigModeChanged((int)Abakus::Radians);
     if(action("setRadiansMode"))
         action<KToggleAction>("setRadiansMode")->setChecked(true);
 }
@@ -294,11 +302,11 @@ void MainWindow::loadConfig()
         QString mode = config.readEntry("Trigonometric mode", "Degrees");
         if(mode == "Degrees") {
             setTrigMode(Abakus::Degrees);
-            m_ui->degreesButton->setChecked(true);
+            emit trigModeChanged((int)Abakus::Degrees);
         }
         else {
             setTrigMode(Abakus::Radians);
-            m_ui->radiansButton->setChecked(true);
+            emit trigModeChanged((int)Abakus::Radians);
         }
 
         bool useRPN = config.readEntry("Use RPN Mode", false);

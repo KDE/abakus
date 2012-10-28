@@ -67,11 +67,15 @@ class MainWindow : public KXmlGuiWindow
     Q_INVOKABLE void slotEvaluate(const QString &expression);
     Q_INVOKABLE void slotTextChanged(const QString &str);
     Q_INVOKABLE QString getTag(const int &index);
+
+    Q_INVOKABLE void setDegrees();
+    Q_INVOKABLE void setRadians();
     
     Q_INVOKABLE void setHistoryVisible(const bool &visible);
     
     signals:
     void setInputText(const QString &inputText);
+    void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
     void historyVisibleChanged(const bool &visible);
     
     private slots:

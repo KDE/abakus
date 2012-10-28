@@ -22,35 +22,7 @@
      <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout">
        <item>
-        <layout class="QHBoxLayout">
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="degreesButton">
-           <property name="text">
-            <string>&amp;Degrees</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radiansButton">
-           <property name="text">
-            <string>&amp;Radians</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <layout class="QHBoxLayout"/>
        </item>
        <item>
         <layout class="QHBoxLayout"/>
