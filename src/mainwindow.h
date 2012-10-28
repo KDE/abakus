@@ -68,8 +68,11 @@ class MainWindow : public KXmlGuiWindow
     Q_INVOKABLE void slotTextChanged(const QString &str);
     Q_INVOKABLE QString getTag(const int &index);
     
+    Q_INVOKABLE void setHistoryVisible(const bool &visible);
+    
     signals:
     void setInputText(const QString &inputText);
+    void historyVisibleChanged(const bool &visible);
     
     private slots:
     void slotPrecisionAuto();
@@ -129,6 +132,7 @@ class MainWindow : public KXmlGuiWindow
     QDeclarativeView* m_declarativeView;
     QDeclarativeContext *m_declarativeContext;
 
+    bool m_historyVisible;
     bool m_wasFnShown, m_wasVarShown, m_wasHistoryShown;
     bool m_compactMode;
 

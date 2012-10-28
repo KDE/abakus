@@ -67,6 +67,7 @@ MainWindow::MainWindow() :
     m_popup(0),
     m_resultItemModel (new ResultModel(this)),
     m_newSize(QSize(600, 300)), m_oldSize(QSize(600, 300)),
+    m_historyVisible(true),
     m_wasFnShown(true), m_wasVarShown(true), m_wasHistoryShown(true),
     m_compactMode(false),
     m_insert(false)
@@ -80,9 +81,6 @@ MainWindow::MainWindow() :
     slotDegrees();
     connect(m_ui->degreesButton, SIGNAL(clicked()), SLOT(slotDegrees()));
     connect(m_ui->radiansButton, SIGNAL(clicked()), SLOT(slotRadians()));
-
-    //connect(m_resultItemModel, SIGNAL(signalColumnChanged(int)),
-    //        m_ui->resultList, SLOT(resizeColumnToContents(int)));
 
     connect(FunctionManager::instance(), SIGNAL(signalFunctionAdded(const QString &)),
             this, SLOT(slotNewFunction(const QString &)));
@@ -244,6 +242,12 @@ QString MainWindow::getTag(const int &index)
     return m_resultItemModel->data(m_resultItemModel->index(index), ResultModel::TagRole).toString();
 }
 
+void MainWindow::setHistoryVisible(const bool& visible)
+{
+    m_historyVisible = visible;
+    emit historyVisibleChanged(visible);
+}
+
 void MainWindow::slotUpdateSize()
 {
     if(m_newSize != QSize(0, 0))
@@ -328,7 +332,7 @@ void MainWindow::loadConfig()
 
         bool showHistory = config.readEntry("ShowHistory", true);
         action<KToggleAction>("toggleHistoryList")->setChecked(showHistory);
-        //m_ui->resultList->setShown(showHistory);
+        setHistoryVisible(showHistory);
 
         bool showFunctions = config.readEntry("ShowFunctions", true);
         action<KToggleAction>("toggleFunctionList")->setChecked(showFunctions);
@@ -402,7 +406,7 @@ void MainWindow::saveConfig()
         config.writeEntry("InCompactMode", inCompactMode);
 
         if(!inCompactMode) {
-            //config.writeEntry("ShowHistory", !m_ui->resultList->isHidden());
+            config.writeEntry("ShowHistory", m_historyVisible);
             config.writeEntry("ShowFunctions", !m_ui->fnList->isHidden());
             config.writeEntry("ShowVariables", !m_ui->varList->isHidden());
         }
@@ -568,7 +572,7 @@ void MainWindow::slotToggleVariableList()
 void MainWindow::slotToggleHistoryList()
 {
     bool show = action<KToggleAction>("toggleHistoryList")->isChecked();
-    //m_ui->resultList->setShown(show);
+    setHistoryVisible(show);
 
     action<KToggleAction>("toggleCompactMode")->setChecked(false);
 }
@@ -623,12 +627,12 @@ void MainWindow::slotToggleCompactMode()
     if(action<KToggleAction>("toggleCompactMode")->isChecked()) {
         m_wasFnShown = !m_ui->fnList->isHidden();
         m_wasVarShown = !m_ui->varList->isHidden();
-        //m_wasHistoryShown = !m_ui->resultList->isHidden();
+        m_wasHistoryShown = m_historyVisible;
         m_compactMode = true;
 
         m_ui->fnList->setShown(false);
         m_ui->varList->setShown(false);
-        //m_ui->resultList->setShown(false);
+        setHistoryVisible(false);
 
         action<KToggleAction>("toggleFunctionList")->setChecked(false);
         action<KToggleAction>("toggleVariableList")->setChecked(false);
@@ -641,7 +645,7 @@ void MainWindow::slotToggleCompactMode()
     else {
         m_ui->fnList->setShown(m_wasFnShown);
         m_ui->varList->setShown(m_wasVarShown);
-        //m_ui->resultList->setShown(m_wasHistoryShown);
+        setHistoryVisible(m_wasHistoryShown);
         m_compactMode = false;
 
         action<KToggleAction>("toggleFunctionList")->setChecked(m_wasFnShown);

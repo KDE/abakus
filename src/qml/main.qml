@@ -13,6 +13,7 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         currentIndex: count -1
+        visible: true
         
         signal expressionSelected( string expression )
         onExpressionSelected: input.text = expression
@@ -37,6 +38,12 @@ Item {
             z: 10
         }
         highlightFollowsCurrentItem: true
+
+        Connections {
+            target: mainWindow
+            
+            onHistoryVisibleChanged: history.visible = visible
+        }
     }
 
     PlasmaComponents.TextField {

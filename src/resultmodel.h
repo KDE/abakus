@@ -49,11 +49,6 @@ class ResultModel : public QAbstractListModel
     
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
-    signals:
-    /// Only emitted when the result column changes in width due to the user
-    /// selecting a different precision.
-    void signalColumnChanged(int);
-
     public slots:
     void slotRedrawItems(); ///< Called when precision length changes.
     void clear(); ///< Removes all non-header items.
