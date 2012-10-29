@@ -23,8 +23,8 @@
 
 <legalnotice>&FDLNotice;</legalnotice>
 
-<date>2005-07-06</date>
-<releaseinfo>0.90</releaseinfo>
+<date>2012-10-29</date>
+<releaseinfo>0.92</releaseinfo>
 
 <abstract>
 <para>&abakus; is a calculator designed with computer usability in mind</para>
@@ -39,10 +39,10 @@
 </bookinfo>
 
 <chapter id="introduction">
-<title>What is abakus?</title>
+<title>What is &abakus;?</title>
 <para>&abakus; is a calculator designed with computer usability in mind, as opposed to just being a clone of your desktop calculator. Instead of using your powerful computer to put a limited simulation of a calculator on-screen, &abakus; instead allows you to use your computer to its greater potential.</para>
 
-<para>Enough of the metaphysics, how about an example of what I'm talking about? Let's use&kcalc;, the normal &kde; calculator program as an example, trying to calculate 3 multiplied by the sine of 50 degrees. First you would do something like the following:</para>
+<para>Enough of the metaphysics, how about an example of what I'm talking about? Let's use &kcalc;, the normal &kde; calculator program as an example, trying to calculate 3 multiplied by the sine of 50 degrees. First you would do something like the following:</para>
 
 <para>1. Make sure you're in Degrees mode:</para>
 <para><inlinemediaobject>
@@ -109,9 +109,9 @@
 
 <sect1 id="basics">
 <title>Basic usage</title>
-<para>The basic synposis is: Type your expression, and hit Enter. &abakus; will calculate the value of what you typed and display it on the screen. You can use many functions from mathematics, and even define your own functions. You can also define and use variables.</para>
+<para>The basic synopsis is: Type your expression, and hit Enter. &abakus; will calculate the value of what you typed and display it on the screen. You can use many functions from mathematics, and even define your own functions. You can also define and use variables.</para>
 
-<para>You can define your own functions in abakus. To do so, at the expression prompt, you would type something like: <userinput>set funcname(var) = expr</userinput> and hit Enter. If all went well &abakus; will simply output <guilabel>OK</guilabel>, and you'll see your function appear in the user-defined function list. Now you can use your function as normal. If you'd like to remove your function, you can either right-click on it in the user function list and select <guilabel>Remove Function</guilabel>, or enter <userinput>remove funcname()</userinput> in the expression prompt and hit Enter. Note that you don't enter the variable name in the parentheses since only the function name is needed. (The reason you still need the parentheses is because your variables can have the same name as a function).</para>
+<para>You can define your own functions in &abakus;. To do so, at the expression prompt, you would type something like: <userinput>set funcname(var) = expr</userinput> and hit Enter. If all went well &abakus; will simply output <guilabel>OK</guilabel>, and you'll see your function appear in the user-defined function list. Now you can use your function as normal. If you'd like to remove your function, you can either right-click on it in the user function list and select <guilabel>Remove Function</guilabel>, or enter <userinput>remove funcname()</userinput> in the expression prompt and hit Enter. Note that you don't enter the variable name in the parentheses since only the function name is needed. (The reason you still need the parentheses is because your variables can have the same name as a function).</para>
 
 <para>You can also define your own variables. &abakus; comes with the basic mathematical constants pi (&pi;) and e (Euler's Constant) defined by default. To define your own variable, at the expression prompt you would type: <userinput><replaceable>name</replaceable> = <replaceable>value</replaceable></userinput>, or <userinput>set <replaceable>name</replaceable> = <replaceable>value</replaceable></userinput>. You will then see your variable in the list of variables. To remove your variable, either right-click on it in the list and select <guilabel>Remove Variable</guilabel>, or enter <userinput>remove varname</userinput> in the expression prompt. Notice that there are no parentheses this time. ;-)</para>
 
@@ -243,6 +243,7 @@ are currently unsupported in RPN Mode.</para>
 
 </sect1>
 
+<!-- Not here now
 <sect1 id="advanced-dnd">
 <title>Drag and Drop</title>
 
@@ -263,7 +264,7 @@ into an application.</para>
 </mediaobject>
 </screenshot>
 </sect1>
-
+-->
 </chapter>
 
 <chapter id="command-reference">
