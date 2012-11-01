@@ -294,152 +294,145 @@ int MainWindow::getParenthesesLevel(const QString &str)
 
 void MainWindow::loadConfig()
 {
-    {
-        KConfigGroup config(KGlobal::config(), "Settings");
+    KConfigGroup config = KGlobal::config()->group("Settings");
 
-        QString mode = config.readEntry("Trigonometric mode", "Degrees");
-        if(mode == "Degrees") {
-            setTrigMode(Abakus::Degrees);
-            emit trigModeChanged((int)Abakus::Degrees);
-        }
-        else {
-            setTrigMode(Abakus::Radians);
-            emit trigModeChanged((int)Abakus::Radians);
-        }
-
-        bool useRPN = config.readEntry("Use RPN Mode", false);
-        action<KToggleAction>("toggleExpressionMode")->setChecked(useRPN);
-
-        int precision = config.readEntry("Decimal Precision", -1);
-        if(precision < -1 || precision > 75)
-            precision = -1;
-
-        Abakus::m_prec = precision;
-        selectCorrectPrecisionAction();
+    QString mode = config.readEntry("Trigonometric mode", "Degrees");
+    if(mode == "Degrees") {
+        setTrigMode(Abakus::Degrees);
+        emit trigModeChanged((int)Abakus::Degrees);
+    }
+    else {
+        setTrigMode(Abakus::Radians);
+        emit trigModeChanged((int)Abakus::Radians);
     }
 
-    {
-        KConfigGroup config(KGlobal::config(), "Variables");
+    bool useRPN = config.readEntry("Use RPN Mode", false);
+    action<KToggleAction>("toggleExpressionMode")->setChecked(useRPN);
 
-        QStringList list = config.readEntry("Saved Variables", QStringList());
-        foreach(QString str, list) {
-            QStringList values = str.split('=');
-            if(values.count() != 2) {
-                kWarning() << "Your configuration file has somehow been corrupted!\n";
-                continue;
-            }
+    int precision = config.readEntry("Decimal Precision", -1);
+    if(precision < -1 || precision > 75)
+        precision = -1;
 
-            QByteArray valueStr = values[1].toLatin1();
-            NumeralModel::instance()->setValue(values[0], Abakus::number_t(valueStr.data()));
+    Abakus::m_prec = precision;
+    selectCorrectPrecisionAction();
+
+
+    config = KGlobal::config()->group("Variables");
+
+    QStringList list = config.readEntry("Saved Variables", QStringList());
+    foreach(QString str, list) {
+        QStringList values = str.split('=');
+        if(values.count() != 2) {
+            kWarning() << "Your configuration file has somehow been corrupted!\n";
+            continue;
         }
+
+        QByteArray valueStr = values[1].toLatin1();
+        NumeralModel::instance()->setValue(values[0], Abakus::number_t(valueStr.data()));
     }
 
-    {
-        KConfigGroup config(KGlobal::config(), "GUI");
+    
+    config = KGlobal::config()->group("GUI");
 
-        bool showHistory = config.readEntry("ShowHistory", true);
-        action<KToggleAction>("toggleHistoryList")->setChecked(showHistory);
-        setHistoryVisible(showHistory);
+    bool showHistory = config.readEntry("ShowHistory", true);
+    action<KToggleAction>("toggleHistoryList")->setChecked(showHistory);
+    setHistoryVisible(showHistory);
 
-        bool showFunctions = config.readEntry("ShowFunctions", true);
-        action<KToggleAction>("toggleFunctionList")->setChecked(showFunctions);
-        m_ui->fnList->setShown(showFunctions);
+    bool showFunctions = config.readEntry("ShowFunctions", true);
+    action<KToggleAction>("toggleFunctionList")->setChecked(showFunctions);
+    m_ui->fnList->setShown(showFunctions);
 
-        bool showVariables = config.readEntry("ShowVariables", true);
-        action<KToggleAction>("toggleVariableList")->setChecked(showVariables);
-        setNumeralsVisible(showVariables);
+    bool showVariables = config.readEntry("ShowVariables", true);
+    action<KToggleAction>("toggleVariableList")->setChecked(showVariables);
+    setNumeralsVisible(showVariables);
 
-        bool compactMode = config.readEntry("InCompactMode", false);
-        compactMode = compactMode || !showHistory;
-        action<KToggleAction>("toggleCompactMode")->setChecked(compactMode);
+    bool compactMode = config.readEntry("InCompactMode", false);
+    compactMode = compactMode || !showHistory;
+    action<KToggleAction>("toggleCompactMode")->setChecked(compactMode);
 
-        if(compactMode)
-            QTimer::singleShot(0, this, SLOT(slotToggleCompactMode()));
-    }
+    if(compactMode)
+        QTimer::singleShot(0, this, SLOT(slotToggleCompactMode()));
 
-    {
-        KConfigGroup config(KGlobal::config(), "Functions");
 
-        QStringList fnList = config.readEntry("FunctionList", QStringList());
-        foreach(QString str, fnList) {
-            QByteArray strValue = str.toLatin1();
-            parseString(strValue.data()); // Run the function definitions through the parser
-        }
+    config = KGlobal::config()->group("Functions");
+
+    QStringList fnList = config.readEntry("FunctionList", QStringList());
+    foreach(QString str, fnList) {
+        QByteArray strValue = str.toLatin1();
+        parseString(strValue.data()); // Run the function definitions through the parser
     }
 }
 
 void MainWindow::saveConfig()
 {
-    {
-        KConfigGroup config(KGlobal::config(), "Settings");
+    KConfigGroup config = KGlobal::config()->group("Settings");
 
-        config.writeEntry("Trigonometric mode",
-             trigMode() == Abakus::Degrees
-             ? "Degrees"
-             : "Radians");
+    config.writeEntry("Trigonometric mode",
+            trigMode() == Abakus::Degrees
+            ? "Degrees"
+            : "Radians");
 
-        config.writeEntry("Use RPN Mode", inRPNMode());
-        config.writeEntry("Decimal Precision", Abakus::m_prec);
+    config.writeEntry("Use RPN Mode", inRPNMode());
+    config.writeEntry("Decimal Precision", Abakus::m_prec);
+
+    
+    config = KGlobal::config()->group("Variables");
+
+    QStringList list;
+    QStringList values = NumeralModel::instance()->valueNames();
+    QStringList::ConstIterator it = values.begin();
+
+    // Set precision to max for most accuracy
+    Abakus::m_prec = 75;
+
+    for(; it != values.end(); ++it) {
+        if(NumeralModel::instance()->isValueReadOnly(*it))
+            continue;
+
+        list += QString("%1=%2")
+                    .arg(*it)
+                    .arg(NumeralModel::instance()->value(*it).toString());
     }
 
-    {
-        KConfigGroup config(KGlobal::config(), "Variables");
+    config.writeEntry("Saved Variables", list);
 
-        QStringList list;
-        QStringList values = NumeralModel::instance()->valueNames();
-        QStringList::ConstIterator it = values.begin();
 
-        // Set precision to max for most accuracy
-        Abakus::m_prec = 75;
+    config = KGlobal::config()->group("GUI");
+    
+    bool inCompactMode = action<KToggleAction>("toggleCompactMode")->isChecked();
 
-        for(; it != values.end(); ++it) {
-            if(NumeralModel::instance()->isValueReadOnly(*it))
-                continue;
+    config.writeEntry("InCompactMode", inCompactMode);
 
-            list += QString("%1=%2")
-                        .arg(*it)
-                        .arg(NumeralModel::instance()->value(*it).toString());
-        }
-
-        config.writeEntry("Saved Variables", list);
+    if(!inCompactMode) {
+        config.writeEntry("ShowHistory", m_historyVisible);
+        config.writeEntry("ShowFunctions", !m_ui->fnList->isHidden());
+        config.writeEntry("ShowVariables", m_numeralsVisible);
+    }
+    else {
+        config.writeEntry("ShowHistory", m_wasHistoryShown);
+        config.writeEntry("ShowFunctions", m_wasFnShown);
+        config.writeEntry("ShowVariables", m_wasVarShown);
     }
 
-    {
-        KConfigGroup config(KGlobal::config(), "GUI");
-        bool inCompactMode = action<KToggleAction>("toggleCompactMode")->isChecked();
 
-        config.writeEntry("InCompactMode", inCompactMode);
+    config = KGlobal::config()->group("Functions");
 
-        if(!inCompactMode) {
-            config.writeEntry("ShowHistory", m_historyVisible);
-            config.writeEntry("ShowFunctions", !m_ui->fnList->isHidden());
-            config.writeEntry("ShowVariables", m_numeralsVisible);
-        }
-        else {
-            config.writeEntry("ShowHistory", m_wasHistoryShown);
-            config.writeEntry("ShowFunctions", m_wasFnShown);
-            config.writeEntry("ShowVariables", m_wasVarShown);
-        }
+    FunctionManager *manager = FunctionManager::instance();
+
+    QStringList userFunctions = manager->functionList(FunctionManager::UserDefined);
+    QStringList saveList;
+
+    for(QStringList::ConstIterator it = userFunctions.begin(); it != userFunctions.end(); ++it) {
+        UnaryFunction *fn = dynamic_cast<UnaryFunction *>(manager->function(*it)->userFn->fn);
+        QString var = manager->function(*it)->userFn->varName;
+        QString expr = fn->operand()->infixString();
+
+        saveList += QString("set %1(%2) = %3").arg(*it).arg(var).arg(expr);
     }
 
-    {
-        KConfigGroup config(KGlobal::config(), "Functions");
+    config.writeEntry("FunctionList", saveList);
 
-        FunctionManager *manager = FunctionManager::instance();
-
-        QStringList userFunctions = manager->functionList(FunctionManager::UserDefined);
-        QStringList saveList;
-
-        for(QStringList::ConstIterator it = userFunctions.begin(); it != userFunctions.end(); ++it) {
-            UnaryFunction *fn = dynamic_cast<UnaryFunction *>(manager->function(*it)->userFn->fn);
-            QString var = manager->function(*it)->userFn->varName;
-            QString expr = fn->operand()->infixString();
-
-            saveList += QString("set %1(%2) = %3").arg(*it).arg(var).arg(expr);
-        }
-
-        config.writeEntry("FunctionList", saveList);
-    }
+    config.sync();
 }
 
 void MainWindow::setupLayout()
