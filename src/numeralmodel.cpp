@@ -22,19 +22,19 @@
 #include <QtCore/QRegExp>
 
 #include "numerictypes.h"
-#include "valuemanager.h"
+#include "numeralmodel.h"
 
-ValueManager *ValueManager::m_manager = 0;
+NumeralModel *NumeralModel::m_manager = 0;
 
-ValueManager *ValueManager::instance()
+NumeralModel *NumeralModel::instance()
 {
     if(!m_manager)
-        m_manager = new ValueManager;
+        m_manager = new NumeralModel;
 
     return m_manager;
 }
 
-ValueManager::ValueManager(QObject *parent) : QAbstractListModel(parent)
+NumeralModel::NumeralModel(QObject *parent) : QAbstractListModel(parent)
 {
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
@@ -52,7 +52,7 @@ ValueManager::ValueManager(QObject *parent) : QAbstractListModel(parent)
     setObjectName ("ValueManager");
 }
 
-ValueManager::~ValueManager()
+NumeralModel::~NumeralModel()
 {
     beginRemoveRows(QModelIndex(), 0, rowCount()-1);
     while(!m_numeralModelItems.isEmpty())
@@ -62,7 +62,7 @@ ValueManager::~ValueManager()
     endRemoveRows();
 }
 
-int ValueManager::numeralModelItemIndex(const QString& name) const
+int NumeralModel::numeralModelItemIndex(const QString& name) const
 {
     for(int i = 0; i < m_numeralModelItems.count(); ++i)
     {
@@ -75,12 +75,12 @@ int ValueManager::numeralModelItemIndex(const QString& name) const
     return -1;
 }
 
-int ValueManager::rowCount(const QModelIndex & parent) const
+int NumeralModel::rowCount(const QModelIndex & parent) const
 {
     return m_numeralModelItems.count();
 }
 
-QVariant ValueManager::data(const QModelIndex & index, int role) const
+QVariant NumeralModel::data(const QModelIndex & index, int role) const
 {
     if (index.row() < 0 || index.row() > m_numeralModelItems.count())
     {
@@ -107,7 +107,7 @@ QVariant ValueManager::data(const QModelIndex & index, int role) const
     return QVariant();
 }
 
-Abakus::number_t ValueManager::value(const QString &name) const
+Abakus::number_t NumeralModel::value(const QString &name) const
 {
     int numeralIndex = numeralModelItemIndex(name);
     if(numeralIndex != -1)
@@ -118,12 +118,12 @@ Abakus::number_t ValueManager::value(const QString &name) const
     return Abakus::number_t();
 }
 
-bool ValueManager::isValueSet(const QString &name) const
+bool NumeralModel::isValueSet(const QString &name) const
 {
     return numeralModelItemIndex(name) != -1;
 }
 
-bool ValueManager::isValueReadOnly(const QString &name) const
+bool NumeralModel::isValueReadOnly(const QString &name) const
 {
     int numeralIndex = numeralModelItemIndex(name);
     if(numeralIndex != -1)
@@ -134,7 +134,7 @@ bool ValueManager::isValueReadOnly(const QString &name) const
     return false;
 }
 
-void ValueManager::setValue(const QString &name, const Abakus::number_t value)
+void NumeralModel::setValue(const QString &name, const Abakus::number_t value)
 {
     int numeralIndex = numeralModelItemIndex(name);
     if(numeralIndex != -1 && m_numeralModelItems[numeralIndex]->value() != value)
@@ -151,7 +151,7 @@ void ValueManager::setValue(const QString &name, const Abakus::number_t value)
     }
 }
 
-void ValueManager::removeValue(const QString &name)
+void NumeralModel::removeValue(const QString &name)
 {
     int numeralIndex = numeralModelItemIndex(name);
     if(numeralIndex != -1)
@@ -162,7 +162,7 @@ void ValueManager::removeValue(const QString &name)
     }
 }
 
-void ValueManager::slotRemoveUserVariables()
+void NumeralModel::slotRemoveUserVariables()
 {
     QStringList vars = valueNames();
 
@@ -175,7 +175,7 @@ void ValueManager::slotRemoveUserVariables()
     }
 }
 
-void ValueManager::slotRedrawItems()
+void NumeralModel::slotRedrawItems()
 {
     if(rowCount() == 0)
     {
@@ -190,7 +190,7 @@ void ValueManager::slotRedrawItems()
     emit dataChanged(index(0), index(rowCount() - 1));
 }
 
-QStringList ValueManager::valueNames() const
+QStringList NumeralModel::valueNames() const
 {
     QStringList strList;
     foreach(NumeralModelItem* numeralModelItem, m_numeralModelItems)
@@ -201,7 +201,7 @@ QStringList ValueManager::valueNames() const
     return strList;
 }
 
-QString ValueManager::description(const QString &name)
+QString NumeralModel::description(const QString &name)
 {
     int numeralIndex = numeralModelItemIndex(name);
     if(numeralIndex != -1)
@@ -212,6 +212,6 @@ QString ValueManager::description(const QString &name)
     return QString();
 }
 
-#include "valuemanager.moc"
+#include "numeralmodel.moc"
 
 // vim: set et ts=8 sw=4 encoding=utf-8:

@@ -28,7 +28,7 @@
 
 #include "function.h"
 #include "node.h"
-#include "valuemanager.h"
+#include "numeralmodel.h"
 #include "hmath.h"
 
 // Used to try and avoid recursive function definitions
@@ -282,18 +282,18 @@ Abakus::number_t evaluateFunction(const Function *func, const Abakus::number_t v
         // Pull real entry from userFunctionTable
         UserFunction *realFunction = func->userFn;
 
-        bool wasSet = ValueManager::instance()->isValueSet(realFunction->varName);
+        bool wasSet = NumeralModel::instance()->isValueSet(realFunction->varName);
         Abakus::number_t oldValue;
         if(wasSet)
-            oldValue = ValueManager::instance()->value(realFunction->varName);
+            oldValue = NumeralModel::instance()->value(realFunction->varName);
 
-        ValueManager::instance()->setValue(realFunction->varName, value);
+        NumeralModel::instance()->setValue(realFunction->varName, value);
         Abakus::number_t result = realFunction->fn->value();
 
         if(wasSet)
-            ValueManager::instance()->setValue(realFunction->varName, oldValue);
+            NumeralModel::instance()->setValue(realFunction->varName, oldValue);
         else
-            ValueManager::instance()->removeValue(realFunction->varName);
+            NumeralModel::instance()->removeValue(realFunction->varName);
 
         return result;
     }

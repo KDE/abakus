@@ -26,7 +26,7 @@
 #include "numerictypes.h"
 #include "numeralmodelitem.h"
 
-class ValueManager : public QAbstractListModel
+class NumeralModel : public QAbstractListModel
 {
     Q_OBJECT
     public:
@@ -37,7 +37,7 @@ class ValueManager : public QAbstractListModel
         TypeStringRole
     };
 
-    static ValueManager *instance();
+    static NumeralModel *instance();
 
     Abakus::number_t value(const QString &name) const;
 
@@ -62,12 +62,12 @@ class ValueManager : public QAbstractListModel
     void slotRemoveUserVariables();
 
     private:
-    ValueManager(QObject *parent = 0);
-    ~ValueManager();
+    NumeralModel(QObject *parent = 0);
+    ~NumeralModel();
 
     int numeralModelItemIndex(const QString &name) const;
 
-    static ValueManager *m_manager;
+    static NumeralModel *m_manager;
     QList<NumeralModelItem*> m_numeralModelItems;
 };
 

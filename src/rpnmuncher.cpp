@@ -27,7 +27,7 @@
 #include <QtCore/QStringList>
 
 #include "rpnmuncher.h"
-#include "valuemanager.h"
+#include "numeralmodel.h"
 #include "function.h"
 
 /**
@@ -45,7 +45,7 @@ class Operand
         if(m_isValue)
             return m_value;
 
-        return ValueManager::instance()->value(m_text);
+        return NumeralModel::instance()->value(m_text);
     }
 
     operator Abakus::number_t() const
@@ -73,7 +73,7 @@ struct Counter
 {
     ~Counter() {
         Abakus::number_t count( static_cast<int>(RPNParser::stack().count()) );
-        ValueManager::instance()->setValue("stackCount", count);
+        NumeralModel::instance()->setValue("stackCount", count);
     }
 };
 
@@ -157,7 +157,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         case '=':
             r = m_stack.pop();
             l = m_stack.pop();
-            ValueManager::instance()->setValue(l.text(), r);
+            NumeralModel::instance()->setValue(l.text(), r);
 
             m_stack.push(l);
         break;

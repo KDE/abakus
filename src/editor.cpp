@@ -513,14 +513,14 @@ void Editor::triggerAutoComplete()
 
     // find matches in variables names
     QStringList vchoices;
-    QStringList values = ValueManager::instance()->valueNames();
+    QStringList values = NumeralModel::instance()->valueNames();
 
     for(QStringList::ConstIterator it = values.begin(); it != values.end(); ++it)
         if( (*it).startsWith( id, false ) )
         {
-            QString choice = ValueManager::description(*it);
+            QString choice = NumeralModel::description(*it);
             if(choice.isEmpty())
-    choice = ValueManager::instance()->value(*it).toString();
+    choice = NumeralModel::instance()->value(*it).toString();
 
             vchoices.append( QString("%1:%2").arg( *it, choice ) );
         }

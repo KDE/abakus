@@ -30,7 +30,7 @@
 
 #include "dragsupport.h"
 #include "abakuslistview.h"
-#include "valuemanager.h"
+#include "numeralmodel.h"
 #include "function.h"
 
 ListView::ListView(QWidget *parent) :

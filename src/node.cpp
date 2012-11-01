@@ -21,7 +21,7 @@
 #include <math.h>
 
 #include "node.h"
-#include "valuemanager.h"
+#include "numeralmodel.h"
 #include "function.h"
 
 void Node::deleteNode(Node *node)
@@ -175,7 +175,7 @@ DerivativeFunction::~DerivativeFunction()
 
 Abakus::number_t DerivativeFunction::value() const
 {
-    ValueManager *vm = ValueManager::instance();
+    NumeralModel *vm = NumeralModel::instance();
     Abakus::number_t result;
 
     if(vm->isValueSet("x")) {
@@ -403,7 +403,7 @@ Identifier::Identifier(const char *name) : m_name(name)
 
 Abakus::number_t Identifier::value() const
 {
-    return ValueManager::instance()->value(name());
+    return NumeralModel::instance()->value(name());
 }
 
 void Identifier::applyMap(NodeFunctor &fn) const

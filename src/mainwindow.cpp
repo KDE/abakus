@@ -52,7 +52,7 @@
 #include "editor.h"
 #include "evaluator.h"
 #include "function.h"
-#include "valuemanager.h"
+#include "numeralmodel.h"
 #include "node.h"
 #include "rpnmuncher.h"
 //#include "dcopIface.h"
@@ -89,7 +89,7 @@ MainWindow::MainWindow() :
     m_declarativeContext = m_declarativeView->rootContext();
     m_declarativeContext->setContextProperty("mainWindow", this);
     m_declarativeContext->setContextProperty("resultModel", m_resultItemModel);
-    m_declarativeContext->setContextProperty("numeralModel", ValueManager::instance());
+    m_declarativeContext->setContextProperty("numeralModel", NumeralModel::instance());
     m_declarativeView->setResizeMode(QDeclarativeView::SizeRootObjectToView);
     // Set view optimizations not already done for QDeclarativeView
     m_declarativeView->setAttribute(Qt::WA_OpaquePaintEvent);
@@ -162,7 +162,7 @@ void MainWindow::slotEvaluate(const QString &expression)
 
         if(!RPNParser::wasError()) {
             resultVal = result.toString();
-            ValueManager::instance()->setValue("ans", result);
+            NumeralModel::instance()->setValue("ans", result);
             m_insert = true;
         }
         else {
@@ -190,7 +190,7 @@ void MainWindow::slotEvaluate(const QString &expression)
             case Result::Value:
                 resultVal = result.toString();
 
-                ValueManager::instance()->setValue("ans", result);
+                NumeralModel::instance()->setValue("ans", result);
 
                 m_resultItemModel->addResult(str, result);
                 m_insert = true;
@@ -330,7 +330,7 @@ void MainWindow::loadConfig()
             }
 
             QByteArray valueStr = values[1].toLatin1();
-            ValueManager::instance()->setValue(values[0], Abakus::number_t(valueStr.data()));
+            NumeralModel::instance()->setValue(values[0], Abakus::number_t(valueStr.data()));
         }
     }
 
@@ -386,19 +386,19 @@ void MainWindow::saveConfig()
         KConfigGroup config(KGlobal::config(), "Variables");
 
         QStringList list;
-        QStringList values = ValueManager::instance()->valueNames();
+        QStringList values = NumeralModel::instance()->valueNames();
         QStringList::ConstIterator it = values.begin();
 
         // Set precision to max for most accuracy
         Abakus::m_prec = 75;
 
         for(; it != values.end(); ++it) {
-            if(ValueManager::instance()->isValueReadOnly(*it))
+            if(NumeralModel::instance()->isValueReadOnly(*it))
                 continue;
 
             list += QString("%1=%2")
                         .arg(*it)
-                        .arg(ValueManager::instance()->value(*it).toString());
+                        .arg(NumeralModel::instance()->value(*it).toString());
         }
 
         config.writeEntry("Saved Variables", list);
@@ -703,7 +703,7 @@ void MainWindow::slotPrecisionCustom()
 void MainWindow::redrawResults()
 {
     m_resultItemModel->slotRedrawItems();
-    ValueManager::instance()->slotRedrawItems();
+    NumeralModel::instance()->slotRedrawItems();
 
     // Because of the way we implemented the menu, it is possible to deselect
     // every possibility, so make sure we have at least one selected.

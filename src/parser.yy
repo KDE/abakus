@@ -34,7 +34,7 @@
 #include "result.h"
 #include "node.h"
 #include "function.h"
-#include "valuemanager.h"
+#include "numeralmodel.h"
 
 extern char *yytext;
 
@@ -205,7 +205,7 @@ S: REMOVE IDENT '(' IDENT ')' {
 }
 
 S: REMOVE IDENT {
-    ValueManager *manager = ValueManager::instance();
+    NumeralModel *manager = NumeralModel::instance();
 
     if(manager->isValueSet($2->name()) && !manager->isValueReadOnly($2->name())) {
         manager->removeValue($2->name());
@@ -227,7 +227,7 @@ S: REMOVE IDENT {
 }
 
 S: SET IDENT '=' EXP {
-    ValueManager *vm = ValueManager::instance();
+    NumeralModel *vm = NumeralModel::instance();
 
     if(vm->isValueReadOnly($2->name())) {
         if($2->name() == "pi" && $4->value() == Abakus::number_t("3.0"))
@@ -238,7 +238,7 @@ S: SET IDENT '=' EXP {
         YYABORT;
     }
 
-    ValueManager::instance()->setValue($2->name(), $4->value());
+    NumeralModel::instance()->setValue($2->name(), $4->value());
 
     Result::setLastResult(Result::Null);
     YYACCEPT;
@@ -246,7 +246,7 @@ S: SET IDENT '=' EXP {
 
 // Set a variable.
 S: IDENT '=' EXP {
-    ValueManager *vm = ValueManager::instance();
+    NumeralModel *vm = NumeralModel::instance();
 
     if(vm->isValueReadOnly($1->name())) {
         if($1->name() == "pi" && $3->value() == Abakus::number_t("3.0"))
@@ -257,7 +257,7 @@ S: IDENT '=' EXP {
         YYABORT;
     }
 
-    ValueManager::instance()->setValue($1->name(), $3->value());
+    NumeralModel::instance()->setValue($1->name(), $3->value());
 
     Result::setLastResult(Result::Null);
     YYACCEPT;
@@ -357,7 +357,7 @@ TERM: NUMBER '(' EXP ')' {
 }
 
 TERM: NUMBER IDENT {
-    if(gCheckIdents > 0 && !ValueManager::instance()->isValueSet($2->name())) {
+    if(gCheckIdents > 0 && !NumeralModel::instance()->isValueSet($2->name())) {
         Result::setLastResult(i18n("Unknown variable %1", QString($2->name())));
         YYABORT;
     }
@@ -366,7 +366,7 @@ TERM: NUMBER IDENT {
 }
 
 VALUE: IDENT {
-    if(gCheckIdents <= 0 || ValueManager::instance()->isValueSet($1->name()))
+    if(gCheckIdents <= 0 || NumeralModel::instance()->isValueSet($1->name()))
         $$ = $1;
     else {
         Result::setLastResult(i18n("Unknown variable %1", QString($1->name())));

@@ -113,6 +113,7 @@ set(abakus_SRCS
     ${CMAKE_CURRENT_BINARY_DIR}/lexer_lex.cpp
     mainwindow.cpp
     node.cpp
+    numeralmodel.cpp
     numeralmodelitem.cpp
     numerictypes.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/parser_yacc.cpp
@@ -120,7 +121,6 @@ set(abakus_SRCS
     resultmodel.cpp
     resultmodelitem.cpp
     rpnmuncher.cpp
-    valuemanager.cpp
     #    dcopIface.skel
     )
 
