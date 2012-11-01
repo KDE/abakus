@@ -113,6 +113,7 @@ set(abakus_SRCS
     ${CMAKE_CURRENT_BINARY_DIR}/lexer_lex.cpp
     mainwindow.cpp
     node.cpp
+    numeralmodelitem.cpp
     numerictypes.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/parser_yacc.cpp
     result.cpp

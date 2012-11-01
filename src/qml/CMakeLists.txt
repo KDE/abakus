@@ -1,5 +1,6 @@
 set(abakus-qml-files
     main.qml
+    NumeralViewItem.qml
     Result.qml
 )
 

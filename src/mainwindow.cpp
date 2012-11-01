@@ -85,19 +85,11 @@ MainWindow::MainWindow() :
     connect(FunctionManager::instance(), SIGNAL(signalFunctionRemoved(const QString &)),
             this, SLOT(slotRemoveFunction(const QString &)));
 
-    connect(ValueManager::instance(), SIGNAL(signalValueAdded(const QString &, Abakus::number_t)),
-            this, SLOT(slotNewValue(const QString &, Abakus::number_t)));
-    connect(ValueManager::instance(), SIGNAL(signalValueChanged(const QString &, Abakus::number_t)),
-            this, SLOT(slotChangeValue(const QString &, Abakus::number_t)));
-    connect(ValueManager::instance(), SIGNAL(signalValueRemoved(const QString &)),
-            this, SLOT(slotRemoveValue(const QString &)));
-
-    
-    
     m_declarativeView = new QDeclarativeView(this);
     m_declarativeContext = m_declarativeView->rootContext();
     m_declarativeContext->setContextProperty("mainWindow", this);
     m_declarativeContext->setContextProperty("resultModel", m_resultItemModel);
+    m_declarativeContext->setContextProperty("numeralModel", ValueManager::instance());
     m_declarativeView->setResizeMode(QDeclarativeView::SizeRootObjectToView);
     // Set view optimizations not already done for QDeclarativeView
     m_declarativeView->setAttribute(Qt::WA_OpaquePaintEvent);
@@ -257,6 +249,12 @@ void MainWindow::setHistoryVisible(const bool& visible)
     emit historyVisibleChanged(visible);
 }
 
+void MainWindow::setNumeralsVisible(const bool& visible)
+{
+    m_numeralsVisible = visible;
+    emit numeralsVisibleChanged(visible);
+}
+
 void MainWindow::slotUpdateSize()
 {
     if(m_newSize != QSize(0, 0))
@@ -349,7 +347,7 @@ void MainWindow::loadConfig()
 
         bool showVariables = config.readEntry("ShowVariables", true);
         action<KToggleAction>("toggleVariableList")->setChecked(showVariables);
-        m_ui->varList->setShown(showVariables);
+        setNumeralsVisible(showVariables);
 
         bool compactMode = config.readEntry("InCompactMode", false);
         compactMode = compactMode || !showHistory;
@@ -368,8 +366,6 @@ void MainWindow::loadConfig()
             parseString(strValue.data()); // Run the function definitions through the parser
         }
     }
-
-    populateListViews();
 }
 
 void MainWindow::saveConfig()
@@ -417,7 +413,7 @@ void MainWindow::saveConfig()
         if(!inCompactMode) {
             config.writeEntry("ShowHistory", m_historyVisible);
             config.writeEntry("ShowFunctions", !m_ui->fnList->isHidden());
-            config.writeEntry("ShowVariables", !m_ui->varList->isHidden());
+            config.writeEntry("ShowVariables", m_numeralsVisible);
         }
         else {
             config.writeEntry("ShowHistory", m_wasHistoryShown);
@@ -531,17 +527,6 @@ void MainWindow::setupLayout()
     a->setShortcut(Qt::Key_F6);
 }
 
-void MainWindow::populateListViews()
-{
-    QStringList values = ValueManager::instance()->valueNames();
-
-    Abakus::number_t value = ValueManager::instance()->value("pi");
-    new ValueTreeWidgetItem(m_ui->varList, "pi", value);
-
-    value = ValueManager::instance()->value("e");
-    new ValueTreeWidgetItem(m_ui->varList, "e", value);
-}
-
 QAction *MainWindow::action(const char *key) const
 {
     return actionCollection()->action(key);
@@ -568,7 +553,7 @@ void MainWindow::slotToggleFunctionList()
 void MainWindow::slotToggleVariableList()
 {
     bool show = action<KToggleAction>("toggleVariableList")->isChecked();
-    m_ui->varList->setShown(show);
+    setNumeralsVisible(show);
 
     if(m_compactMode) {
         action<KToggleAction>("toggleHistoryList")->setChecked(true);
@@ -610,37 +595,16 @@ void MainWindow::slotRemoveFunction(const QString &name)
         delete item;
 }
 
-void MainWindow::slotNewValue(const QString &name, Abakus::number_t value)
-{
-    new ValueTreeWidgetItem(m_ui->varList, name, value);
-}
-
-void MainWindow::slotChangeValue(const QString &name, Abakus::number_t value)
-{
-    QList<QTreeWidgetItem *> items = m_ui->varList->findItems(name, Qt::MatchFixedString, 0);
-
-    foreach(QTreeWidgetItem *item, items)
-        static_cast<ValueTreeWidgetItem *>(item)->valueChanged(value);
-}
-
-void MainWindow::slotRemoveValue(const QString &name)
-{
-    QList<QTreeWidgetItem *> items = m_ui->varList->findItems(name, Qt::MatchFixedString, 0);
-
-    foreach(QTreeWidgetItem *item, items)
-        delete item;
-}
-
 void MainWindow::slotToggleCompactMode()
 {
     if(action<KToggleAction>("toggleCompactMode")->isChecked()) {
         m_wasFnShown = !m_ui->fnList->isHidden();
-        m_wasVarShown = !m_ui->varList->isHidden();
+        m_wasVarShown = m_numeralsVisible;
         m_wasHistoryShown = m_historyVisible;
         m_compactMode = true;
 
         m_ui->fnList->setShown(false);
-        m_ui->varList->setShown(false);
+        setNumeralsVisible(false);
         setHistoryVisible(false);
 
         action<KToggleAction>("toggleFunctionList")->setChecked(false);
@@ -653,7 +617,7 @@ void MainWindow::slotToggleCompactMode()
     }
     else {
         m_ui->fnList->setShown(m_wasFnShown);
-        m_ui->varList->setShown(m_wasVarShown);
+        setNumeralsVisible(m_wasVarShown);
         setHistoryVisible(m_wasHistoryShown);
         m_compactMode = false;
 
@@ -739,7 +703,7 @@ void MainWindow::slotPrecisionCustom()
 void MainWindow::redrawResults()
 {
     m_resultItemModel->slotRedrawItems();
-    m_ui->varList->redrawItems();
+    ValueManager::instance()->slotRedrawItems();
 
     // Because of the way we implemented the menu, it is possible to deselect
     // every possibility, so make sure we have at least one selected.

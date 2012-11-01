@@ -46,10 +46,10 @@ Item {
     
     ListView {
         id: history
-        width: parent.width
+        width: parent.width - 200
         height: parent.height - trigMode.height - input.height
         anchors.top: trigMode.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
         currentIndex: count -1
         visible: true
         
@@ -73,6 +73,41 @@ Item {
             target: mainWindow
             
             onHistoryVisibleChanged: history.visible = visible
+        }
+    }
+
+    ListView {
+        id: numerals
+        width: parent.width - history.width
+        height: history.height
+        anchors.top: trigMode.bottom
+        anchors.right: parent.right
+        //clip: true //TODO: check why visibility needs seconds to apply a change if this is set
+        visible: true
+        
+        signal numeralSelected( string numeral )
+        onNumeralSelected: input.text += numeral
+        
+        model: numeralModel
+        delegate: NumeralViewItem { }
+        
+        section.property: "typeString"
+        section.criteria: ViewSection.FullString
+        section.delegate: Rectangle {
+            color: "lightsteelblue"
+            width: parent.width
+            height: 20
+            Text {
+                anchors.centerIn: parent
+                font.pixelSize: 12
+                text: section
+            }
+        }
+        
+        Connections {
+            target: mainWindow
+            
+            onNumeralsVisibleChanged: numerals.visible = visible
         }
     }
 

@@ -57,27 +57,6 @@
         </property>
        </column>
       </widget>
-      <widget class="VariableListView" name="varList">
-       <property name="rootIsDecorated">
-        <bool>false</bool>
-       </property>
-       <property name="uniformRowHeights">
-        <bool>true</bool>
-       </property>
-       <property name="itemsExpandable">
-        <bool>false</bool>
-       </property>
-       <column>
-        <property name="text">
-         <string>Variables</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Value</string>
-        </property>
-       </column>
-      </widget>
      </widget>
     </widget>
    </item>
@@ -86,11 +65,6 @@
  <customwidgets>
   <customwidget>
    <class>FunctionListView</class>
-   <extends>QTreeWidget</extends>
-   <header>abakuslistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>VariableListView</class>
    <extends>QTreeWidget</extends>
    <header>abakuslistview.h</header>
   </customwidget>

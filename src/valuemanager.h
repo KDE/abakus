@@ -19,18 +19,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <QtCore/QObject>
-#include <QtCore/QMap>
+#include <QtCore/QAbstractListModel>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
 #include "numerictypes.h"
+#include "numeralmodelitem.h"
 
-class ValueManager : public QObject
+class ValueManager : public QAbstractListModel
 {
     Q_OBJECT
     public:
-    typedef QMap<QString, Abakus::number_t> valueMap;
+    enum NumeralRoles {
+        NameRole = Qt::UserRole + 1,
+        ValueStringRole,
+        DescriptionRole,
+        TypeStringRole
+    };
 
     static ValueManager *instance();
 
@@ -47,21 +52,23 @@ class ValueManager : public QObject
     /**
      * Returns a textual description of a constant built-into abakus.
      */
-    static QString description(const QString &valueName);
+    QString description(const QString &name);
 
-    signals:
-    void signalValueAdded(const QString &name, Abakus::number_t value);
-    void signalValueRemoved(const QString &name);
-    void signalValueChanged(const QString &name, Abakus::number_t newValue);
+    int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
     public slots:
+    void slotRedrawItems();
     void slotRemoveUserVariables();
 
     private:
     ValueManager(QObject *parent = 0);
+    ~ValueManager();
+
+    int numeralModelItemIndex(const QString &name) const;
 
     static ValueManager *m_manager;
-    valueMap m_values;
+    QList<NumeralModelItem*> m_numeralModelItems;
 };
 
 #endif

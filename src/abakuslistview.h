@@ -114,26 +114,6 @@ class ValueTreeWidgetItem : public QTreeWidgetItem
 };
 
 /**
- * Subclass used for the list of variables.
- */
-class VariableListView : public ListView
-{
-    Q_OBJECT
-    public:
-
-    VariableListView(QWidget *parent);
-
-    protected:
-    virtual QString removeItemString() const;
-    virtual QString removeAllItemsString(unsigned count) const;
-    virtual bool isItemRemovable(QTreeWidgetItem *item) const;
-
-    protected slots:
-    virtual void removeSelectedItem(QTreeWidgetItem *item);
-    virtual void removeAllItems();
-};
-
-/**
  * Subclass used for the list of functions.
  */
 class FunctionListView : public ListView

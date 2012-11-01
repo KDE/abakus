@@ -175,54 +175,6 @@ Abakus::number_t ValueTreeWidgetItem::itemValue() const
     return m_value;
 }
 
-VariableListView::VariableListView(QWidget *parent) : ListView(parent)
-{
-    enablePopupHandler(true);
-}
-
-QString VariableListView::removeItemString() const
-{
-    return i18n("Remove selected variable");
-}
-
-QString VariableListView::removeAllItemsString(unsigned count) const
-{
-    // count is unreliable because not all of the elements in the list view
-    // can be removed.
-    count = 0;
-    QStringList values = ValueManager::instance()->valueNames();
-
-    foreach(QString value, values) {
-        if(!ValueManager::instance()->isValueReadOnly(value))
-            ++count;
-    }
-
-    return i18np("Remove all variables (1 variable)",
-                "Remove all variables (%1 variables)",
-                count);
-}
-
-bool VariableListView::isItemRemovable(QTreeWidgetItem *item) const
-{
-    if(!item)
-        return false;
-
-    return !ValueManager::instance()->isValueReadOnly(item->text(0));
-}
-
-void VariableListView::removeSelectedItem(QTreeWidgetItem *item)
-{
-    if(!item)
-        return;
-
-    ValueManager::instance()->removeValue(item->text(0));
-}
-
-void VariableListView::removeAllItems()
-{
-    ValueManager::instance()->slotRemoveUserVariables();
-}
-
 FunctionListView::FunctionListView(QWidget *parent) : ListView(parent)
 {
     enablePopupHandler(true);

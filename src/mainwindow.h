@@ -72,11 +72,13 @@ class MainWindow : public KXmlGuiWindow
     Q_INVOKABLE void setRadians();
     
     Q_INVOKABLE void setHistoryVisible(const bool &visible);
+    Q_INVOKABLE void setNumeralsVisible(const bool &visible);
     
     signals:
     void setInputText(const QString &inputText);
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
     void historyVisibleChanged(const bool &visible);
+    void numeralsVisibleChanged(const bool &visible);
     
     private slots:
     void slotPrecisionAuto();
@@ -98,10 +100,6 @@ class MainWindow : public KXmlGuiWindow
     void slotToggleCompactMode();
     void slotToggleExpressionMode();
 
-    void slotNewValue(const QString &name, Abakus::number_t value);
-    void slotChangeValue(const QString &name, Abakus::number_t value);
-    void slotRemoveValue(const QString &name);
-
     void slotNewFunction(const QString &name);
     void slotRemoveFunction(const QString &name);
 
@@ -114,7 +112,6 @@ class MainWindow : public KXmlGuiWindow
     void loadConfig();
     void saveConfig();
     void setupLayout();
-    void populateListViews();
     QString interpolateExpression(const QString &text);
 
     // Donated via JuK
@@ -137,6 +134,7 @@ class MainWindow : public KXmlGuiWindow
     QDeclarativeContext *m_declarativeContext;
 
     bool m_historyVisible;
+    bool m_numeralsVisible;
     bool m_wasFnShown, m_wasVarShown, m_wasHistoryShown;
     bool m_compactMode;
 

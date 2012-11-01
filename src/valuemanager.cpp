@@ -34,47 +34,132 @@ ValueManager *ValueManager::instance()
     return m_manager;
 }
 
-ValueManager::ValueManager(QObject *parent) : QObject(parent)
+ValueManager::ValueManager(QObject *parent) : QAbstractListModel(parent)
 {
-    m_values.insert("pi", Abakus::number_t::PI);
-    m_values.insert("e", Abakus::number_t::E);
+    QHash<int, QByteArray> roles;
+    roles[NameRole] = "name";
+    roles[ValueStringRole] = "valueString";
+    roles[DescriptionRole] = "description";
+    roles[TypeStringRole] = "typeString";
+    setRoleNames(roles);
+
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_numeralModelItems << new NumeralModelItem("ans", Abakus::number_t(42), NumeralModelItem::AbakusVariable);
+    m_numeralModelItems << new NumeralModelItem("pi", Abakus::number_t::PI, NumeralModelItem::Constant, i18n("pi (π): 3.1415926"));
+    m_numeralModelItems << new NumeralModelItem("e", Abakus::number_t::E, NumeralModelItem::Constant, i18n("Natural exponential base: 2.7182818"));
+    endInsertRows();
 
     setObjectName ("ValueManager");
 }
 
+ValueManager::~ValueManager()
+{
+    beginRemoveRows(QModelIndex(), 0, rowCount()-1);
+    while(!m_numeralModelItems.isEmpty())
+    {
+        delete m_numeralModelItems.takeFirst();
+    }
+    endRemoveRows();
+}
+
+int ValueManager::numeralModelItemIndex(const QString& name) const
+{
+    for(int i = 0; i < m_numeralModelItems.count(); ++i)
+    {
+        if(m_numeralModelItems[i]->name() == name)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
+int ValueManager::rowCount(const QModelIndex & parent) const
+{
+    return m_numeralModelItems.count();
+}
+
+QVariant ValueManager::data(const QModelIndex & index, int role) const
+{
+    if (index.row() < 0 || index.row() > m_numeralModelItems.count())
+    {
+        return QVariant();
+    }
+    
+    NumeralModelItem *numeralModelItem = m_numeralModelItems[index.row()];
+    if (role == NameRole)
+    {
+        return numeralModelItem->name();
+    }
+    else if (role == ValueStringRole)
+    {
+        return numeralModelItem->valueString();
+    }
+    else if (role == DescriptionRole)
+    {
+        return numeralModelItem->description();
+    }
+    else if (role == TypeStringRole)
+    {
+        return numeralModelItem->typeString();
+    }
+    return QVariant();
+}
+
 Abakus::number_t ValueManager::value(const QString &name) const
 {
-    return m_values[name];
+    int numeralIndex = numeralModelItemIndex(name);
+    if(numeralIndex != -1)
+    {
+        return m_numeralModelItems[numeralIndex]->value();
+    }
+
+    return Abakus::number_t();
 }
 
 bool ValueManager::isValueSet(const QString &name) const
 {
-    return m_values.contains(name);
+    return numeralModelItemIndex(name) != -1;
 }
 
 bool ValueManager::isValueReadOnly(const QString &name) const
 {
-    QRegExp readOnlyValues("^(ans|pi|e|stackCount)$");
+    int numeralIndex = numeralModelItemIndex(name);
+    if(numeralIndex != -1)
+    {
+        return m_numeralModelItems[numeralIndex]->type() != NumeralModelItem::UserVariable;
+    }
 
-    return readOnlyValues.indexIn(name) != -1;
+    return false;
 }
 
 void ValueManager::setValue(const QString &name, const Abakus::number_t value)
 {
-    if(m_values.contains(name) && this->value(name) != value)
-        emit signalValueChanged(name, value);
-    else if(!m_values.contains(name))
-        emit signalValueAdded(name, value);
-
-    m_values.insert(name, value);
+    int numeralIndex = numeralModelItemIndex(name);
+    if(numeralIndex != -1 && m_numeralModelItems[numeralIndex]->value() != value)
+    {
+        m_numeralModelItems[numeralIndex]->setValue(value);
+        emit dataChanged(index(numeralIndex), index(numeralIndex));
+    }
+    else if(numeralIndex == -1)
+    {
+        NumeralModelItem* numeralModelItem = new NumeralModelItem(name, value, NumeralModelItem::UserVariable);
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_numeralModelItems << numeralModelItem;
+        endInsertRows();
+    }
 }
 
 void ValueManager::removeValue(const QString &name)
 {
-    if(m_values.contains(name))
-        emit signalValueRemoved(name);
-
-    m_values.remove(name);
+    int numeralIndex = numeralModelItemIndex(name);
+    if(numeralIndex != -1)
+    {
+        beginRemoveRows(QModelIndex(), numeralIndex, numeralIndex);
+        delete m_numeralModelItems.takeAt(numeralIndex);
+        endRemoveRows();
+    }
 }
 
 void ValueManager::slotRemoveUserVariables()
@@ -82,21 +167,47 @@ void ValueManager::slotRemoveUserVariables()
     QStringList vars = valueNames();
 
     foreach(QString var, vars)
+    {
         if(!isValueReadOnly(var))
+        {
             removeValue(var);
+        }
+    }
+}
+
+void ValueManager::slotRedrawItems()
+{
+    if(rowCount() == 0)
+    {
+        return; // Don't emit signal if nothing changed.
+    }
+    
+    foreach(NumeralModelItem* numeralModelItem, m_numeralModelItems)
+    {
+        numeralModelItem->updateNumeral();
+    }
+    
+    emit dataChanged(index(0), index(rowCount() - 1));
 }
 
 QStringList ValueManager::valueNames() const
 {
-    return m_values.keys();
+    QStringList strList;
+    foreach(NumeralModelItem* numeralModelItem, m_numeralModelItems)
+    {
+        strList << numeralModelItem->name();
+    }
+
+    return strList;
 }
 
-QString ValueManager::description(const QString &valueName)
+QString ValueManager::description(const QString &name)
 {
-    if(valueName == "e")
-        return i18n("Natural exponential base - 2.7182818");
-    if(valueName == "pi")
-        return i18n("pi (π) - 3.1415926");
+    int numeralIndex = numeralModelItemIndex(name);
+    if(numeralIndex != -1)
+    {
+        return m_numeralModelItems[numeralIndex]->description();
+    }
 
     return QString();
 }
