@@ -51,7 +51,7 @@
 
 #include "editor.h"
 #include "evaluator.h"
-#include "function.h"
+#include "functionmodel.h"
 #include "numeralmodel.h"
 #include "node.h"
 #include "rpnmuncher.h"

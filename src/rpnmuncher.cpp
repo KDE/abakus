@@ -28,7 +28,7 @@
 
 #include "rpnmuncher.h"
 #include "numeralmodel.h"
-#include "function.h"
+#include "functionmodel.h"
 
 /**
  * Holds either a textual identifier, or a numeric value.

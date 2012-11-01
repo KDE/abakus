@@ -110,6 +110,7 @@ set(abakus_SRCS
     #editor.cpp
     evaluator.cpp
     function.cpp
+    functionmodel.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/lexer_lex.cpp
     mainwindow.cpp
     node.cpp

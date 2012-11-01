@@ -31,7 +31,7 @@
 #include "dragsupport.h"
 #include "abakuslistview.h"
 #include "numeralmodel.h"
-#include "function.h"
+#include "functionmodel.h"
 
 ListView::ListView(QWidget *parent) :
     QTreeWidget(parent), m_menu(0), m_usePopup(false), m_removeSingleId(0),

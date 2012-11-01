@@ -33,7 +33,7 @@
 
 #include "result.h"
 #include "node.h"
-#include "function.h"
+#include "functionmodel.h"
 #include "numeralmodel.h"
 
 extern char *yytext;

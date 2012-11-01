@@ -20,7 +20,7 @@
  */
 
 #include "evaluator.h"
-#include "function.h"
+#include "functionmodel.h"
 #include "node.h" // For parser_yacc.hpp below
 #include "parser_yacc.hpp"
 

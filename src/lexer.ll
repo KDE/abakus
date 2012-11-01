@@ -23,7 +23,7 @@
 #include <kdebug.h>
 
 #include "node.h"
-#include "function.h"
+#include "functionmodel.h"
 #include "parser_yacc.hpp"
 #include "result.h"
 

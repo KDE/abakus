@@ -57,40 +57,6 @@ struct Function {
 void setTrigMode(Abakus::TrigMode mode);
 Abakus::TrigMode trigMode();
 
-class FunctionManager : public QObject
-{
-    Q_OBJECT
-    public:
-    typedef QHash<QString, Function *> functionDict;
-
-    ~FunctionManager();
-
-    static FunctionManager *instance();
-
-    Function *function(const QString &name);
-
-    bool isFunction(const QString &name);
-    bool isFunctionUserDefined(const QString &name);
-
-    bool addFunction(BaseFunction *fn, const QString &dependantVar);
-    bool addFunction(const QString &name, function_t fn, const QString &desc);
-    void removeFunction(const QString &name);
-
-    typedef enum { Builtin, UserDefined, All } FunctionType;
-
-    QStringList functionList(FunctionType type);
-
-    signals:
-    void signalFunctionAdded(const QString &name);
-    void signalFunctionRemoved(const QString &name);
-
-    private:
-    FunctionManager(QObject *parent = 0);
-
-    static FunctionManager *m_manager;
-    functionDict m_dict;
-};
-
 Abakus::number_t evaluateFunction(const Function *func, const Abakus::number_t value);
 
 // Implemented in lexer.l due to prototype issues.

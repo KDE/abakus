@@ -22,7 +22,7 @@
 
 #include "node.h"
 #include "numeralmodel.h"
-#include "function.h"
+#include "functionmodel.h"
 
 void Node::deleteNode(Node *node)
 {
