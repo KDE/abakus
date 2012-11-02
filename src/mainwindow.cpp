@@ -75,6 +75,8 @@ MainWindow::MainWindow() :
 
     slotDegrees();
 
+    m_visibleHistoryItemIndices.clear();
+
     m_declarativeView = new QDeclarativeView(this);
     m_declarativeContext = m_declarativeView->rootContext();
     m_declarativeContext->setContextProperty("mainWindow", this);
@@ -250,6 +252,21 @@ void MainWindow::setFunctionsVisible(const bool& visible)
 {
     m_functionsVisible = visible;
     emit functionsVisibleChanged(visible);
+}
+
+int MainWindow::getVisibleHistoryItemIndex(int listIndex)
+{
+    return (listIndex >= 0 && listIndex < m_visibleHistoryItemIndices.count()) ? m_visibleHistoryItemIndices[listIndex] : -1;
+}
+
+void MainWindow::addVisibleHistoryItemIndex(int itemIndex)
+{
+    m_visibleHistoryItemIndices.append(itemIndex);
+}
+
+void MainWindow::removeVisibleHistoryItemIndex(int itemIndex)
+{
+    m_visibleHistoryItemIndices.removeOne(itemIndex);
 }
 
 void MainWindow::slotUpdateSize()

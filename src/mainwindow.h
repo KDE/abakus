@@ -74,6 +74,10 @@ class MainWindow : public KXmlGuiWindow
     Q_INVOKABLE void setHistoryVisible(const bool &visible);
     Q_INVOKABLE void setNumeralsVisible(const bool &visible);
     Q_INVOKABLE void setFunctionsVisible(const bool &visible);
+
+    Q_INVOKABLE int getVisibleHistoryItemIndex(int listIndex);
+    Q_INVOKABLE void addVisibleHistoryItemIndex(int itemIndex);
+    Q_INVOKABLE void removeVisibleHistoryItemIndex(int itemIndex);
     
     signals:
     void setInputText(const QString &inputText);
@@ -138,6 +142,8 @@ class MainWindow : public KXmlGuiWindow
     bool m_compactMode;
 
     bool m_insert;
+
+    QList<int> m_visibleHistoryItemIndices;
 };
 
 #endif

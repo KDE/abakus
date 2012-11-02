@@ -64,8 +64,6 @@ Item {
         onTagSelected: input.text += tag
         
         property int minTagSize: 0
-        property int indexTop: 0
-        property int indexBottom: 0
         
         model: resultModel
         delegate: Result { }
