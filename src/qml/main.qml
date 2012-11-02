@@ -52,7 +52,7 @@ Item {
         anchors.top: trigMode.bottom
         anchors.left: parent.left
         currentIndex: count -1
-        visible: true
+        clip: true
         
         signal expressionSelected( string expression )
         onExpressionSelected: input.text = expression
@@ -71,7 +71,10 @@ Item {
         Connections {
             target: mainWindow
             
-            onHistoryVisibleChanged: history.visible = visible
+            onHistoryVisibleChanged: {
+                history.visible = visible
+                history.opacity = visible ? 1 : 0
+            }
         }
     }
 
@@ -81,8 +84,7 @@ Item {
         height: numerals.visible ? parent.height / 2 : parent.height
         anchors.top: parent.top
         anchors.right: parent.right
-        //clip: true //TODO: check why visibility needs seconds to apply a change if this is set
-        visible: true
+        clip: true
         
         signal functionSelected( string functionName )
         onFunctionSelected: input.text += functionName
@@ -108,6 +110,7 @@ Item {
             
             onFunctionsVisibleChanged: {
                 functions.visible = visible
+                functions.opacity = visible ? 1 : 0
                 if(visible) {
                     numerals.anchors.top = functions.bottom
                 }
@@ -124,8 +127,7 @@ Item {
         height: functions.visible ? parent.height / 2 : parent.height
         anchors.top: functions.bottom
         anchors.right: parent.right
-        //clip: true //TODO: check why visibility needs seconds to apply a change if this is set
-        visible: true
+        clip: true
         
         signal numeralSelected( string numeral )
         onNumeralSelected: input.text += numeral
@@ -149,7 +151,10 @@ Item {
         Connections {
             target: mainWindow
             
-            onNumeralsVisibleChanged: numerals.visible = visible
+            onNumeralsVisibleChanged: {
+                numerals.visible = visible
+                numerals.opacity = visible ? 1 : 0
+            }
         }
     }
 

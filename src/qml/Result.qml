@@ -19,6 +19,7 @@ Row {
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 12
             color: "darkgrey"
+            clip: true
             text: expression
             
             MouseArea {
@@ -41,6 +42,7 @@ Row {
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 12
+            clip: true
             text: result
             
             MouseArea  {
