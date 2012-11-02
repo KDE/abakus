@@ -22,22 +22,26 @@
 
 #include "numerictypes.h"
 #include "function.h"
+#include "functionmodelitem.h"
 
-#include <QtCore/QObject>
+#include <QtCore/QAbstractListModel>
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
 
-class FunctionManager : public QObject
+class FunctionModel : public QAbstractListModel
 {
     Q_OBJECT
     public:
-    typedef QHash<QString, Function *> functionDict;
+    enum NumeralRoles {
+        NameRole = Qt::UserRole + 1,
+        ValueRole,
+        DescriptionRole,
+        TypeStringRole
+    };
 
-    ~FunctionManager();
+    static FunctionModel *instance();
 
-    static FunctionManager *instance();
-
-    Function *function(const QString &name);
+    Function *function(const QString &name) const;
 
     bool isFunction(const QString &name);
     bool isFunctionUserDefined(const QString &name);
@@ -50,15 +54,17 @@ class FunctionManager : public QObject
 
     QStringList functionList(FunctionType type);
 
-    signals:
-    void signalFunctionAdded(const QString &name);
-    void signalFunctionRemoved(const QString &name);
+    int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
     private:
-    FunctionManager(QObject *parent = 0);
+    FunctionModel(QObject *parent = 0);
+    ~FunctionModel();
 
-    static FunctionManager *m_manager;
-    functionDict m_dict;
+    int functionModelItemIndex(const QString &name) const;
+
+    static FunctionModel *m_manager;
+    QList<FunctionModelItem*> m_functionModelItems;
 };
 
 #endif

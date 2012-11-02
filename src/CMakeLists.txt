@@ -105,12 +105,12 @@ ENDIF(FLEX_EXECUTABLE)
 add_subdirectory(qml)
 set(abakus_SRCS
     abakus.cpp
-    abakuslistview.cpp
     dragsupport.cpp
     #editor.cpp
     evaluator.cpp
     function.cpp
     functionmodel.cpp
+    functionmodelitem.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/lexer_lex.cpp
     mainwindow.cpp
     node.cpp
@@ -133,10 +133,6 @@ ELSE(HAVE_MPFR)
     SET(abakus_SRCS ${abakus_SRCS} hmath.cpp number.c)
     SET(MPFR_LIBS m)
 ENDIF(HAVE_MPFR)
-
-kde4_add_ui_files(abakus_SRCS
-    mainwindow.ui
-)
 
 kde4_add_executable(abakus ${abakus_SRCS})
 target_link_libraries(abakus ${MPFR_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTDECLARATIVE_LIBRARIES} ${KDECLARATIVE_LIBRARY})

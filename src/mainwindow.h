@@ -73,12 +73,14 @@ class MainWindow : public KXmlGuiWindow
     
     Q_INVOKABLE void setHistoryVisible(const bool &visible);
     Q_INVOKABLE void setNumeralsVisible(const bool &visible);
+    Q_INVOKABLE void setFunctionsVisible(const bool &visible);
     
     signals:
     void setInputText(const QString &inputText);
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
     void historyVisibleChanged(const bool &visible);
     void numeralsVisibleChanged(const bool &visible);
+    void functionsVisibleChanged(const bool &visible);
     
     private slots:
     void slotPrecisionAuto();
@@ -100,9 +102,6 @@ class MainWindow : public KXmlGuiWindow
     void slotToggleCompactMode();
     void slotToggleExpressionMode();
 
-    void slotNewFunction(const QString &name);
-    void slotRemoveFunction(const QString &name);
-
     private:
     int getParenthesesLevel(const QString &str);
 
@@ -123,7 +122,6 @@ class MainWindow : public KXmlGuiWindow
     }
 
     private:
-    Ui::MainWindow *m_ui;
     QMenu *m_popup;
     ResultModel *m_resultItemModel;
     QSize m_newSize, m_oldSize;
@@ -135,6 +133,7 @@ class MainWindow : public KXmlGuiWindow
 
     bool m_historyVisible;
     bool m_numeralsVisible;
+    bool m_functionsVisible;
     bool m_wasFnShown, m_wasVarShown, m_wasHistoryShown;
     bool m_compactMode;
 

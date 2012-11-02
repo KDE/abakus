@@ -61,31 +61,87 @@ class DupFinder : public NodeFunctor
 };
 
 // Define static member for FunctionManager
-FunctionManager *FunctionManager::m_manager = 0;
+FunctionModel *FunctionModel::m_manager = 0;
 
-FunctionManager *FunctionManager::instance()
+FunctionModel *FunctionModel::instance()
 {
     if(!m_manager)
-        m_manager = new FunctionManager;
+        m_manager = new FunctionModel;
 
     return m_manager;
 }
 
-FunctionManager::FunctionManager(QObject *parent) :
-    QObject(parent)
+FunctionModel::FunctionModel(QObject *parent) :
+    QAbstractListModel(parent)
 {
+    QHash<int, QByteArray> roles;
+    roles[NameRole] = "name";
+    roles[ValueRole] = "value";
+    roles[DescriptionRole] = "description";
+    roles[TypeStringRole] = "typeString";
+    setRoleNames(roles);
+    
     setObjectName("FunctionManager");
 }
 
-FunctionManager::~FunctionManager()
+FunctionModel::~FunctionModel()
 {
-    qDeleteAll(m_dict);
-    m_dict.clear();
+    beginRemoveRows(QModelIndex(), 0, rowCount()-1);
+    while(!m_functionModelItems.isEmpty())
+    {
+        delete m_functionModelItems.takeFirst();
+    }
+    endRemoveRows();
+}
+
+int FunctionModel::functionModelItemIndex(const QString& name) const
+{
+    for(int i = 0; i < m_functionModelItems.count(); ++i)
+    {
+        if(m_functionModelItems[i]->name() == name)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
+int FunctionModel::rowCount(const QModelIndex & parent) const
+{
+    return m_functionModelItems.count();
+}
+
+QVariant FunctionModel::data(const QModelIndex & index, int role) const
+{
+    if (index.row() < 0 || index.row() > m_functionModelItems.count())
+    {
+        return QVariant();
+    }
+    
+    FunctionModelItem *functionModelItem = m_functionModelItems[index.row()];
+    if (role == NameRole)
+    {
+        return functionModelItem->name();
+    }
+    else if (role == ValueRole)
+    {
+        return functionModelItem->value();
+    }
+    else if (role == DescriptionRole)
+    {
+        return functionModelItem->description();
+    }
+    else if (role == TypeStringRole)
+    {
+        return functionModelItem->typeString();
+    }
+    return QVariant();
 }
 
 // Dummy return value to enable static initialization in the DECL_*()
 // macros.
-bool FunctionManager::addFunction(const QString &name, function_t fn, const QString &desc)
+bool FunctionModel::addFunction(const QString &name, function_t fn, const QString &desc)
 {
     Function *newFn = new Function;
     QRegExp returnTrigRE("^a(cos|sin|tan)");
@@ -99,12 +155,15 @@ bool FunctionManager::addFunction(const QString &name, function_t fn, const QStr
     newFn->returnsTrig = fnName.contains(returnTrigRE);
     newFn->needsTrig = fnName.contains(needsTrigRE);
 
-    m_dict.insert(name, newFn);
+    FunctionModelItem* functionModelItem = new FunctionModelItem(newFn, FunctionModelItem::BuiltInFunction);
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_functionModelItems << functionModelItem;
+    endInsertRows();
 
     return false;
 }
 
-#define DECLARE_FUNC(name, fn, desc) bool dummy##name = FunctionManager::instance()->addFunction(#name, fn, desc)
+#define DECLARE_FUNC(name, fn, desc) bool dummy##name = FunctionModel::instance()->addFunction(#name, fn, desc)
 
 // Declares a function name that is implemented by the function of a different
 // name. e.g. atan -> Abakus::number_t::arctan()
@@ -142,27 +201,30 @@ DECLARE_FUNC1(floor, "Nearest lesser integer");
 DECLARE_FUNC2(int, integer, "Integral part of number");
 DECLARE_FUNC1(frac, "Fractional part of number");
 
-Function *FunctionManager::function(const QString &name)
+Function *FunctionModel::function(const QString &name) const
 {
-    if(!m_dict.contains(name))
-        return 0;
+    int functionIndex = functionModelItemIndex(name);
+    if(functionIndex != -1)
+    {
+        return m_functionModelItems[functionIndex]->function();
+    }
 
-    return m_dict.value(name, 0);
+    return 0;
 }
 
 // Returns true if the named identifier is a function, false otherwise.
-bool FunctionManager::isFunction(const QString &name)
+bool FunctionModel::isFunction(const QString &name)
 {
-    return function(name) != 0;
+    return functionModelItemIndex(name) != -1;
 }
 
-bool FunctionManager::isFunctionUserDefined(const QString &name)
+bool FunctionModel::isFunctionUserDefined(const QString &name)
 {
-    const Function *fn = function(name);
-    return (fn != 0) && (fn->userDefined);
+    int functionIndex = functionModelItemIndex(name);
+    return (functionIndex != -1) && (m_functionModelItems[functionIndex]->type() == FunctionModelItem::UserFunction);
 }
 
-bool FunctionManager::addFunction(BaseFunction *fn, const QString &dependantVar)
+bool FunctionModel::addFunction(BaseFunction *fn, const QString &dependantVar)
 {
     // First see if this function is recursive
     DupFinder dupFinder(fn->name());
@@ -176,7 +238,6 @@ bool FunctionManager::addFunction(BaseFunction *fn, const QString &dependantVar)
     // Structure holds extra data needed to call the user defined
     // function.
     UserFunction *newFn = new UserFunction;
-    newFn->sequenceNumber = m_dict.count();
     newFn->fn = fn;
     newFn->varName = QString(dependantVar);
 
@@ -189,88 +250,54 @@ bool FunctionManager::addFunction(BaseFunction *fn, const QString &dependantVar)
     fnTabEntry->needsTrig = false;
     fnTabEntry->userDefined = true;
 
-    if(m_dict.contains(fn->name()))
-        emit signalFunctionRemoved(fn->name());
-
-    m_dict.insert(fn->name(), fnTabEntry);
-    emit signalFunctionAdded(fn->name());
+    FunctionModelItem* functionModelItem = new FunctionModelItem(fnTabEntry, FunctionModelItem::UserFunction);
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_functionModelItems << functionModelItem;
+    endInsertRows();
 
     return true;
 }
 
-void FunctionManager::removeFunction(const QString &name)
+void FunctionModel::removeFunction(const QString &name)
 {
-    Function *fn = function(name);
-
-    // If we remove a function, we need to decrement the sequenceNumber of
-    // functions after this one.
-    if(fn && fn->userDefined) {
-        int savedSeqNum = fn->userFn->sequenceNumber;
-
-        // Emit before we actually remove it so that the info on the function
-        // can still be looked up.
-        emit signalFunctionRemoved(name);
-
-        delete fn->userFn;
-        fn->userFn = 0;
-
-        delete fn;
-        m_dict.remove(name);
-
-        foreach(Function *fn, m_dict) {
-            UserFunction *userFn = fn->userDefined ? fn->userFn : 0;
-            if(userFn && userFn->sequenceNumber > savedSeqNum)
-                --fn->userFn->sequenceNumber;
-        }
+    int functionIndex = functionModelItemIndex(name);
+    if(functionIndex != -1)
+    {
+        beginRemoveRows(QModelIndex(), functionIndex, functionIndex);
+        delete m_functionModelItems.takeAt(functionIndex);
+        endRemoveRows();
     }
 }
 
-QStringList FunctionManager::functionList(FunctionManager::FunctionType type)
+QStringList FunctionModel::functionList(FunctionModel::FunctionType type)
 {
-    functionDict::const_iterator it(m_dict.constBegin());
     QStringList functions;
 
     switch(type) {
         case Builtin:
-            while(it != m_dict.constEnd()) {
-                if(!it.value()->userDefined)
-                    functions += it.value()->name;
-                ++it;
+            foreach(FunctionModelItem* functionModelItem, m_functionModelItems)
+            {
+                if(functionModelItem->type() == FunctionModelItem::BuiltInFunction)
+                {
+                    functions += functionModelItem->name();
+                }
             }
-        break;
+            break;
 
         case UserDefined:
-            // We want to return the function names in the order they were
-            // added.
+            foreach(FunctionModelItem* functionModelItem, m_functionModelItems)
             {
-                QVector<Function *> fnTable(m_dict.count(), 0);
-                QVector<int> sequenceNumberTable(m_dict.count(), -1);
-
-                // First find out what sequence numbers we have.
-                while(it != m_dict.constEnd()) {
-                    if(it.value()->userDefined) {
-                        int id = it.value()->userFn->sequenceNumber;
-                        fnTable[id] = it.value();
-                        sequenceNumberTable.append(id);
-                    }
-
-                    ++it;
-                }
-
-                // Now sort the sequence numbers and return the ordered list
-                qSort(sequenceNumberTable.begin(), sequenceNumberTable.end());
-
-                foreach(int sequenceNumber, sequenceNumberTable) {
-                    if(sequenceNumber >= 0)
-                        functions += fnTable[sequenceNumber]->name;
+                if(functionModelItem->type() == FunctionModelItem::UserFunction)
+                {
+                    functions += functionModelItem->name();
                 }
             }
-        break;
+            break;
 
         case All:
             functions += functionList(Builtin);
             functions += functionList(UserDefined);
-        break;
+            break;
     }
 
     return functions;

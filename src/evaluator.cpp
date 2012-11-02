@@ -250,7 +250,7 @@ QString Evaluator::autoFix( const QString& expr )
   {
     Tokens tokens = Evaluator::scan( result );
     if( (tokens.count() == 1) &&
-        FunctionManager::instance()->isFunction(tokens[0].text())
+        FunctionModel::instance()->isFunction(tokens[0].text())
       )
     {
       result.append( "(ans)" );

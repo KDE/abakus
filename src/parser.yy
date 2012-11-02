@@ -139,7 +139,7 @@ S: SET FUNC ASSIGN EXP {
     // not a built-in.
     QString funcName = $2->name();
     QString ident = $3->name();
-    FunctionManager *manager = FunctionManager::instance();
+    FunctionModel *manager = FunctionModel::instance();
 
     if(manager->isFunction(funcName) && !manager->isFunctionUserDefined(funcName)) {
         QString s(i18n("Function %1 is built-in and cannot be overridden.", funcName));
@@ -176,7 +176,7 @@ S: SET IDENT ASSIGN EXP {
     // lexer checked for us before returning the IDENT token.
     QByteArray fnName = funcName.toLatin1();
     BaseFunction *newFn = new UserDefinedFunction(fnName.data(), $4);
-    FunctionManager::instance()->addFunction(newFn, ident);
+    FunctionModel::instance()->addFunction(newFn, ident);
 
     Result::setLastResult(Result::Null);
     YYACCEPT;
@@ -184,7 +184,7 @@ S: SET IDENT ASSIGN EXP {
 
 // Remove a defined function.
 S: REMOVE FUNC '(' ')' {
-    FunctionManager::instance()->removeFunction($2->name());
+    FunctionModel::instance()->removeFunction($2->name());
 
     Result::setLastResult(Result::Null);
     YYACCEPT;

@@ -21,7 +21,6 @@
 
 #include "numerictypes.h"
 
-#include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
 
@@ -29,7 +28,6 @@ class BaseFunction;
 
 struct UserFunction
 {
-    int sequenceNumber;
     BaseFunction *fn;
     QString varName;
 };

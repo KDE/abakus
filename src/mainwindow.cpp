@@ -56,40 +56,31 @@
 #include "node.h"
 #include "rpnmuncher.h"
 //#include "dcopIface.h"
-#include "ui_mainwindow.h"
-#include "abakuslistview.h"
 #include "result.h"
 #include "resultmodel.h"
 
 MainWindow::MainWindow() :
     KXmlGuiWindow(0),
-    m_ui(new Ui::MainWindow),
     m_popup(0),
     m_resultItemModel (new ResultModel(this)),
     m_newSize(QSize(600, 300)), m_oldSize(QSize(600, 300)),
     m_historyVisible(true),
+    m_numeralsVisible(true),
+    m_functionsVisible(true),
     m_wasFnShown(true), m_wasVarShown(true), m_wasHistoryShown(true),
     m_compactMode(false),
     m_insert(false)
 {
     setObjectName("abakusMainWindow");
-    QWidget *w = new QWidget(this);
-    setCentralWidget(w);
-
-    m_ui->setupUi(w);
 
     slotDegrees();
-
-    connect(FunctionManager::instance(), SIGNAL(signalFunctionAdded(const QString &)),
-            this, SLOT(slotNewFunction(const QString &)));
-    connect(FunctionManager::instance(), SIGNAL(signalFunctionRemoved(const QString &)),
-            this, SLOT(slotRemoveFunction(const QString &)));
 
     m_declarativeView = new QDeclarativeView(this);
     m_declarativeContext = m_declarativeView->rootContext();
     m_declarativeContext->setContextProperty("mainWindow", this);
     m_declarativeContext->setContextProperty("resultModel", m_resultItemModel);
     m_declarativeContext->setContextProperty("numeralModel", NumeralModel::instance());
+    m_declarativeContext->setContextProperty("functionModel", FunctionModel::instance());
     m_declarativeView->setResizeMode(QDeclarativeView::SizeRootObjectToView);
     // Set view optimizations not already done for QDeclarativeView
     m_declarativeView->setAttribute(Qt::WA_OpaquePaintEvent);
@@ -98,7 +89,7 @@ MainWindow::MainWindow() :
     QString filePath = KStandardDirs::locate("appdata", "qml/main.qml");
     m_declarativeView->setSource(QUrl::fromLocalFile(filePath));
     
-    m_ui->vboxLayout1->addWidget(m_declarativeView);
+    setCentralWidget(m_declarativeView);
     
     m_declarativeView->setFocus();
     
@@ -175,7 +166,7 @@ void MainWindow::slotEvaluate(const QString &expression)
     else {
 
         // Check to see if it's just a function name, if so, add (ans).
-        if(FunctionManager::instance()->isFunction(str))
+        if(FunctionModel::instance()->isFunction(str))
             str += " ans";
 
         // Add right parentheses as needed to balance out the expression.
@@ -253,6 +244,12 @@ void MainWindow::setNumeralsVisible(const bool& visible)
 {
     m_numeralsVisible = visible;
     emit numeralsVisibleChanged(visible);
+}
+
+void MainWindow::setFunctionsVisible(const bool& visible)
+{
+    m_functionsVisible = visible;
+    emit functionsVisibleChanged(visible);
 }
 
 void MainWindow::slotUpdateSize()
@@ -340,7 +337,7 @@ void MainWindow::loadConfig()
 
     bool showFunctions = config.readEntry("ShowFunctions", true);
     action<KToggleAction>("toggleFunctionList")->setChecked(showFunctions);
-    m_ui->fnList->setShown(showFunctions);
+    setFunctionsVisible(showFunctions);
 
     bool showVariables = config.readEntry("ShowVariables", true);
     action<KToggleAction>("toggleVariableList")->setChecked(showVariables);
@@ -405,7 +402,7 @@ void MainWindow::saveConfig()
 
     if(!inCompactMode) {
         config.writeEntry("ShowHistory", m_historyVisible);
-        config.writeEntry("ShowFunctions", !m_ui->fnList->isHidden());
+        config.writeEntry("ShowFunctions", m_functionsVisible);
         config.writeEntry("ShowVariables", m_numeralsVisible);
     }
     else {
@@ -417,17 +414,18 @@ void MainWindow::saveConfig()
 
     config = KGlobal::config()->group("Functions");
 
-    FunctionManager *manager = FunctionManager::instance();
+    FunctionModel *manager = FunctionModel::instance();
 
-    QStringList userFunctions = manager->functionList(FunctionManager::UserDefined);
+    QStringList userFunctions = manager->functionList(FunctionModel::UserDefined);
     QStringList saveList;
 
-    for(QStringList::ConstIterator it = userFunctions.begin(); it != userFunctions.end(); ++it) {
-        UnaryFunction *fn = dynamic_cast<UnaryFunction *>(manager->function(*it)->userFn->fn);
-        QString var = manager->function(*it)->userFn->varName;
+    foreach(QString functionName, userFunctions)
+    {
+        UnaryFunction *fn = dynamic_cast<UnaryFunction *>(manager->function(functionName)->userFn->fn);
+        QString var = manager->function(functionName)->userFn->varName;
         QString expr = fn->operand()->infixString();
 
-        saveList += QString("set %1(%2) = %3").arg(*it).arg(var).arg(expr);
+        saveList += QString("set %1(%2) = %3").arg(functionName).arg(var).arg(expr);
     }
 
     config.writeEntry("FunctionList", saveList);
@@ -533,7 +531,7 @@ void MainWindow::slotToggleMenuBar()
 void MainWindow::slotToggleFunctionList()
 {
     bool show = action<KToggleAction>("toggleFunctionList")->isChecked();
-    m_ui->fnList->setShown(show);
+    setFunctionsVisible(show);
 
     if(m_compactMode) {
         action<KToggleAction>("toggleHistoryList")->setChecked(true);
@@ -564,39 +562,15 @@ void MainWindow::slotToggleHistoryList()
     action<KToggleAction>("toggleCompactMode")->setChecked(false);
 }
 
-void MainWindow::slotNewFunction(const QString &name)
-{
-    UserFunction *userFn = FunctionManager::instance()->function(name)->userFn;
-    UnaryFunction *fn = dynamic_cast<UnaryFunction *>(userFn->fn);
-    QString fnName = QString("%1(%2)").arg(name, userFn->varName);
-    QString expr = fn->operand()->infixString();
-
-    QTreeWidgetItem *item = new QTreeWidgetItem(m_ui->fnList);
-    item->setText(0, fnName);
-    item->setText(1, expr);
-}
-
-void MainWindow::slotRemoveFunction(const QString &name)
-{
-    UserFunction *userFn = FunctionManager::instance()->function(name)->userFn;
-    QString fnName = QString("%1(%2)").arg(name, userFn->varName);
-
-    QList<QTreeWidgetItem *> markedForDeath
-        = m_ui->fnList->findItems(fnName, Qt::MatchFixedString, 0);
-
-    foreach(QTreeWidgetItem *item, markedForDeath)
-        delete item;
-}
-
 void MainWindow::slotToggleCompactMode()
 {
     if(action<KToggleAction>("toggleCompactMode")->isChecked()) {
-        m_wasFnShown = !m_ui->fnList->isHidden();
+        m_wasFnShown = m_functionsVisible;
         m_wasVarShown = m_numeralsVisible;
         m_wasHistoryShown = m_historyVisible;
         m_compactMode = true;
 
-        m_ui->fnList->setShown(false);
+        setFunctionsVisible(false);
         setNumeralsVisible(false);
         setHistoryVisible(false);
 
@@ -609,7 +583,7 @@ void MainWindow::slotToggleCompactMode()
         QTimer::singleShot(0, this, SLOT(slotUpdateSize()));
     }
     else {
-        m_ui->fnList->setShown(m_wasFnShown);
+        setFunctionsVisible(m_wasFnShown);
         setNumeralsVisible(m_wasVarShown);
         setHistoryVisible(m_wasHistoryShown);
         m_compactMode = false;

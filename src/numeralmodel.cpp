@@ -44,7 +44,7 @@ NumeralModel::NumeralModel(QObject *parent) : QAbstractListModel(parent)
     setRoleNames(roles);
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_numeralModelItems << new NumeralModelItem("ans", Abakus::number_t(42), NumeralModelItem::AbakusVariable);
+    m_numeralModelItems << new NumeralModelItem("ans", Abakus::number_t(42), NumeralModelItem::BuiltInVariable);
     m_numeralModelItems << new NumeralModelItem("pi", Abakus::number_t::PI, NumeralModelItem::Constant, i18n("pi (π): 3.1415926"));
     m_numeralModelItems << new NumeralModelItem("e", Abakus::number_t::E, NumeralModelItem::Constant, i18n("Natural exponential base: 2.7182818"));
     endInsertRows();

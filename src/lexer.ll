@@ -116,7 +116,7 @@ HEX [0-9A-Fa-f]+
     yyCurTokenPos += yyThisTokenLength;
     yyThisTokenLength = yyleng;
 
-    if(FunctionManager::instance()->isFunction(yytext))
+    if(FunctionModel::instance()->isFunction(yytext))
         return FN;
     else {
         return ID;

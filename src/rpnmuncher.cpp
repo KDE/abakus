@@ -85,7 +85,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
 
     // Used in the case statements below
     Operand l, r;
-    FunctionManager *manager = FunctionManager::instance();
+    FunctionModel *manager = FunctionModel::instance();
     Function *fn = 0;
 
     m_error = false;
@@ -237,7 +237,7 @@ static int tokenize (const QString &token)
     if(token == "**" || token == "^")
         return Power;
 
-    if(FunctionManager::instance()->isFunction(token))
+    if(FunctionModel::instance()->isFunction(token))
         return Func;
 
     if(token.toLower() == "set")

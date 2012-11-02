@@ -15,7 +15,7 @@ Row {
         
         MouseArea {
             anchors.fill: parent
-            onClicked: numerals.numeralSelected(name)
+            onClicked: functions.functionSelected(name)
             onDoubleClicked: console.log("TODO")
         }
     }
@@ -25,11 +25,11 @@ Row {
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: 12
         clip: true
-        text: valueString
+        text: value
         
         MouseArea {
             anchors.fill: parent
-            onClicked: numerals.numeralSelected(name)
+            onClicked: functions.functionSelected(name)
             onDoubleClicked: console.log("TODO")
         }
     }

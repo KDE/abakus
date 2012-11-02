@@ -9,7 +9,8 @@ Item {
     PlasmaComponents.TabBar {
         id: trigMode
         height: 30
-        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.right: history.right
         z: 10
         
         PlasmaComponents.TabButton {
@@ -77,10 +78,53 @@ Item {
     }
 
     ListView {
+        id: functions
+        width: parent.width - history.width
+        height: numerals.visible ? parent.height / 2 : parent.height
+        anchors.top: parent.top
+        anchors.right: parent.right
+        //clip: true //TODO: check why visibility needs seconds to apply a change if this is set
+        visible: true
+        
+        signal functionSelected( string functionName )
+        onFunctionSelected: input.text += functionName
+        
+        model: functionModel
+        delegate: FunctionViewItem { }
+        
+        section.property: "typeString"
+        section.criteria: ViewSection.FullString
+        section.delegate: Rectangle {
+            color: "lightsteelblue"
+            width: parent.width
+            height: 20
+            Text {
+                anchors.centerIn: parent
+                font.pixelSize: 12
+                text: section
+            }
+        }
+        
+        Connections {
+            target: mainWindow
+            
+            onFunctionsVisibleChanged: {
+                functions.visible = visible
+                if(visible) {
+                    numerals.anchors.top = functions.bottom
+                }
+                else {
+                    numerals.anchors.top = baseItem.top
+                }
+            }
+        }
+    }
+    
+    ListView {
         id: numerals
         width: parent.width - history.width
-        height: history.height
-        anchors.top: trigMode.bottom
+        height: functions.visible ? parent.height / 2 : parent.height
+        anchors.top: functions.bottom
         anchors.right: parent.right
         //clip: true //TODO: check why visibility needs seconds to apply a change if this is set
         visible: true
@@ -113,9 +157,9 @@ Item {
 
     PlasmaComponents.TextField {
         id: input
-        width: parent.width
+        width: history.width
         height: 25
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
         anchors.bottom: parent.bottom
         font.pixelSize: 12
         clearButtonShown: true

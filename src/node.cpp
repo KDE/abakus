@@ -37,7 +37,7 @@ BaseFunction::BaseFunction(const char *name) :
 
 const Function *BaseFunction::function() const
 {
-    return FunctionManager::instance()->function(m_name);
+    return FunctionModel::instance()->function(m_name);
 }
 
 UnaryFunction::UnaryFunction(const char *name, Node *operand) :

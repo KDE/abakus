@@ -1,7 +1,7 @@
-#ifndef NUMERALMODELITEM_H
-#define NUMERALMODELITEM_H
+#ifndef FUNCTIONMODELITEM_H
+#define FUNCTIONMODELITEM_H
 /*
- * numeralmodelitem.h - part of abakus
+ * functionmodelitem.h - part of abakus
  * Copyright (C) 2012 Mathias Kraus <k.hias@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,33 +19,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "function.h"
+
 #include <QString>
 
-#include "numerictypes.h"
-
-class NumeralModelItem
+class FunctionModelItem
 {
 public:
-    enum NumeralItemType { BuiltInVariable, UserVariable, Constant };
+    enum FunctionItemType { BuiltInFunction, UserFunction };
     
-    NumeralModelItem(const QString &name, const Abakus::number_t &value, NumeralItemType type, const QString &description = "");
+    FunctionModelItem(Function* function, FunctionItemType type);
+    ~FunctionModelItem();
 
     QString name() const;
-    QString valueString() const;
+    QString value() const;
     QString description() const;
     QString typeString() const;
 
-    void updateNumeral();
-    Abakus::number_t value();
-    void setValue(Abakus::number_t value);
-    NumeralItemType type() const;
+    Function* function() const;
+    void setValue(const QString &value);
+    FunctionItemType type() const;
 
 private:
-    QString m_name;
-    Abakus::number_t m_value;
-    QString m_valueString;
-    QString m_description;
-    NumeralItemType m_type;
+    Function* m_function;
+    QString m_value;
+    FunctionItemType m_type;
 };
 
-#endif // NUMERALMODELITEM_H
+#endif // FUNCTIONMODELITEM_H

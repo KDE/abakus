@@ -45,8 +45,8 @@ QString NumeralModelItem::typeString() const
 {
     switch(m_type)
     {
-        case AbakusVariable: return QString();
-        case UserVariable: return i18n("Variables");
+        case BuiltInVariable: return i18n("Built-In Variables");
+        case UserVariable: return i18n("User Variables");
         case Constant: return i18n("Constants");
         default: return QString();
     }
