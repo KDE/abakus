@@ -5,17 +5,17 @@ Row {
     height: 20
     
     Text {
-        width: parent.width - 150
+        width: 50
         height: parent.height
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: 12
         clip: true
-        text: name
+        text: model.name
         
         MouseArea {
             anchors.fill: parent
-            onClicked: numerals.numeralSelected(name)
+            onClicked: parent.numeralSelected(model.name)
             onDoubleClicked: console.log("TODO")
         }
     }
@@ -25,11 +25,11 @@ Row {
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: 12
         clip: true
-        text: valueString
+        text: model.valueString
         
         MouseArea {
             anchors.fill: parent
-            onClicked: numerals.numeralSelected(name)
+            onClicked: parent.numeralSelected(model.name)
             onDoubleClicked: console.log("TODO")
         }
     }
