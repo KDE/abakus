@@ -15,7 +15,7 @@ Row {
         
         MouseArea {
             anchors.fill: parent
-            onClicked: parent.numeralSelected(model.name)
+            onClicked: numerals.numeralSelected(model.name)
             onDoubleClicked: console.log("TODO")
         }
     }
@@ -29,7 +29,7 @@ Row {
         
         MouseArea {
             anchors.fill: parent
-            onClicked: parent.numeralSelected(model.name)
+            onClicked: numerals.numeralSelected(model.name)
             onDoubleClicked: console.log("TODO")
         }
     }
