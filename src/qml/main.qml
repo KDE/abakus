@@ -66,7 +66,7 @@ Item {
         property int minTagSize: 0
         
         model: resultModel
-        delegate: Result { }
+        delegate: ResultViewItem { }
 
         Connections {
             target: mainWindow
