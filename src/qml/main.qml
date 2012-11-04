@@ -6,9 +6,14 @@ Item {
     width: 500
     height: 300
 
+    property int sidebarWidth: 200
+    property int sidebarTabBarHeight: 30
+    property int trigModeHeight: 30
+    property int inputHeight: 25
+
     PlasmaComponents.TabBar {
         id: trigMode
-        height: 30
+        height: trigModeHeight
         anchors.top: parent.top
         anchors.right: history.right
         z: 10
@@ -47,10 +52,10 @@ Item {
     
     ListView {
         id: history
-        width: parent.width - 200
-        height: parent.height - trigMode.height - input.height
         anchors.top: trigMode.bottom
         anchors.left: parent.left
+        anchors.right: sidebar.left
+        anchors.bottom: input.top
         currentIndex: count -1
         clip: true
         
@@ -78,91 +83,168 @@ Item {
         }
     }
 
-    ListView {
-        id: functions
-        width: parent.width - history.width
-        height: numerals.visible ? parent.height / 2 : parent.height
+    Item {
+        id: sidebar
+        width: sidebarWidth
         anchors.top: parent.top
         anchors.right: parent.right
-        clip: true
+        anchors.bottom: parent.bottom
         
-        signal functionSelected( string functionName )
-        onFunctionSelected: input.text += functionName
-        
-        model: functionModel
-        delegate: FunctionViewItem { }
-        
-        section.property: "typeString"
-        section.criteria: ViewSection.FullString
-        section.delegate: Rectangle {
-            color: "lightsteelblue"
+        PlasmaComponents.TabBar {
+            id: sidebarTabBar
+            height: sidebarTabBarHeight
             width: parent.width
-            height: 20
-            Text {
-                anchors.centerIn: parent
-                font.pixelSize: 12
-                text: section
-            }
-        }
-        
-        Connections {
-            target: mainWindow
-            
-            onFunctionsVisibleChanged: {
-                functions.visible = visible
-                functions.opacity = visible ? 1 : 0
-                if(visible) {
-                    numerals.anchors.top = functions.bottom
+            anchors.right: parent.right
+            anchors.top: parent.top
+            PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: "Numerals" }
+            PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: "Functions" }
+
+            Connections {
+                target: mainWindow
+                
+                onNumeralsVisibleChanged: {
+                    if(!visible && sidebarTabBar.currentTab == numeralsTabButton && functionsTabButton.visible) {
+                        sidebarTabBar.currentTab = functionsTabButton
+                        sidebarTabGroup.currentTab = functionsTab    
+                    }
+
+                    if(visible) {
+                        sidebarTabBar.currentTab = numeralsTabButton
+                        sidebarTabGroup.currentTab = numeralsTab
+                    }
+                    
+                    numeralsTabButton.visible = visible
+                    numeralsTabButton.opacity = visible ? 1 : 0
+
+                    if(numeralsTabButton.visible && functionsTabButton.visible) {
+                        sidebarTabBar.anchors.bottom = undefined
+                        sidebarTabBar.anchors.top = sidebar.top
+                    }
+                    else {
+                        sidebarTabBar.anchors.top = undefined
+                        sidebarTabBar.anchors.bottom = sidebar.top
+                    }
+
+                    if(numeralsTabButton.visible || functionsTabButton.visible) {
+                        sidebar.anchors.left = undefined
+                        sidebar.anchors.right = baseItem.right
+                    }
+                    else {
+                        sidebar.anchors.right = undefined
+                        sidebar.anchors.left = baseItem.right
+                    }
                 }
-                else {
-                    numerals.anchors.top = baseItem.top
+
+                onFunctionsVisibleChanged: {
+                    if(!visible && sidebarTabBar.currentTab == functionsTabButton && numeralsTabButton.visible) {
+                        sidebarTabBar.currentTab = numeralsTabButton
+                        sidebarTabGroup.currentTab = numeralsTab
+                        
+                    }
+
+                    if(visible) {
+                        sidebarTabBar.currentTab = functionsTabButton
+                        sidebarTabGroup.currentTab = functionsTab
+                    }
+                    
+                    functionsTabButton.visible = visible
+                    functionsTabButton.opacity = visible ? 1 : 0
+                    
+                    if(numeralsTabButton.visible && functionsTabButton.visible) {
+                        sidebarTabBar.anchors.bottom = undefined
+                        sidebarTabBar.anchors.top = sidebar.top
+                    }
+                    else {
+                        sidebarTabBar.anchors.top = undefined
+                        sidebarTabBar.anchors.bottom = sidebar.top
+                    }
+                    
+                    if(numeralsTabButton.visible || functionsTabButton.visible) {
+                        sidebar.anchors.left = undefined
+                        sidebar.anchors.right = baseItem.right
+                    }
+                    else {
+                        sidebar.anchors.right = undefined
+                        sidebar.anchors.left = baseItem.right
+                    }
                 }
             }
         }
-    }
-    
-    ListView {
-        id: numerals
-        width: parent.width - history.width
-        height: functions.visible ? parent.height / 2 : parent.height
-        anchors.top: functions.bottom
-        anchors.right: parent.right
-        clip: true
-        
-        signal numeralSelected( string numeral )
-        onNumeralSelected: input.text += numeral
-        
-        model: numeralModel
-        delegate: NumeralViewItem { }
-        
-        section.property: "typeString"
-        section.criteria: ViewSection.FullString
-        section.delegate: Rectangle {
-            color: "lightsteelblue"
-            width: parent.width
-            height: 20
-            Text {
-                anchors.centerIn: parent
-                font.pixelSize: 12
-                text: section
+
+        PlasmaComponents.TabGroup {
+            id: sidebarTabGroup
+            width: sidebarWidth
+            anchors.top: sidebarTabBar.bottom
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+
+            PlasmaComponents.Page {
+                id: numeralsTab
+                anchors.fill: parent
+
+                ListView {
+                    id: numerals
+                    anchors.fill: parent
+                    clip: true
+
+                    signal numeralSelected( string numeral )
+                    onNumeralSelected: input.text += numeral
+
+                    model: numeralModel
+                    delegate: NumeralViewItem { }
+
+                    section.property: "typeString"
+                    section.criteria: ViewSection.FullString
+                    section.delegate: Rectangle {
+                        color: "lightsteelblue"
+                        width: parent.width
+                        height: 20
+                        Text {
+                            anchors.centerIn: parent
+                            font.pixelSize: 12
+                            text: section
+                        }
+                    }
+                }
             }
-        }
-        
-        Connections {
-            target: mainWindow
-            
-            onNumeralsVisibleChanged: {
-                numerals.visible = visible
-                numerals.opacity = visible ? 1 : 0
+
+            PlasmaComponents.Page {
+                id: functionsTab
+                anchors.fill: parent
+
+                ListView {
+                    id: functions
+                    anchors.fill: parent
+                    clip: true
+
+                    signal functionSelected( string functionName )
+                    onFunctionSelected: input.text += functionName
+
+                    model: functionModel
+                    delegate: FunctionViewItem { }
+
+                    section.property: "typeString"
+                    section.criteria: ViewSection.FullString
+                    section.delegate: Rectangle {
+                        color: "lightsteelblue"
+                        width: parent.width
+                        height: 20
+                        Text {
+                            anchors.centerIn: parent
+                            font.pixelSize: 12
+                            text: section
+                        }
+                    }
+                }
             }
         }
     }
 
     PlasmaComponents.TextField {
         id: input
-        width: history.width
-        height: 25
+        height: inputHeight
         anchors.left: parent.left
+        anchors.right: sidebar.left
         anchors.bottom: parent.bottom
         font.pixelSize: 12
         clearButtonShown: true
