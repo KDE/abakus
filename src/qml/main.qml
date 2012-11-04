@@ -11,40 +11,34 @@ Item {
     property int trigModeHeight: 30
     property int inputHeight: 25
 
-    PlasmaComponents.TabBar {
+    PlasmaComponents.ButtonRow {
         id: trigMode
         height: trigModeHeight
         anchors.top: parent.top
-        anchors.right: history.right
-        z: 10
-        
-        PlasmaComponents.TabButton {
-            id: degrees
-            text: "Degrees"
-        }
-        PlasmaComponents.TabButton {
-            id: radians
-            text: "Radians"
-        }
+        anchors.right: sidebar.left
+        exclusive: true
 
-        onCurrentTabChanged: {
-            if(currentTab == degrees) {
+        PlasmaComponents.ToolButton { id: degrees; height: parent.height; flat: true; text: "Degrees" }
+        PlasmaComponents.ToolButton { id: radians; height: parent.height; flat: true; text: "Radians" }
+
+        onCheckedButtonChanged: {
+            if(degrees.checked) {
                 mainWindow.setDegrees()
             }
             else {
                 mainWindow.setRadians()
             }
         }
-        
+
         Connections {
             target: mainWindow
             
             onTrigModeChanged: {
-                if(trigMode.currentTab == degrees && mode != 0) { //TODO: use the Abakus::TrigMode enum
-                    trigMode.currentTab = radians
+                if(degrees.checked && mode != 0) { //TODO: use the Abakus::TrigMode enum
+                    radians.checked = true
                 }
-                else if(trigMode.currentTab == radians && mode != 1) {
-                    trigMode.currentTab = degrees
+                else if(radians.checked && mode != 1) {
+                    degrees.checked = true
                 }
             }
         }
