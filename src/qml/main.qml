@@ -178,7 +178,10 @@ Item {
 
                 ListView {
                     id: numerals
-                    anchors.fill: parent
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.bottom: parent.bottom
+                    anchors.right: numeralsScrollBar.visible ? numeralsScrollBar.left : parent.right
                     clip: true
 
                     signal numeralSelected( string numeral )
@@ -200,6 +203,14 @@ Item {
                         }
                     }
                 }
+
+                
+                
+                PlasmaComponents.ScrollBar {
+                    id: numeralsScrollBar
+                    flickableItem: numerals
+                    anchors.right: parent.right
+                }
             }
 
             PlasmaComponents.Page {
@@ -208,7 +219,10 @@ Item {
 
                 ListView {
                     id: functions
-                    anchors.fill: parent
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.bottom: parent.bottom
+                    anchors.right: functionsScrollBar.visible ? functionsScrollBar.left : parent.right
                     clip: true
 
                     signal functionSelected( string functionName )
@@ -229,6 +243,12 @@ Item {
                             text: section
                         }
                     }
+                }
+
+                PlasmaComponents.ScrollBar {
+                    id: functionsScrollBar
+                    flickableItem: functions
+                    anchors.right: parent.right
                 }
             }
         }
