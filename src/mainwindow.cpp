@@ -202,7 +202,7 @@ void MainWindow::slotEvaluate(const QString &expression)
     
     // set result in expression text edit if in compact mode
     if(m_compactMode) {
-        emit setInputText(resultVal);
+        emit setEditorText(resultVal);
     }
 }
 
@@ -216,7 +216,7 @@ void MainWindow::slotTextChanged(const QString &str)
             return;
 
         if(QRegExp("^[-+*/^]").indexIn(str) != -1) {
-            emit setInputText("ans " + str + " ");
+            emit setEditorText("ans " + str + " ");
         }
     }
 }

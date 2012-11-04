@@ -9,7 +9,7 @@ Item {
     property int sidebarWidth: 200
     property int sidebarTabBarHeight: 30
     property int trigModeHeight: 30
-    property int inputHeight: 25
+    property int editorHeight: 25
 
     PlasmaComponents.ButtonRow {
         id: trigMode
@@ -49,18 +49,18 @@ Item {
         anchors.top: trigMode.bottom
         anchors.left: parent.left
         anchors.right: sidebar.left
-        anchors.bottom: input.top
+        anchors.bottom: editor.top
         currentIndex: count -1
         clip: true
         
         signal expressionSelected( string expression )
-        onExpressionSelected: input.text = expression
+        onExpressionSelected: editor.text = expression
         
         signal resultSelected( string result )
-        onResultSelected: input.text += result
+        onResultSelected: editor.text += result
         
         signal tagSelected( string tag )
-        onTagSelected: input.text += tag
+        onTagSelected: editor.text += tag
         
         property int minTagSize: 0
         
@@ -185,7 +185,7 @@ Item {
                     clip: true
 
                     signal numeralSelected( string numeral )
-                    onNumeralSelected: input.text += numeral
+                    onNumeralSelected: editor.text += numeral
 
                     model: numeralModel
                     delegate: NumeralViewItem { }
@@ -226,7 +226,7 @@ Item {
                     clip: true
 
                     signal functionSelected( string functionName )
-                    onFunctionSelected: input.text += functionName
+                    onFunctionSelected: editor.text += functionName
 
                     model: functionModel
                     delegate: FunctionViewItem { }
@@ -255,8 +255,8 @@ Item {
     }
 
     PlasmaComponents.TextField {
-        id: input
-        height: inputHeight
+        id: editor
+        height: editorHeight
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: parent.bottom
@@ -266,7 +266,7 @@ Item {
 
         onAccepted: {
             mainWindow.slotEvaluate(text)
-            input.selectAll()
+            editor.selectAll()
         }
         
         onTextChanged: mainWindow.slotTextChanged(text)
@@ -274,9 +274,9 @@ Item {
         Connections {
             target: mainWindow
             
-            onSetInputText: input.text = inputText
+            onSetEditorText: editor.text = editorText
         }
     }
 
-    Component.onCompleted: input.forceActiveFocus()
+    Component.onCompleted: editor.forceActiveFocus()
 }

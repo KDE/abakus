@@ -80,7 +80,7 @@ class MainWindow : public KXmlGuiWindow
     Q_INVOKABLE void removeVisibleHistoryItemIndex(int itemIndex);
     
     signals:
-    void setInputText(const QString &inputText);
+    void setEditorText(const QString &editorText);
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
     void historyVisibleChanged(const bool &visible);
     void numeralsVisibleChanged(const bool &visible);
