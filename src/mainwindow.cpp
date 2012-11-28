@@ -33,6 +33,7 @@
 #include <kconfiggroup.h>
 #include <kinputdialog.h>
 #include <ktoggleaction.h>
+#include <kdeclarative.h>
 
 #include <QtGui/QLineEdit>
 #include <QtGui/QTreeView>
@@ -87,6 +88,12 @@ MainWindow::MainWindow() :
     // Set view optimizations not already done for QDeclarativeView
     m_declarativeView->setAttribute(Qt::WA_OpaquePaintEvent);
     m_declarativeView->setAttribute(Qt::WA_NoSystemBackground);
+
+    // initialize kdeclarative
+    KDeclarative kDeclarative;
+    kDeclarative.setDeclarativeEngine(m_declarativeView->engine());
+    kDeclarative.initialize();
+    kDeclarative.setupBindings();
     
     QString filePath = KStandardDirs::locate("appdata", "qml/main.qml");
     m_declarativeView->setSource(QUrl::fromLocalFile(filePath));
