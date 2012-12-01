@@ -18,8 +18,8 @@ Item {
         anchors.right: sidebar.left
         exclusive: true
 
-        PlasmaComponents.ToolButton { id: degrees; height: parent.height; flat: true; text: "Degrees" }
-        PlasmaComponents.ToolButton { id: radians; height: parent.height; flat: true; text: "Radians" }
+        PlasmaComponents.ToolButton { id: degrees; height: parent.height; flat: true; text: i18n("Degrees") }
+        PlasmaComponents.ToolButton { id: radians; height: parent.height; flat: true; text: i18n("Radians") }
 
         onCheckedButtonChanged: {
             if(degrees.checked) {
@@ -90,8 +90,8 @@ Item {
             width: parent.width
             anchors.right: parent.right
             anchors.top: parent.top
-            PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: "Numerals" }
-            PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: "Functions" }
+            PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: i18n("Numerals") }
+            PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: i18n("Functions") }
 
             Connections {
                 target: mainWindow
@@ -262,7 +262,7 @@ Item {
         anchors.bottom: parent.bottom
         font.pixelSize: 12
         clearButtonShown: true
-        placeholderText: qsTr("Enter expression")
+        placeholderText: i18n("Enter expression")
 
         onAccepted: {
             mainWindow.slotEvaluate(text)
