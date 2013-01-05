@@ -186,6 +186,9 @@ Item {
 
                     signal numeralSelected( string numeral )
                     onNumeralSelected: editor.text += numeral
+                    
+                    signal numeralRemoved( string numeralName )
+                    onNumeralRemoved: mainWindow.removeNumeral(numeralName)
 
                     model: numeralModel
                     delegate: NumeralViewItem { }
@@ -227,6 +230,9 @@ Item {
 
                     signal functionSelected( string functionName )
                     onFunctionSelected: editor.text += functionName
+                    
+                    signal functionRemoved( string functionName )
+                    onFunctionRemoved: mainWindow.removeFunction(functionName)
 
                     model: functionModel
                     delegate: FunctionViewItem { }

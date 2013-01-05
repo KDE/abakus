@@ -19,18 +19,59 @@ Row {
             onDoubleClicked: console.log("TODO")
         }
     }
-    Text {
+    
+    Item {
+        id: description
+        width: parent.width - 50
         height: parent.height
-        horizontalAlignment: Text.AlignRight
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: 12
-        clip: true
-        text: model.valueString
         
-        MouseArea {
+        property bool itemHovered: false
+        
+        Item {
             anchors.fill: parent
-            onClicked: numerals.numeralSelected(model.name)
-            onDoubleClicked: console.log("TODO")
+            
+            Text {
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                clip: true
+                text: model.valueString
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: numerals.numeralSelected(model.name)
+                onDoubleClicked: console.log("TODO")
+                onEntered: description.itemHovered = true
+                onExited: description.itemHovered = false
+            }
+        }
+        
+        Rectangle { //TODO: replace with image
+            width: parent.height
+            height: parent.height
+            anchors.right: parent.right
+            color: removeItem.visible ? "red" : "transparent"
+            
+            Text {
+                id: removeItem
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                visible: model.typeString == "User Variables" ? description.itemHovered : false
+                text: "---"
+                color: "white"
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: description.itemHovered = true
+                onExited: description.itemHovered = false
+                onClicked: numerals.numeralRemoved(model.name)
+            }
         }
     }
 }

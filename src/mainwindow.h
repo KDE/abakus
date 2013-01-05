@@ -74,6 +74,9 @@ class MainWindow : public KXmlGuiWindow
     Q_INVOKABLE void setHistoryVisible(const bool &visible);
     Q_INVOKABLE void setNumeralsVisible(const bool &visible);
     Q_INVOKABLE void setFunctionsVisible(const bool &visible);
+    
+    Q_INVOKABLE void removeNumeral(const QString &name);
+    Q_INVOKABLE void removeFunction(const QString &name);
 
     Q_INVOKABLE int getVisibleHistoryItemIndex(int listIndex);
     Q_INVOKABLE void addVisibleHistoryItemIndex(int itemIndex);

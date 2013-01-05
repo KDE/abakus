@@ -261,6 +261,16 @@ void MainWindow::setFunctionsVisible(const bool& visible)
     emit functionsVisibleChanged(visible);
 }
 
+void MainWindow::removeNumeral(const QString& name)
+{
+    NumeralModel::instance()->removeValue(name);
+}
+
+void MainWindow::removeFunction(const QString& name)
+{
+    FunctionModel::instance()->removeFunction(name);
+}
+
 int MainWindow::getVisibleHistoryItemIndex(int listIndex)
 {
     return (listIndex >= 0 && listIndex < m_visibleHistoryItemIndices.count()) ? m_visibleHistoryItemIndices[listIndex] : -1;

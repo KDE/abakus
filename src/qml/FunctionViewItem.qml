@@ -19,18 +19,59 @@ Row {
             onDoubleClicked: console.log("TODO")
         }
     }
-    Text {
+    
+    Item {
+        id: description
+        width: parent.width - 50
         height: parent.height
-        horizontalAlignment: Text.AlignRight
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: 12
-        clip: true
-        text: model.value
         
-        MouseArea {
+        property bool itemHovered: false
+        
+        Item {
             anchors.fill: parent
-            onClicked: functions.functionSelected(model.name)
-            onDoubleClicked: console.log("TODO")
+            
+            Text {
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                clip: true
+                text: model.value
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: functions.functionSelected(model.name)
+                onDoubleClicked: console.log("TODO")
+                onEntered: description.itemHovered = true
+                onExited: description.itemHovered = false
+            }
+        }
+        
+        Rectangle { //TODO: replace with image
+            width: parent.height
+            height: parent.height
+            anchors.right: parent.right
+            color: removeItem.visible ? "red" : "transparent"
+        
+            Text {
+                id: removeItem
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                visible: model.typeString == "User Functions" ? description.itemHovered : false
+                text: "---"
+                color: "white"
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: description.itemHovered = true
+                onExited: description.itemHovered = false
+                onClicked: functions.functionRemoved(model.name)
+            }
         }
     }
 }
