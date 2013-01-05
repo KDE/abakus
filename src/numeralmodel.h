@@ -66,6 +66,7 @@ class NumeralModel : public QAbstractListModel
     ~NumeralModel();
 
     int numeralModelItemIndex(const QString &name) const;
+    int numeralModelItemIndex(const NumeralModelItem::NumeralItemType &type) const;
 
     static NumeralModel *m_manager;
     QList<NumeralModelItem*> m_numeralModelItems;

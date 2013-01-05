@@ -75,6 +75,19 @@ int NumeralModel::numeralModelItemIndex(const QString& name) const
     return -1;
 }
 
+int NumeralModel::numeralModelItemIndex(const NumeralModelItem::NumeralItemType& type) const
+{
+    for(int i = 0; i < m_numeralModelItems.count(); ++i)
+    {
+        if(m_numeralModelItems[i]->type() == type)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
 int NumeralModel::rowCount(const QModelIndex & parent) const
 {
     return m_numeralModelItems.count();
@@ -145,8 +158,14 @@ void NumeralModel::setValue(const QString &name, const Abakus::number_t value)
     else if(numeralIndex == -1)
     {
         NumeralModelItem* numeralModelItem = new NumeralModelItem(name, value, NumeralModelItem::UserVariable);
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        m_numeralModelItems << numeralModelItem;
+        int numeralIndexOfFirstConstant = numeralModelItemIndex(NumeralModelItem::Constant);
+        if(numeralIndexOfFirstConstant == -1)
+        {
+            numeralIndexOfFirstConstant = rowCount();
+        }
+        
+        beginInsertRows(QModelIndex(), numeralIndexOfFirstConstant, numeralIndexOfFirstConstant);
+        m_numeralModelItems.insert(numeralIndexOfFirstConstant, numeralModelItem);
         endInsertRows();
     }
 }
