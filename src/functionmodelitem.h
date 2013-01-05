@@ -37,6 +37,7 @@ public:
     QString typeString() const;
 
     Function* function() const;
+    void setFunction(Function* function);
     void setValue(const QString &value);
     FunctionItemType type() const;
 

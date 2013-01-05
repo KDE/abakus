@@ -62,6 +62,7 @@ class FunctionModel : public QAbstractListModel
     ~FunctionModel();
 
     int functionModelItemIndex(const QString &name) const;
+    int functionModelItemIndex(const FunctionModelItem::FunctionItemType &type) const;
 
     static FunctionModel *m_manager;
     QList<FunctionModelItem*> m_functionModelItems;

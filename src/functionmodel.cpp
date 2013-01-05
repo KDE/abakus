@@ -107,6 +107,19 @@ int FunctionModel::functionModelItemIndex(const QString& name) const
     return -1;
 }
 
+int FunctionModel::functionModelItemIndex(const FunctionModelItem::FunctionItemType &type) const
+{
+    for(int i = 0; i < m_functionModelItems.count(); ++i)
+    {
+        if(m_functionModelItems[i]->type() == type)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
 int FunctionModel::rowCount(const QModelIndex & parent) const
 {
     return m_functionModelItems.count();
@@ -250,10 +263,25 @@ bool FunctionModel::addFunction(BaseFunction *fn, const QString &dependantVar)
     fnTabEntry->needsTrig = false;
     fnTabEntry->userDefined = true;
 
-    FunctionModelItem* functionModelItem = new FunctionModelItem(fnTabEntry, FunctionModelItem::UserFunction);
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_functionModelItems << functionModelItem;
-    endInsertRows();
+    int functionIndex = functionModelItemIndex(fnTabEntry->name);
+    if(functionIndex != -1)
+    {
+        m_functionModelItems[functionIndex]->setFunction(fnTabEntry);
+        emit dataChanged(index(functionIndex), index(functionIndex));
+    }
+    else if(functionIndex == -1)
+    {
+        FunctionModelItem* functionModelItem = new FunctionModelItem(fnTabEntry, FunctionModelItem::UserFunction);
+        int functionIndexOfFirstBuiltInFunction = functionModelItemIndex(FunctionModelItem::BuiltInFunction);
+        if(functionIndexOfFirstBuiltInFunction == -1)
+        {
+            functionIndexOfFirstBuiltInFunction = rowCount();
+        }
+        
+        beginInsertRows(QModelIndex(), functionIndexOfFirstBuiltInFunction, functionIndexOfFirstBuiltInFunction);
+        m_functionModelItems.insert(functionIndexOfFirstBuiltInFunction, functionModelItem);
+        endInsertRows();
+    }
 
     return true;
 }

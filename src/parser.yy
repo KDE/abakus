@@ -148,9 +148,6 @@ S: SET FUNC ASSIGN EXP {
         YYABORT;
     }
 
-    if(manager->isFunction(funcName))
-        manager->removeFunction(funcName);
-
     QByteArray fnName = funcName.toLatin1();
     BaseFunction *newFn = new UserDefinedFunction(fnName.data(), $4);
     if(!manager->addFunction(newFn, ident)) {

@@ -23,16 +23,10 @@
 #include <KLocale>
 
 FunctionModelItem::FunctionModelItem(Function* function, FunctionItemType type)
-    : m_function(function), m_type(type)
+    : m_type(type)
 {
-    if(m_type == BuiltInFunction)
-    {
-        m_value = m_function->description;
-    }
-    else
-    {
-        m_value = dynamic_cast<UnaryFunction *> (function->userFn->fn)->operand()->infixString();
-    }
+    m_function = 0;
+    setFunction(function);
 }
 
 FunctionModelItem::~FunctionModelItem()
@@ -68,6 +62,20 @@ QString FunctionModelItem::typeString() const
 Function* FunctionModelItem::function() const
 {
     return m_function;
+}
+
+void FunctionModelItem::setFunction(Function* function)
+{
+    delete m_function;
+    m_function = function;
+    if(m_type == BuiltInFunction)
+    {
+        m_value = m_function->description;
+    }
+    else
+    {
+        m_value = dynamic_cast<UnaryFunction *> (function->userFn->fn)->operand()->infixString();
+    }
 }
 
 void FunctionModelItem::setValue(const QString &value)
