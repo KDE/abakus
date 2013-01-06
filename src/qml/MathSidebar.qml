@@ -19,77 +19,6 @@ Item {
         anchors.top: parent.top
         PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: i18n("Numerals") }
         PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: i18n("Functions") }
-        
-        Connections {
-            target: mainWindow
-            
-            onNumeralsVisibleChanged: {
-                if(!visible && sidebarTabBar.currentTab == numeralsTabButton && functionsTabButton.visible) {
-                    sidebarTabBar.currentTab = functionsTabButton
-                    sidebarTabGroup.currentTab = functionsTab    
-                }
-                
-                if(visible) {
-                    sidebarTabBar.currentTab = numeralsTabButton
-                    sidebarTabGroup.currentTab = numeralsTab
-                }
-                
-                numeralsTabButton.visible = visible
-                numeralsTabButton.opacity = visible ? 1 : 0
-                
-                if(numeralsTabButton.visible && functionsTabButton.visible) {
-                    sidebarTabBar.anchors.bottom = undefined
-                    sidebarTabBar.anchors.top = sidebar.top
-                }
-                else {
-                    sidebarTabBar.anchors.top = undefined
-                    sidebarTabBar.anchors.bottom = sidebar.top
-                }
-                
-                if(numeralsTabButton.visible || functionsTabButton.visible) {
-                    sidebar.anchors.left = undefined
-                    sidebar.anchors.right = baseItem.right
-                }
-                else {
-                    sidebar.anchors.right = undefined
-                    sidebar.anchors.left = baseItem.right
-                }
-            }
-            
-            onFunctionsVisibleChanged: {
-                if(!visible && sidebarTabBar.currentTab == functionsTabButton && numeralsTabButton.visible) {
-                    sidebarTabBar.currentTab = numeralsTabButton
-                    sidebarTabGroup.currentTab = numeralsTab
-                    
-                }
-                
-                if(visible) {
-                    sidebarTabBar.currentTab = functionsTabButton
-                    sidebarTabGroup.currentTab = functionsTab
-                }
-                
-                functionsTabButton.visible = visible
-                functionsTabButton.opacity = visible ? 1 : 0
-                
-                if(numeralsTabButton.visible && functionsTabButton.visible) {
-                    sidebarTabBar.anchors.bottom = undefined
-                    sidebarTabBar.anchors.top = sidebar.top
-                }
-                else {
-                    sidebarTabBar.anchors.top = undefined
-                    sidebarTabBar.anchors.bottom = sidebar.top
-                }
-                
-                if(numeralsTabButton.visible || functionsTabButton.visible) {
-                    sidebar.anchors.left = undefined
-                    sidebar.anchors.right = baseItem.right
-                }
-                else {
-                    sidebar.anchors.right = undefined
-                    sidebar.anchors.left = baseItem.right
-                }
-            }
-        }
     }
     
     PlasmaComponents.TabGroup {
@@ -175,6 +104,73 @@ Item {
                 flickableItem: functions
                 anchors.right: parent.right
             }
+        }
+    }
+    
+    function numeralsVisibleChanged(visible) {
+        if(!visible && sidebarTabBar.currentTab == numeralsTabButton && functionsTabButton.visible) {
+            sidebarTabBar.currentTab = functionsTabButton
+            sidebarTabGroup.currentTab = functionsTab    
+        }
+        
+        if(visible) {
+            sidebarTabBar.currentTab = numeralsTabButton
+            sidebarTabGroup.currentTab = numeralsTab
+        }
+        
+        numeralsTabButton.visible = visible
+        numeralsTabButton.opacity = visible ? 1 : 0
+        
+        if(numeralsTabButton.visible && functionsTabButton.visible) {
+            sidebarTabBar.anchors.bottom = undefined
+            sidebarTabBar.anchors.top = sidebar.top
+        }
+        else {
+            sidebarTabBar.anchors.top = undefined
+            sidebarTabBar.anchors.bottom = sidebar.top
+        }
+        
+        if(numeralsTabButton.visible || functionsTabButton.visible) {
+            sidebar.anchors.left = undefined
+            sidebar.anchors.right = baseItem.right
+        }
+        else {
+            sidebar.anchors.right = undefined
+            sidebar.anchors.left = baseItem.right
+        }
+    }
+    
+    function functionsVisibleChanged(visible) {
+        if(!visible && sidebarTabBar.currentTab == functionsTabButton && numeralsTabButton.visible) {
+            sidebarTabBar.currentTab = numeralsTabButton
+            sidebarTabGroup.currentTab = numeralsTab
+            
+        }
+        
+        if(visible) {
+            sidebarTabBar.currentTab = functionsTabButton
+            sidebarTabGroup.currentTab = functionsTab
+        }
+        
+        functionsTabButton.visible = visible
+        functionsTabButton.opacity = visible ? 1 : 0
+        
+        if(numeralsTabButton.visible && functionsTabButton.visible) {
+            sidebarTabBar.anchors.bottom = undefined
+            sidebarTabBar.anchors.top = sidebar.top
+        }
+        else {
+            sidebarTabBar.anchors.top = undefined
+            sidebarTabBar.anchors.bottom = sidebar.top
+        }
+        
+        if(numeralsTabButton.visible || functionsTabButton.visible) {
+            sidebar.anchors.left = undefined
+            sidebar.anchors.right = baseItem.right
+        }
+        else {
+            sidebar.anchors.right = undefined
+            sidebar.anchors.left = baseItem.right
         }
     }
 }

@@ -90,6 +90,18 @@ Item {
         
         onFunctionSelected: editor.text += functionName
         onFunctionRemoved: mainWindow.removeFunction(functionName)
+        
+        Connections {
+            target: mainWindow
+            
+            onNumeralsVisibleChanged: {
+                sidebar.numeralsVisibleChanged(visible)
+            }
+            
+            onFunctionsVisibleChanged: {
+                sidebar.functionsVisibleChanged(visible)
+            }
+        }
     }
 
     Editor {
