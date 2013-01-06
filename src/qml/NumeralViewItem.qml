@@ -1,8 +1,12 @@
 import QtQuick 1.1
 
 Row {
+    id: numeralViewItem
     width: parent.width
     height: 20
+    
+    signal numeralSelected(string numeralName)
+    signal numeralRemoved(string numeralName)
     
     Text {
         width: 50
@@ -15,7 +19,7 @@ Row {
         
         MouseArea {
             anchors.fill: parent
-            onClicked: numerals.numeralSelected(model.name)
+            onClicked: numeralViewItem.numeralSelected(model.name)
             onDoubleClicked: console.log("TODO")
         }
     }
@@ -42,7 +46,7 @@ Row {
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked: numerals.numeralSelected(model.name)
+                onClicked: numeralViewItem.numeralSelected(model.name)
                 onDoubleClicked: console.log("TODO")
                 onEntered: description.itemHovered = true
                 onExited: description.itemHovered = false
@@ -70,7 +74,7 @@ Row {
                 hoverEnabled: true
                 onEntered: description.itemHovered = true
                 onExited: description.itemHovered = false
-                onClicked: numerals.numeralRemoved(model.name)
+                onClicked: numeralViewItem.numeralRemoved(model.name)
             }
         }
     }

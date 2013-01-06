@@ -1,8 +1,12 @@
 import QtQuick 1.1
 
 Row {
+    id: functionViewItem
     width: parent.width
     height: 20
+    
+    signal functionSelected(string functionName)
+    signal functionRemoved(string functionName)
     
     Text {
         width: 50
@@ -15,7 +19,7 @@ Row {
         
         MouseArea {
             anchors.fill: parent
-            onClicked: functions.functionSelected(model.name)
+            onClicked: functionViewItem.functionSelected(model.name)
             onDoubleClicked: console.log("TODO")
         }
     }
@@ -42,7 +46,7 @@ Row {
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked: functions.functionSelected(model.name)
+                onClicked: functionViewItem.functionSelected(model.name)
                 onDoubleClicked: console.log("TODO")
                 onEntered: description.itemHovered = true
                 onExited: description.itemHovered = false
@@ -70,7 +74,7 @@ Row {
                 hoverEnabled: true
                 onEntered: description.itemHovered = true
                 onExited: description.itemHovered = false
-                onClicked: functions.functionRemoved(model.name)
+                onClicked: functionViewItem.functionRemoved(model.name)
             }
         }
     }
