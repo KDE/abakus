@@ -71,6 +71,9 @@ class MainWindow : public KXmlGuiWindow
     Q_INVOKABLE void setDegrees();
     Q_INVOKABLE void setRadians();
     
+    Q_INVOKABLE void historyPrevious();
+    Q_INVOKABLE void historyNext();
+    
     Q_INVOKABLE void setHistoryVisible(const bool &visible);
     Q_INVOKABLE void setNumeralsVisible(const bool &visible);
     Q_INVOKABLE void setFunctionsVisible(const bool &visible);

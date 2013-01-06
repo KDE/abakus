@@ -43,6 +43,9 @@ class ResultModel : public QAbstractListModel
     
     void addResult(const QString &expr, const Abakus::number_t &result);
     void addMessage(const QString &msg);
+    
+    QString previousExpression();
+    QString nextExpression();
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
     bool stackValue(unsigned position, Abakus::number_t &result);
@@ -58,6 +61,7 @@ class ResultModel : public QAbstractListModel
 
     private:
     QList<ResultModelItem*> m_resultModelItems;
+    int historyIndex;
 };
 
 #endif

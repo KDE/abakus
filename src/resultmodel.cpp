@@ -26,7 +26,7 @@
 #include <QtGui/QStandardItemModel>
 
 ResultModel::ResultModel(QObject *parent)
-    : QAbstractListModel(parent)
+    : QAbstractListModel(parent), historyIndex(-1)
 {
     QHash<int, QByteArray> roles;
     roles[ExpressionRole] = "expression";
@@ -50,6 +50,8 @@ void ResultModel::addResult(const QString &expr, const Abakus::number_t &result)
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_resultModelItems << resultModelItem;
     endInsertRows();
+    
+    historyIndex = m_resultModelItems.count() - 1;
 }
 
 void ResultModel::addMessage(const QString &msg)
@@ -59,6 +61,40 @@ void ResultModel::addMessage(const QString &msg)
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_resultModelItems << resultModelItem;
     endInsertRows();
+}
+
+QString ResultModel::previousExpression()
+{
+    if(historyIndex >= 0)
+    {
+        --historyIndex;
+    }
+    
+    if(historyIndex < 0 || historyIndex >= m_resultModelItems.count())
+    {
+        return QString();
+    }
+    else
+    {
+        return m_resultModelItems.at(historyIndex)->expression();
+    }
+}
+
+QString ResultModel::nextExpression()
+{
+    if(historyIndex < m_resultModelItems.count())
+    {
+        ++historyIndex;
+    }
+    
+    if(historyIndex < 0 || historyIndex >= m_resultModelItems.count())
+    {
+        return QString();
+    }
+    else
+    {
+        return m_resultModelItems.at(historyIndex)->expression();
+    }
 }
 
 int ResultModel::rowCount(const QModelIndex & parent) const

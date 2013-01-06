@@ -277,6 +277,9 @@ Item {
         
         onTextChanged: mainWindow.slotTextChanged(text)
         
+        Keys.onUpPressed: mainWindow.historyPrevious()
+        Keys.onDownPressed: mainWindow.historyNext()
+        
         Connections {
             target: mainWindow
             

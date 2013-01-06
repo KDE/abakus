@@ -243,6 +243,16 @@ void MainWindow::setRadians()
     slotRadians();
 }
 
+void MainWindow::historyPrevious()
+{
+    emit setEditorText(m_resultItemModel->previousExpression());
+}
+
+void MainWindow::historyNext()
+{
+    emit setEditorText(m_resultItemModel->nextExpression());
+}
+
 void MainWindow::setHistoryVisible(const bool& visible)
 {
     m_historyVisible = visible;
