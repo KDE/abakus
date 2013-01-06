@@ -8,12 +8,12 @@ Item {
 
     property int sidebarWidth: 200
     property int sidebarTabBarHeight: 30
-    property int trigModeHeight: 30
+    property int configPanelHeight: 30
     property int editorHeight: 25
 
     PlasmaComponents.ButtonRow {
-        id: trigMode
-        height: trigModeHeight
+        id: configPanel
+        height: configPanelHeight
         anchors.top: parent.top
         anchors.right: sidebar.left
         exclusive: true
@@ -46,7 +46,7 @@ Item {
     
     ListView {
         id: history
-        anchors.top: trigMode.bottom
+        anchors.top: configPanel.bottom
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: editor.top
