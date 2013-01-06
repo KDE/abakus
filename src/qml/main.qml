@@ -260,25 +260,17 @@ Item {
         }
     }
 
-    PlasmaComponents.TextField {
+    Editor {
         id: editor
         height: editorHeight
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: parent.bottom
-        font.pixelSize: 12
-        clearButtonShown: true
-        placeholderText: i18n("Enter expression")
-
-        onAccepted: {
-            mainWindow.slotEvaluate(text)
-            editor.selectAll()
-        }
         
         onTextChanged: mainWindow.slotTextChanged(text)
-        
-        Keys.onUpPressed: mainWindow.historyPrevious()
-        Keys.onDownPressed: mainWindow.historyNext()
+        onToEvaluate: mainWindow.slotEvaluate(text)
+        onUpPressed: mainWindow.historyPrevious()
+        onDownPressed: mainWindow.historyNext()
         
         Connections {
             target: mainWindow
