@@ -19,6 +19,45 @@ Item {
         anchors.right: sidebar.left
         
         PlasmaComponents.ButtonRow {
+            id: toolbar
+            height: configPanelHeight
+            anchors.left: parent.left
+            anchors.bottom: parent. bottom
+            exclusive: false
+            
+            PlasmaComponents.ToolButton {
+                id: settings;
+                height: parent.height;
+                flat: true;
+                checkable: true;
+                iconSource: "configure"
+            }
+            
+            PlasmaComponents.ToolButton {
+                id: compactMode;
+                height: parent.height;
+                flat: true;
+                checkable:true;
+                iconSource: "merge"
+                
+                onClicked: mainWindow.slotToggleCompactMode()
+                
+                Connections {
+                    target: mainWindow
+                    
+                    onCompactModeChanged: compactMode.checked = active
+                }
+            }
+            
+            PlasmaComponents.ToolButton {
+                id: help;
+                height: parent.height;
+                flat: true;
+                iconSource: "help-about"
+            }
+        }
+        
+        PlasmaComponents.ButtonRow {
             id: trigMode
             height: configPanelHeight
             anchors.right: sidebarGrip.left
@@ -175,17 +214,6 @@ Item {
         Connections {
             target: mainWindow
             
-//             onMathematicalSidebarVisibleChanged: {
-//                 sidebar.sidebarShown = visible
-//                 if(visible) {
-//                     sidebar.anchors.left = undefined
-//                     sidebar.anchors.right = baseItem.right
-//                 }
-//                 else {
-//                     sidebar.anchors.right = undefined
-//                     sidebar.anchors.left = baseItem.right
-//                 }
-//             }
             onMathematicalSidebarVisibleChanged: {
                 if(visible) {
                     sidebar.state = "shown"

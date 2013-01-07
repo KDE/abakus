@@ -91,6 +91,7 @@ class MainWindow : public KXmlGuiWindow
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
     void historyVisibleChanged(const bool &visible);
     void mathematicalSidebarVisibleChanged(const bool &visible);
+    void compactModeChanged(const bool &active);
     
     private slots:
     void slotPrecisionAuto();

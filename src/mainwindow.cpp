@@ -579,10 +579,11 @@ void MainWindow::slotToggleHistoryList()
 
 void MainWindow::slotToggleCompactMode()
 {
-    if(action<KToggleAction>("toggleCompactMode")->isChecked()) {
+    m_compactMode = !m_compactMode;
+    action<KToggleAction>("toggleCompactMode")->setChecked(m_compactMode);
+    if(m_compactMode) {
         m_wasMathematicalSidebarShown = m_mathematicalSidebarVisible;
         m_wasHistoryShown = m_historyVisible;
-        m_compactMode = true;
 
         setMathematicalSidebarVisible(false);
         setHistoryVisible(false);
@@ -597,7 +598,6 @@ void MainWindow::slotToggleCompactMode()
     else {
         setMathematicalSidebarVisible(m_wasMathematicalSidebarShown);
         setHistoryVisible(m_wasHistoryShown);
-        m_compactMode = false;
 
         action<KToggleAction>("toggleMathematicalSidebar")->setChecked(m_wasMathematicalSidebarShown);
         action<KToggleAction>("toggleHistoryList")->setChecked(m_wasHistoryShown);
@@ -605,6 +605,8 @@ void MainWindow::slotToggleCompactMode()
         m_newSize = m_oldSize;
         QTimer::singleShot(0, this, SLOT(slotUpdateSize()));
     }
+    
+    emit compactModeChanged(m_compactMode);
 }
 
 void MainWindow::slotToggleExpressionMode()
