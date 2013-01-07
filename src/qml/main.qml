@@ -53,19 +53,54 @@ Item {
         currentIndex: count -1
         clip: true
         
-        signal expressionSelected( string expression )
-        onExpressionSelected: editor.text = expression
-        
-        signal resultSelected( string result )
-        onResultSelected: editor.text += result
-        
-        signal tagSelected( string tag )
-        onTagSelected: editor.text += tag
-        
         property int minTagSize: 0
         
         model: resultModel
-        delegate: ResultViewItem { }
+        delegate: ResultViewItem {
+            currentHistoryIndex: history.currentIndex
+            currentMinTagSize: history.minTagSize
+            
+            onExpressionSelected: editor.text = expression;
+            onResultSelected: editor.text += result
+            onTagSelected: editor.text += tag
+            
+            Component.onCompleted: {
+                mainWindow.addVisibleHistoryItemIndex(model.index)
+                history.updateTagWidth();
+            }
+            
+            Component.onDestruction: {
+                mainWindow.removeVisibleHistoryItemIndex(model.index)
+                history.updateTagWidth();
+            }
+        }
+        
+        Text {
+            id: tagItemDummy
+            font.pixelSize: 12
+            font.italic: true
+            visible: false
+        }
+        
+        function updateTagWidth() {
+            var i = 0;
+            var itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
+            var minTagSize = 0
+            
+            while(itemIndexNext > -1)
+            {
+                tagItemDummy.text = mainWindow.getTag(itemIndexNext)
+                if(minTagSize < tagItemDummy.width)
+                {
+                    minTagSize = tagItemDummy.width
+                }
+                ++i;
+                itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
+            }
+            
+            tagItemDummy.text = ""
+            history.minTagSize = minTagSize
+        }
 
         Connections {
             target: mainWindow

@@ -7,12 +7,19 @@ Row {
     
     property string rowBackground: model.index % 2 == 0 ? "white" : "whitesmoke"
     property string highlightColor: "lightblue"
-
+    
+    property int currentHistoryIndex: 0
+    property int currentMinTagSize: 0
+    
+    signal expressionSelected(string expression)
+    signal resultSelected(string result)
+    signal tagSelected(string tag)
+    
     Rectangle {
         id: expressionItem
         width: parent.width - resultItem.width - tagItem.width
         height: parent.height
-        color: model.index == history.currentIndex ? highlightColor : rowBackground
+        color: model.index == currentHistoryIndex ? highlightColor : rowBackground
         
         Text {
             height: parent.height
@@ -25,7 +32,7 @@ Row {
             
             MouseArea {
                 anchors.fill: parent
-                onClicked: history.expressionSelected(model.expression)
+                onClicked: root.expressionSelected(model.expression)
                 onDoubleClicked: console.log("TODO")
             }
         }
@@ -35,7 +42,7 @@ Row {
         id: resultItem
         width: resultItemText.width
         height: parent.height
-        color: model.index == history.currentIndex ? highlightColor : rowBackground
+        color: model.index == currentHistoryIndex ? highlightColor : rowBackground
         
         Text {
             id: resultItemText
@@ -48,7 +55,7 @@ Row {
             
             MouseArea  {
                 anchors.fill: parent
-                onClicked: history.resultSelected(model.result)
+                onClicked: root.resultSelected(model.result)
                 onDoubleClicked: console.log("TODO")
             }
         }
@@ -56,9 +63,9 @@ Row {
     
     Rectangle {
         id: tagItem
-        width: model.tag == "" ? 0 : history.minTagSize
+        width: model.tag == "" ? 0 : currentMinTagSize
         height: parent.height
-        color: model.index == history.currentIndex ? highlightColor : rowBackground
+        color: model.index == currentHistoryIndex ? highlightColor : rowBackground
         
         Text {
             height: parent.height
@@ -71,46 +78,9 @@ Row {
             
             MouseArea  {
                 anchors.fill: parent
-                onClicked: history.tagSelected(model.tag)
+                onClicked: root.tagSelected(model.tag)
                 onDoubleClicked: {}//do nothing
             }
         }
-    }
-    
-    Text {
-        id: tagItemDummy
-        font.pixelSize: 12
-        font.italic: true
-        visible: false
-    }
-    
-    Component.onCompleted: {
-        mainWindow.addVisibleHistoryItemIndex(model.index)
-        updateTagWidth()
-    }
-    
-    Component.onDestruction:  {
-            mainWindow.removeVisibleHistoryItemIndex(model.index)
-            updateTagWidth()
-    }
-    
-    function updateTagWidth() {
-        var i = 0;
-        var itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
-        var minTagSize = 0
-        
-        while(itemIndexNext > -1)
-        {
-            tagItemDummy.text = mainWindow.getTag(itemIndexNext)
-            if(minTagSize < tagItemDummy.width)
-            {
-                minTagSize = tagItemDummy.width
-            }
-            ++i;
-            itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
-        }
-        
-        tagItemDummy.text = ""
-        history.minTagSize = minTagSize
     }
 }
