@@ -11,35 +11,79 @@ Item {
     property int configPanelHeight: 25
     property int editorHeight: 25
 
-    PlasmaComponents.ButtonRow {
+    Item {
         id: configPanel
         height: configPanelHeight
         anchors.top: parent.top
+        anchors.left: parent.left
         anchors.right: sidebar.left
-        exclusive: true
+        
+        PlasmaComponents.ButtonRow {
+            id: trigMode
+            height: configPanelHeight
+            anchors.right: sidebarGrip.left
+            anchors.bottom: parent.bottom
+            exclusive: true
 
-        PlasmaComponents.ToolButton { id: degrees; height: parent.height; flat: true; text: i18n("Degrees") }
-        PlasmaComponents.ToolButton { id: radians; height: parent.height; flat: true; text: i18n("Radians") }
+            PlasmaComponents.ToolButton { id: degrees; height: parent.height; flat: true; text: i18n("Degrees") }
+            PlasmaComponents.ToolButton { id: radians; height: parent.height; flat: true; text: i18n("Radians") }
 
-        onCheckedButtonChanged: {
-            if(degrees.checked) {
-                mainWindow.setDegrees()
+            onCheckedButtonChanged: {
+                if(degrees.checked) {
+                    mainWindow.setDegrees()
+                }
+                else {
+                    mainWindow.setRadians()
+                }
             }
-            else {
-                mainWindow.setRadians()
+
+            Connections {
+                target: mainWindow
+                
+                onTrigModeChanged: {
+                    if(degrees.checked && mode != 0) { //TODO: use the Abakus::TrigMode enum
+                        radians.checked = true
+                    }
+                    else if(radians.checked && mode != 1) {
+                        degrees.checked = true
+                    }
+                }
             }
         }
-
-        Connections {
-            target: mainWindow
+        
+        Item {
+            id: sidebarGrip
+            width: 15
+            height: configPanelHeight
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            opacity: 0.5
+            clip: true
             
-            onTrigModeChanged: {
-                if(degrees.checked && mode != 0) { //TODO: use the Abakus::TrigMode enum
-                    radians.checked = true
-                }
-                else if(radians.checked && mode != 1) {
-                    degrees.checked = true
-                }
+            Rectangle {
+                width: parent.width + 10
+                height: parent.height
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                color: "lightgrey"
+                radius: 3
+            }
+            
+            Text {
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: sidebar.sidebarGripSign
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                
+                onEntered: sidebarGrip.opacity = 1
+                onExited: sidebarGrip.opacity = 0.5
+                
+                onClicked: mainWindow.slotToggleMathematicalSidebar()
             }
         }
     }
@@ -117,8 +161,10 @@ Item {
         width: sidebarWidth
         tabBarHeight: sidebarTabBarHeight
         anchors.top: parent.top
-        anchors.right: parent.right
+        anchors.left: parent.right
         anchors.bottom: parent.bottom
+        
+        property string sidebarGripSign: "<"
         
         onNumeralSelected: editor.text += numeralName
         onNumeralRemoved: mainWindow.removeNumeral(numeralName)
@@ -129,13 +175,36 @@ Item {
         Connections {
             target: mainWindow
             
-            onNumeralsVisibleChanged: {
-                sidebar.numeralsVisibleChanged(visible)
+//             onMathematicalSidebarVisibleChanged: {
+//                 sidebar.sidebarShown = visible
+//                 if(visible) {
+//                     sidebar.anchors.left = undefined
+//                     sidebar.anchors.right = baseItem.right
+//                 }
+//                 else {
+//                     sidebar.anchors.right = undefined
+//                     sidebar.anchors.left = baseItem.right
+//                 }
+//             }
+            onMathematicalSidebarVisibleChanged: {
+                if(visible) {
+                    sidebar.state = "shown"
+                    sidebar.sidebarGripSign = ">"
+                }
+                else {
+                    sidebar.state = ""
+                    sidebar.sidebarGripSign = "<"
+                }
             }
-            
-            onFunctionsVisibleChanged: {
-                sidebar.functionsVisibleChanged(visible)
-            }
+        }
+        
+        states: State {
+            name: "shown"
+            AnchorChanges { target: sidebar; anchors.left: undefined; anchors.right: baseItem.right }
+        }
+        
+        transitions: Transition {
+            AnchorAnimation { duration: 100 }
         }
     }
 

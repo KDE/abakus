@@ -74,9 +74,10 @@ class MainWindow : public KXmlGuiWindow
     Q_INVOKABLE void historyPrevious();
     Q_INVOKABLE void historyNext();
     
-    Q_INVOKABLE void setHistoryVisible(const bool &visible);
-    Q_INVOKABLE void setNumeralsVisible(const bool &visible);
-    Q_INVOKABLE void setFunctionsVisible(const bool &visible);
+    Q_INVOKABLE void slotToggleHistoryList();
+    Q_INVOKABLE void slotToggleMathematicalSidebar();
+    Q_INVOKABLE void slotToggleCompactMode();
+    Q_INVOKABLE void slotToggleExpressionMode();
     
     Q_INVOKABLE void removeNumeral(const QString &name);
     Q_INVOKABLE void removeFunction(const QString &name);
@@ -89,8 +90,7 @@ class MainWindow : public KXmlGuiWindow
     void setEditorText(const QString &editorText);
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
     void historyVisibleChanged(const bool &visible);
-    void numeralsVisibleChanged(const bool &visible);
-    void functionsVisibleChanged(const bool &visible);
+    void mathematicalSidebarVisibleChanged(const bool &visible);
     
     private slots:
     void slotPrecisionAuto();
@@ -106,11 +106,6 @@ class MainWindow : public KXmlGuiWindow
     void slotRadians();
 
     void slotToggleMenuBar();
-    void slotToggleFunctionList();
-    void slotToggleVariableList();
-    void slotToggleHistoryList();
-    void slotToggleCompactMode();
-    void slotToggleExpressionMode();
 
     private:
     int getParenthesesLevel(const QString &str);
@@ -122,6 +117,9 @@ class MainWindow : public KXmlGuiWindow
     void saveConfig();
     void setupLayout();
     QString interpolateExpression(const QString &text);
+    
+    void setHistoryVisible(const bool &visible);
+    void setMathematicalSidebarVisible(const bool &visible);
 
     // Donated via JuK
     QAction *action(const char *key) const;
@@ -142,9 +140,9 @@ class MainWindow : public KXmlGuiWindow
     QDeclarativeContext *m_declarativeContext;
 
     bool m_historyVisible;
-    bool m_numeralsVisible;
-    bool m_functionsVisible;
-    bool m_wasFnShown, m_wasVarShown, m_wasHistoryShown;
+    bool m_wasHistoryShown;
+    bool m_mathematicalSidebarVisible;
+    bool m_wasMathematicalSidebarShown;
     bool m_compactMode;
 
     bool m_insert;

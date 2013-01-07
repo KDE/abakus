@@ -66,9 +66,9 @@ MainWindow::MainWindow() :
     m_resultItemModel (new ResultModel(this)),
     m_newSize(QSize(600, 300)), m_oldSize(QSize(600, 300)),
     m_historyVisible(true),
-    m_numeralsVisible(true),
-    m_functionsVisible(true),
-    m_wasFnShown(true), m_wasVarShown(true), m_wasHistoryShown(true),
+    m_wasHistoryShown(true),
+    m_mathematicalSidebarVisible(true),
+    m_wasMathematicalSidebarShown(true),
     m_compactMode(false),
     m_insert(false)
 {
@@ -259,16 +259,10 @@ void MainWindow::setHistoryVisible(const bool& visible)
     emit historyVisibleChanged(visible);
 }
 
-void MainWindow::setNumeralsVisible(const bool& visible)
+void MainWindow::setMathematicalSidebarVisible(const bool& visible)
 {
-    m_numeralsVisible = visible;
-    emit numeralsVisibleChanged(visible);
-}
-
-void MainWindow::setFunctionsVisible(const bool& visible)
-{
-    m_functionsVisible = visible;
-    emit functionsVisibleChanged(visible);
+    m_mathematicalSidebarVisible = visible;
+    emit mathematicalSidebarVisibleChanged(visible);
 }
 
 void MainWindow::removeNumeral(const QString& name)
@@ -358,34 +352,15 @@ void MainWindow::loadConfig()
     selectCorrectPrecisionAction();
 
 
-    config = KGlobal::config()->group("Variables");
-
-    QStringList list = config.readEntry("Saved Variables", QStringList());
-    foreach(QString str, list) {
-        QStringList values = str.split('=');
-        if(values.count() != 2) {
-            kWarning() << "Your configuration file has somehow been corrupted!\n";
-            continue;
-        }
-
-        QByteArray valueStr = values[1].toLatin1();
-        NumeralModel::instance()->setValue(values[0], Abakus::number_t(valueStr.data()));
-    }
-
-    
     config = KGlobal::config()->group("GUI");
 
     bool showHistory = config.readEntry("ShowHistory", true);
     action<KToggleAction>("toggleHistoryList")->setChecked(showHistory);
     setHistoryVisible(showHistory);
 
-    bool showFunctions = config.readEntry("ShowFunctions", true);
-    action<KToggleAction>("toggleFunctionList")->setChecked(showFunctions);
-    setFunctionsVisible(showFunctions);
-
-    bool showVariables = config.readEntry("ShowVariables", true);
-    action<KToggleAction>("toggleVariableList")->setChecked(showVariables);
-    setNumeralsVisible(showVariables);
+    bool showMathematicalSidebar = config.readEntry("ShowMathematicalSidebar", true);
+    action<KToggleAction>("toggleMathematicalSidebar")->setChecked(showMathematicalSidebar);
+    setMathematicalSidebarVisible(showMathematicalSidebar);
 
     bool compactMode = config.readEntry("InCompactMode", false);
     compactMode = compactMode || !showHistory;
@@ -395,6 +370,21 @@ void MainWindow::loadConfig()
         QTimer::singleShot(0, this, SLOT(slotToggleCompactMode()));
 
 
+    config = KGlobal::config()->group("Variables");
+    
+    QStringList list = config.readEntry("Saved Variables", QStringList());
+    foreach(QString str, list) {
+        QStringList values = str.split('=');
+        if(values.count() != 2) {
+            kWarning() << "Your configuration file has somehow been corrupted!\n";
+            continue;
+        }
+        
+        QByteArray valueStr = values[1].toLatin1();
+        NumeralModel::instance()->setValue(values[0], Abakus::number_t(valueStr.data()));
+    }
+    
+    
     config = KGlobal::config()->group("Functions");
 
     QStringList fnList = config.readEntry("FunctionList", QStringList());
@@ -417,27 +407,6 @@ void MainWindow::saveConfig()
     config.writeEntry("Decimal Precision", Abakus::m_prec);
 
     
-    config = KGlobal::config()->group("Variables");
-
-    QStringList list;
-    QStringList values = NumeralModel::instance()->valueNames();
-    QStringList::ConstIterator it = values.begin();
-
-    // Set precision to max for most accuracy
-    Abakus::m_prec = 75;
-
-    for(; it != values.end(); ++it) {
-        if(NumeralModel::instance()->isValueReadOnly(*it))
-            continue;
-
-        list += QString("%1=%2")
-                    .arg(*it)
-                    .arg(NumeralModel::instance()->value(*it).toString());
-    }
-
-    config.writeEntry("Saved Variables", list);
-
-
     config = KGlobal::config()->group("GUI");
     
     bool inCompactMode = action<KToggleAction>("toggleCompactMode")->isChecked();
@@ -446,14 +415,33 @@ void MainWindow::saveConfig()
 
     if(!inCompactMode) {
         config.writeEntry("ShowHistory", m_historyVisible);
-        config.writeEntry("ShowFunctions", m_functionsVisible);
-        config.writeEntry("ShowVariables", m_numeralsVisible);
+        config.writeEntry("ShowMathematicalSidebar", m_mathematicalSidebarVisible);
     }
     else {
         config.writeEntry("ShowHistory", m_wasHistoryShown);
-        config.writeEntry("ShowFunctions", m_wasFnShown);
-        config.writeEntry("ShowVariables", m_wasVarShown);
+        config.writeEntry("ShowMathematicalSidebar", m_wasMathematicalSidebarShown);
     }
+    
+    
+    config = KGlobal::config()->group("Variables");
+    
+    QStringList list;
+    QStringList values = NumeralModel::instance()->valueNames();
+    QStringList::ConstIterator it = values.begin();
+    
+    // Set precision to max for most accuracy
+    Abakus::m_prec = 75;
+    
+    for(; it != values.end(); ++it) {
+        if(NumeralModel::instance()->isValueReadOnly(*it))
+            continue;
+        
+        list += QString("%1=%2")
+        .arg(*it)
+        .arg(NumeralModel::instance()->value(*it).toString());
+    }
+    
+    config.writeEntry("Saved Variables", list);
 
 
     config = KGlobal::config()->group("Functions");
@@ -503,14 +491,9 @@ void MainWindow::setupLayout()
     ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_H);
     ta->setChecked(true);
 
-    ta = ac->add<KToggleAction>("toggleVariableList", this, SLOT(slotToggleVariableList()));
-    ta->setText(i18n("Show &Variables"));
-    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_V);
-    ta->setChecked(true);
-
-    ta = ac->add<KToggleAction>("toggleFunctionList", this, SLOT(slotToggleFunctionList()));
-    ta->setText(i18n("Show &Functions"));
-    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_F);
+    ta = ac->add<KToggleAction>("toggleMathematicalSidebar", this, SLOT(slotToggleMathematicalSidebar()));
+    ta->setText(i18n("Show &Mathematical Sidebar"));
+    ta->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_M);
     ta->setChecked(true);
 
     ta = ac->add<KToggleAction>("toggleCompactMode", this, SLOT(slotToggleCompactMode()));
@@ -572,23 +555,11 @@ void MainWindow::slotToggleMenuBar()
     menuBar()->setShown(menuBar()->isHidden());
 }
 
-void MainWindow::slotToggleFunctionList()
+void MainWindow::slotToggleMathematicalSidebar()
 {
-    bool show = action<KToggleAction>("toggleFunctionList")->isChecked();
-    setFunctionsVisible(show);
-
-    if(m_compactMode) {
-        action<KToggleAction>("toggleHistoryList")->setChecked(true);
-        slotToggleHistoryList();
-    }
-
-    action<KToggleAction>("toggleCompactMode")->setChecked(false);
-}
-
-void MainWindow::slotToggleVariableList()
-{
-    bool show = action<KToggleAction>("toggleVariableList")->isChecked();
-    setNumeralsVisible(show);
+    bool show = !m_mathematicalSidebarVisible;
+    action<KToggleAction>("toggleMathematicalSidebar")->setChecked(show);
+    setMathematicalSidebarVisible(show);
 
     if(m_compactMode) {
         action<KToggleAction>("toggleHistoryList")->setChecked(true);
@@ -609,17 +580,14 @@ void MainWindow::slotToggleHistoryList()
 void MainWindow::slotToggleCompactMode()
 {
     if(action<KToggleAction>("toggleCompactMode")->isChecked()) {
-        m_wasFnShown = m_functionsVisible;
-        m_wasVarShown = m_numeralsVisible;
+        m_wasMathematicalSidebarShown = m_mathematicalSidebarVisible;
         m_wasHistoryShown = m_historyVisible;
         m_compactMode = true;
 
-        setFunctionsVisible(false);
-        setNumeralsVisible(false);
+        setMathematicalSidebarVisible(false);
         setHistoryVisible(false);
 
-        action<KToggleAction>("toggleFunctionList")->setChecked(false);
-        action<KToggleAction>("toggleVariableList")->setChecked(false);
+        action<KToggleAction>("toggleMathematicalSidebar")->setChecked(false);
         action<KToggleAction>("toggleHistoryList")->setChecked(false);
 
         m_oldSize = size();
@@ -627,13 +595,11 @@ void MainWindow::slotToggleCompactMode()
         QTimer::singleShot(0, this, SLOT(slotUpdateSize()));
     }
     else {
-        setFunctionsVisible(m_wasFnShown);
-        setNumeralsVisible(m_wasVarShown);
+        setMathematicalSidebarVisible(m_wasMathematicalSidebarShown);
         setHistoryVisible(m_wasHistoryShown);
         m_compactMode = false;
 
-        action<KToggleAction>("toggleFunctionList")->setChecked(m_wasFnShown);
-        action<KToggleAction>("toggleVariableList")->setChecked(m_wasVarShown);
+        action<KToggleAction>("toggleMathematicalSidebar")->setChecked(m_wasMathematicalSidebarShown);
         action<KToggleAction>("toggleHistoryList")->setChecked(m_wasHistoryShown);
 
         m_newSize = m_oldSize;

@@ -3,8 +3,7 @@
 <MenuBar>
 	<Menu name="view"><text>&amp;View</text>
 		<Action name="toggleHistoryList"/>
-		<Action name="toggleVariableList"/>
-		<Action name="toggleFunctionList"/>
+		<Action name="toggleMathematicalSidebar"/>
 
 		<Separator/>
 
