@@ -1,7 +1,7 @@
 import QtQuick 1.1
 
 Row {
-    id: numeralViewItem
+    id: root
     width: parent.width
     height: 20
     
@@ -19,7 +19,7 @@ Row {
         
         MouseArea {
             anchors.fill: parent
-            onClicked: numeralViewItem.numeralSelected(model.name)
+            onClicked: root.numeralSelected(model.name)
             onDoubleClicked: console.log("TODO")
         }
     }
@@ -46,7 +46,7 @@ Row {
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked: numeralViewItem.numeralSelected(model.name)
+                onClicked: root.numeralSelected(model.name)
                 onDoubleClicked: console.log("TODO")
                 onEntered: description.itemHovered = true
                 onExited: description.itemHovered = false
@@ -74,7 +74,7 @@ Row {
                 hoverEnabled: true
                 onEntered: description.itemHovered = true
                 onExited: description.itemHovered = false
-                onClicked: numeralViewItem.numeralRemoved(model.name)
+                onClicked: root.numeralRemoved(model.name)
             }
         }
     }

@@ -1,6 +1,7 @@
 import QtQuick 1.1
 
 Row {
+    id: root
     width: parent.width
     height: 20
     

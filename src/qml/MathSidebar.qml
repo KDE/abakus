@@ -2,7 +2,7 @@ import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
 Item {
-    id: sidebar
+    id: root
     
     property alias tabBarHeight: sidebarTabBar.height
     
@@ -42,8 +42,8 @@ Item {
                 
                 model: numeralModel
                 delegate: NumeralViewItem {
-                    onNumeralSelected: sidebar.numeralSelected(numeralName)
-                    onNumeralRemoved: sidebar.numeralRemoved(numeralName)
+                    onNumeralSelected: root.numeralSelected(numeralName)
+                    onNumeralRemoved: root.numeralRemoved(numeralName)
                 }
                 
                 section.property: "typeString"
@@ -81,8 +81,8 @@ Item {
                 
                 model: functionModel
                 delegate: FunctionViewItem {
-                    onFunctionSelected: sidebar.functionSelected(functionName)
-                    onFunctionRemoved: sidebar.functionRemoved(functionName)
+                    onFunctionSelected: root.functionSelected(functionName)
+                    onFunctionRemoved: root.functionRemoved(functionName)
                 }
                 
                 section.property: "typeString"
@@ -123,20 +123,20 @@ Item {
         
         if(numeralsTabButton.visible && functionsTabButton.visible) {
             sidebarTabBar.anchors.bottom = undefined
-            sidebarTabBar.anchors.top = sidebar.top
+            sidebarTabBar.anchors.top = root.top
         }
         else {
             sidebarTabBar.anchors.top = undefined
-            sidebarTabBar.anchors.bottom = sidebar.top
+            sidebarTabBar.anchors.bottom = root.top
         }
         
         if(numeralsTabButton.visible || functionsTabButton.visible) {
-            sidebar.anchors.left = undefined
-            sidebar.anchors.right = baseItem.right
+            root.anchors.left = undefined
+            root.anchors.right = baseItem.right
         }
         else {
-            sidebar.anchors.right = undefined
-            sidebar.anchors.left = baseItem.right
+            root.anchors.right = undefined
+            root.anchors.left = baseItem.right
         }
     }
     
@@ -157,20 +157,20 @@ Item {
         
         if(numeralsTabButton.visible && functionsTabButton.visible) {
             sidebarTabBar.anchors.bottom = undefined
-            sidebarTabBar.anchors.top = sidebar.top
+            sidebarTabBar.anchors.top = root.top
         }
         else {
             sidebarTabBar.anchors.top = undefined
-            sidebarTabBar.anchors.bottom = sidebar.top
+            sidebarTabBar.anchors.bottom = root.top
         }
         
         if(numeralsTabButton.visible || functionsTabButton.visible) {
-            sidebar.anchors.left = undefined
-            sidebar.anchors.right = baseItem.right
+            root.anchors.left = undefined
+            root.anchors.right = baseItem.right
         }
         else {
-            sidebar.anchors.right = undefined
-            sidebar.anchors.left = baseItem.right
+            root.anchors.right = undefined
+            root.anchors.left = baseItem.right
         }
     }
 }
