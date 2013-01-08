@@ -112,40 +112,15 @@ Item {
             }
         }
         
-        Item {
+        SidebarGrip {
             id: sidebarGrip
             width: 15
             height: configPanelHeight
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            opacity: 0.5
-            clip: true
+            text: sidebar.sidebarGripSign
             
-            Rectangle {
-                width: parent.width + 10
-                height: parent.height
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                color: "lightgrey"
-                radius: 3
-            }
-            
-            Text {
-                anchors.fill: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                text: sidebar.sidebarGripSign
-            }
-            
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                
-                onEntered: sidebarGrip.opacity = 1
-                onExited: sidebarGrip.opacity = 0.5
-                
-                onClicked: mainWindow.slotToggleMathematicalSidebar()
-            }
+            onToggleSidebar: mainWindow.slotToggleMathematicalSidebar()
         }
     }
     
