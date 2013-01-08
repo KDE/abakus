@@ -264,17 +264,7 @@ Item {
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: parent.bottom
-        
-        onTextChanged: mainWindow.slotTextChanged(text)
-        onToEvaluate: mainWindow.slotEvaluate(text)
-        onUpPressed: mainWindow.historyPrevious()
-        onDownPressed: mainWindow.historyNext()
-        
-        Connections {
-            target: mainWindow
-            
-            onSetEditorText: editor.text = editorText
-        }
+        mainWindowObject: mainWindow
     }
 
     Component.onCompleted: editor.forceActiveFocus()

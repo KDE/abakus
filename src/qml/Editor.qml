@@ -5,11 +5,7 @@ Item {
     id: root
     
     property alias text: textField.text
-    
-    signal textChanged ( string text )
-    signal toEvaluate ( string text )
-    signal upPressed ()
-    signal downPressed ()
+    property QtObject mainWindowObject
     
     PlasmaComponents.TextField {
         id: textField
@@ -19,13 +15,19 @@ Item {
         placeholderText: i18n("Enter expression")
         
         onAccepted: {
-            root.toEvaluate(text)
+            mainWindowObject.slotEvaluate(text)
             textField.selectAll()
         }
         
-        onTextChanged: root.textChanged(text)
+        onTextChanged: mainWindowObject.slotTextChanged(text)
         
-        Keys.onUpPressed: root.upPressed()
-        Keys.onDownPressed: root.downPressed()
+        Keys.onUpPressed: mainWindowObject.historyPrevious()
+        Keys.onDownPressed: mainWindowObject.historyNext()
+        
+        Connections {
+            target: mainWindowObject
+            
+            onSetEditorText: editor.text = editorText
+        }
     }
 }
