@@ -26,18 +26,18 @@ Item {
             exclusive: false
             
             PlasmaComponents.ToolButton {
-                id: settings;
-                height: parent.height;
-                flat: true;
-                checkable: true;
+                id: settings
+                height: parent.height
+                flat: true
+                checkable: true
                 iconSource: "configure"
             }
             
             PlasmaComponents.ToolButton {
-                id: compactMode;
-                height: parent.height;
-                flat: true;
-                checkable:true;
+                id: compactMode
+                height: parent.height
+                flat: true
+                checkable:true
                 iconSource: "merge"
                 
                 onClicked: mainWindow.slotToggleCompactMode()
@@ -50,41 +50,63 @@ Item {
             }
             
             PlasmaComponents.ToolButton {
-                id: help;
-                height: parent.height;
-                flat: true;
+                id: help
+                height: parent.height
+                flat: true
                 iconSource: "help-about"
             }
         }
         
-        PlasmaComponents.ButtonRow {
+        Item {
             id: trigMode
             height: configPanelHeight
             anchors.right: sidebarGrip.left
+            anchors.rightMargin: 5
             anchors.bottom: parent.bottom
-            exclusive: true
-
-            PlasmaComponents.ToolButton { id: degrees; height: parent.height; flat: true; text: i18n("Degrees") }
-            PlasmaComponents.ToolButton { id: radians; height: parent.height; flat: true; text: i18n("Radians") }
-
-            onCheckedButtonChanged: {
-                if(degrees.checked) {
-                    mainWindow.setDegrees()
-                }
-                else {
-                    mainWindow.setRadians()
+            
+            property string strDegrees: i18n("Degrees")
+            property string strRadians: i18n("Radians")
+            
+            PlasmaComponents.ToolButton {
+                id: trigModeButton
+                height: parent.height
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                flat: true
+                property ContextMenu contextMenu
+                text: trigMode.strDegrees
+                onClicked: {
+                    if (!contextMenu) {
+                        contextMenu = contextMenuComponent.createObject(trigModeButton)
+                    }
+                    contextMenu.open()
                 }
             }
-
+            
             Connections {
                 target: mainWindow
                 
                 onTrigModeChanged: {
-                    if(degrees.checked && mode != 0) { //TODO: use the Abakus::TrigMode enum
-                        radians.checked = true
+                    if(mode == 0) { //TODO: use the Abakus::TrigMode enum
+                        trigModeButton.text = trigMode.strDegrees
                     }
-                    else if(radians.checked && mode != 1) {
-                        degrees.checked = true
+                    else if(mode == 1) {
+                        trigModeButton.text = trigMode.strRadians
+                    }
+                }
+            }
+            
+            Component {
+                id: contextMenuComponent
+                PlasmaComponents.ContextMenu {
+                    visualParent: trigModeButton
+                    PlasmaComponents.MenuItem {
+                        text: trigMode.strDegrees
+                        onClicked: mainWindow.setDegrees()
+                    }
+                    PlasmaComponents.MenuItem {
+                        text: trigMode.strRadians
+                        onClicked: mainWindow.setRadians()
                     }
                 }
             }
@@ -143,18 +165,18 @@ Item {
             currentHistoryIndex: history.currentIndex
             currentMinTagSize: history.minTagSize
             
-            onExpressionSelected: editor.text = expression;
+            onExpressionSelected: editor.text = expression
             onResultSelected: editor.text += result
             onTagSelected: editor.text += tag
             
             Component.onCompleted: {
                 mainWindow.addVisibleHistoryItemIndex(model.index)
-                history.updateTagWidth();
+                history.updateTagWidth()
             }
             
             Component.onDestruction: {
                 mainWindow.removeVisibleHistoryItemIndex(model.index)
-                history.updateTagWidth();
+                history.updateTagWidth()
             }
         }
         
@@ -166,7 +188,7 @@ Item {
         }
         
         function updateTagWidth() {
-            var i = 0;
+            var i = 0
             var itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
             var minTagSize = 0
             
@@ -177,7 +199,7 @@ Item {
                 {
                     minTagSize = tagItemDummy.width
                 }
-                ++i;
+                ++i
                 itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
             }
             

@@ -562,8 +562,8 @@ void MainWindow::slotToggleMathematicalSidebar()
     setMathematicalSidebarVisible(show);
 
     if(m_compactMode) {
-        action<KToggleAction>("toggleHistoryList")->setChecked(true);
-        slotToggleHistoryList();
+        m_wasMathematicalSidebarShown = m_mathematicalSidebarVisible;
+        slotToggleCompactMode();
     }
 
     action<KToggleAction>("toggleCompactMode")->setChecked(false);
