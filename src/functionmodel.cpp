@@ -19,6 +19,7 @@
  */
 #include "numerictypes.h"
 
+#include <klocale.h>
 #include <kdebug.h>
 
 #include <QtCore/QVector>
@@ -186,33 +187,33 @@ bool FunctionModel::addFunction(const QString &name, function_t fn, const QStrin
 // same base name.
 #define DECLARE_FUNC1(name, desc) DECLARE_FUNC2(name, name, desc)
 
-DECLARE_FUNC1(sin, "Trigonometric sine");
-DECLARE_FUNC1(cos, "Trigonometric cosine");
-DECLARE_FUNC1(tan, "Trigonometric tangent");
+DECLARE_FUNC1(sin, i18n("Trigonometric sine"));
+DECLARE_FUNC1(cos, i18n("Trigonometric cosine"));
+DECLARE_FUNC1(tan, i18n("Trigonometric tangent"));
 
-DECLARE_FUNC1(sinh, "Hyperbolic sine");
-DECLARE_FUNC1(cosh, "Hyperbolic cosine");
-DECLARE_FUNC1(tanh, "Hyperbolic tangent");
+DECLARE_FUNC1(sinh, i18n("Hyperbolic sine"));
+DECLARE_FUNC1(cosh, i18n("Hyperbolic cosine"));
+DECLARE_FUNC1(tanh, i18n("Hyperbolic tangent"));
 
-DECLARE_FUNC1(atan, "Inverse tangent");
-DECLARE_FUNC1(acos, "Inverse cosine");
-DECLARE_FUNC1(asin, "Inverse sine");
+DECLARE_FUNC1(atan, i18n("Inverse tangent"));
+DECLARE_FUNC1(acos, i18n("Inverse cosine"));
+DECLARE_FUNC1(asin, i18n("Inverse sine"));
 
-DECLARE_FUNC1(asinh, "Inverse hyperbolic sine");
-DECLARE_FUNC1(acosh, "Inverse hyperbolic cosine");
-DECLARE_FUNC1(atanh, "Inverse hyperbolic tangent");
+DECLARE_FUNC1(asinh, i18n("Inverse hyperbolic sine"));
+DECLARE_FUNC1(acosh, i18n("Inverse hyperbolic cosine"));
+DECLARE_FUNC1(atanh, i18n("Inverse hyperbolic tangent"));
 
-DECLARE_FUNC1(abs, "Absolute value of number");
-DECLARE_FUNC1(sqrt, "Square root");
-DECLARE_FUNC1(ln, "Natural logarithm (base e)");
-DECLARE_FUNC1(log, "Logarithm (base 10)");
-DECLARE_FUNC1(exp, "Natural exponential function");
+DECLARE_FUNC1(abs, i18n("Absolute value of number"));
+DECLARE_FUNC1(sqrt, i18n("Square root"));
+DECLARE_FUNC1(ln, i18n("Natural logarithm (base e)"));
+DECLARE_FUNC1(log, i18n("Logarithm (base 10)"));
+DECLARE_FUNC1(exp, i18n("Natural exponential function"));
 
-DECLARE_FUNC1(round, "Round to nearest number");
-DECLARE_FUNC1(ceil, "Nearest greatest integer");
-DECLARE_FUNC1(floor, "Nearest lesser integer");
-DECLARE_FUNC2(int, integer, "Integral part of number");
-DECLARE_FUNC1(frac, "Fractional part of number");
+DECLARE_FUNC1(round, i18n("Round to nearest number"));
+DECLARE_FUNC1(ceil, i18n("Nearest greatest integer"));
+DECLARE_FUNC1(floor, i18n("Nearest lesser integer"));
+DECLARE_FUNC2(int, integer, i18n("Integral part of number"));
+DECLARE_FUNC1(frac, i18n("Fractional part of number"));
 
 Function *FunctionModel::function(const QString &name) const
 {
