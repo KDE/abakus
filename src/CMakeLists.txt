@@ -139,7 +139,6 @@ target_link_libraries(abakus ${MPFR_LIBS} ${QT_QTDECLARATIVE_LIBRARY} ${KDECLARA
 
 install(TARGETS abakus ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES abakus.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
-install(FILES abakusui.rc DESTINATION ${DATA_INSTALL_DIR}/abakus)
 
 kde4_install_icons(${ICON_INSTALL_DIR})
 

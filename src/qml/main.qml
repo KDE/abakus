@@ -8,125 +8,60 @@ Item {
 
     property int sidebarWidth: 200
     property int sidebarTabBarHeight: 25
-    property int configPanelHeight: 25
+    property int toolbarHeight: 25
     property int editorHeight: 25
 
     Item {
-        id: configPanel
-        height: configPanelHeight
+        id: toolbar
+        height: toolbarHeight
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: sidebar.left
         
-        PlasmaComponents.ButtonRow {
-            id: toolbar
-            height: configPanelHeight
+        ConfigPanel {
+            id: configPanel
+            width: parent.width
+            height: toolbarHeight
             anchors.left: parent.left
             anchors.bottom: parent. bottom
-            exclusive: false
+            mainWindowObject: mainWindow
             
-            PlasmaComponents.ToolButton {
-                id: settings
-                height: parent.height
-                flat: true
-                checkable: true
-                iconSource: "configure"
-            }
-            
-            PlasmaComponents.ToolButton {
-                id: compactMode
-                height: parent.height
-                flat: true
-                checkable:true
-                iconSource: "merge"
-                
-                onClicked: mainWindow.slotToggleCompactMode()
-                
-                Connections {
-                    target: mainWindow
-                    
-                    onCompactModeChanged: compactMode.checked = active
-                }
-            }
-            
-            PlasmaComponents.ToolButton {
-                id: help
-                height: parent.height
-                flat: true
-                iconSource: "help-about"
-            }
+            onSettingsPanelVisibleChanged: toolbar.state = settingsVisible ? "settingsVisible" : ""
         }
         
-        Item {
+        TrigonometricMode {
             id: trigMode
-            height: configPanelHeight
+            height: toolbarHeight
             anchors.right: sidebarGrip.left
             anchors.rightMargin: 5
             anchors.bottom: parent.bottom
-            
-            property string strDegrees: i18n("Degrees")
-            property string strRadians: i18n("Radians")
-            
-            PlasmaComponents.ToolButton {
-                id: trigModeButton
-                height: parent.height
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                flat: true
-                property ContextMenu contextMenu
-                text: trigMode.strDegrees
-                onClicked: {
-                    if (!contextMenu) {
-                        contextMenu = contextMenuComponent.createObject(trigModeButton)
-                    }
-                    contextMenu.open()
-                }
-            }
-            
-            Connections {
-                target: mainWindow
-                
-                onTrigModeChanged: {
-                    if(mode == 0) { //TODO: use the Abakus::TrigMode enum
-                        trigModeButton.text = trigMode.strDegrees
-                    }
-                    else if(mode == 1) {
-                        trigModeButton.text = trigMode.strRadians
-                    }
-                }
-            }
-            
-            Component {
-                id: contextMenuComponent
-                PlasmaComponents.ContextMenu {
-                    visualParent: trigModeButton
-                    PlasmaComponents.MenuItem {
-                        text: trigMode.strDegrees
-                        onClicked: mainWindow.setDegrees()
-                    }
-                    PlasmaComponents.MenuItem {
-                        text: trigMode.strRadians
-                        onClicked: mainWindow.setRadians()
-                    }
-                }
-            }
+            mainWindowObject: mainWindow
         }
         
         SidebarGrip {
             id: sidebarGrip
             width: 15
-            height: configPanelHeight
+            height: toolbarHeight
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             text: sidebar.sidebarGripSign
             
             onToggleSidebar: mainWindow.slotToggleMathematicalSidebar()
         }
+        
+        states: State {
+            name: "settingsVisible"
+            PropertyChanges { target: toolbar; height: toolbarHeight + configPanel.settingsPanelHeigth }
+        }
+        
+        transitions: Transition {
+            NumberAnimation { property: "height"; duration: 100; easing.type: Easing.InOutQuad }
+        }
     }
     
     ListView {
         id: history
-        anchors.top: configPanel.bottom
+        anchors.top: toolbar.bottom
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: editor.top
@@ -229,7 +164,7 @@ Item {
         }
         
         transitions: Transition {
-            AnchorAnimation { duration: 100 }
+            AnchorAnimation { duration: 100; easing.type: Easing.InOutQuad }
         }
     }
 

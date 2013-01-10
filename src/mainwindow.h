@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <kxmlguiwindow.h>
+#include <kmainwindow.h>
 
 #include "numerictypes.h"
 
@@ -41,6 +41,7 @@ class QDeclarativeContext;
 //class KComboBox;
 //class Editor;
 class KVBox;
+class KActionCollection;
 
 class ResultModel;
 class ListView;
@@ -52,7 +53,7 @@ namespace Ui {
 }
 
 // Main window class, handles events and layout and stuff
-class MainWindow : public KXmlGuiWindow
+class MainWindow : public KMainWindow
 {
     Q_OBJECT
     public:
@@ -61,20 +62,24 @@ class MainWindow : public KXmlGuiWindow
     bool inRPNMode() const;
 
     protected:
-    virtual void contextMenuEvent(QContextMenuEvent *);
     virtual bool queryExit();
     
     Q_INVOKABLE void slotEvaluate(const QString &expression);
     Q_INVOKABLE void slotTextChanged(const QString &str);
     Q_INVOKABLE QString getTag(const int &index);
+    
+    Q_INVOKABLE void showHelpMenu(int xPosition, int yPosition);
+    Q_INVOKABLE void configureShortcuts();
+    Q_INVOKABLE void setPrecision(int precision);
 
     Q_INVOKABLE void setDegrees();
     Q_INVOKABLE void setRadians();
     
+    Q_INVOKABLE void clearHistory();
+    
     Q_INVOKABLE void historyPrevious();
     Q_INVOKABLE void historyNext();
     
-    Q_INVOKABLE void slotToggleHistoryList();
     Q_INVOKABLE void slotToggleMathematicalSidebar();
     Q_INVOKABLE void slotToggleCompactMode();
     Q_INVOKABLE void slotToggleExpressionMode();
@@ -92,15 +97,9 @@ class MainWindow : public KXmlGuiWindow
     void historyVisibleChanged(const bool &visible);
     void mathematicalSidebarVisibleChanged(const bool &visible);
     void compactModeChanged(const bool &active);
+    void precisionChanged(int newPrecision);
     
     private slots:
-    void slotPrecisionAuto();
-    void slotPrecision3();
-    void slotPrecision8();
-    void slotPrecision15();
-    void slotPrecision50();
-    void slotPrecisionCustom();
-
     void slotUpdateSize();
 
     void slotDegrees();
@@ -112,7 +111,6 @@ class MainWindow : public KXmlGuiWindow
     int getParenthesesLevel(const QString &str);
 
     void redrawResults();
-    void selectCorrectPrecisionAction();
 
     void loadConfig();
     void saveConfig();
@@ -131,7 +129,8 @@ class MainWindow : public KXmlGuiWindow
     }
 
     private:
-    QMenu *m_popup;
+    QMenu* m_helpMenu;
+    KActionCollection* m_actionCollection;
     ResultModel *m_resultItemModel;
     QSize m_newSize, m_oldSize;
 
@@ -140,11 +139,10 @@ class MainWindow : public KXmlGuiWindow
     QDeclarativeView* m_declarativeView;
     QDeclarativeContext *m_declarativeContext;
 
-    bool m_historyVisible;
-    bool m_wasHistoryShown;
     bool m_mathematicalSidebarVisible;
     bool m_wasMathematicalSidebarShown;
     bool m_compactMode;
+    bool m_rpnMode;
 
     bool m_insert;
 
