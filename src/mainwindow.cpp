@@ -502,11 +502,6 @@ void MainWindow::setupLayout()
     m_helpMenu = helpMenu->menu();
 }
 
-QAction *MainWindow::action(const char *key) const
-{
-    return m_actionCollection->action(key);
-}
-
 void MainWindow::slotToggleMenuBar()
 {
     menuBar()->setShown(menuBar()->isHidden());

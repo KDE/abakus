@@ -120,14 +120,6 @@ class MainWindow : public KMainWindow
     void setHistoryVisible(const bool &visible);
     void setMathematicalSidebarVisible(const bool &visible);
 
-    // Donated via JuK
-    QAction *action(const char *key) const;
-
-    template <class T> T *action(const char *key) const
-    {
-        return dynamic_cast<T *>(action(key));
-    }
-
     private:
     QMenu* m_helpMenu;
     KActionCollection* m_actionCollection;
