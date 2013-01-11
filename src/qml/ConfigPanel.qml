@@ -110,7 +110,7 @@ Item {
             Connections {
                 target: mainWindowObject
                 
-                onPrecisionChanged: precission.text = newPrecision < 0 ? i18n("Automatic Precision") : newPrecision + " Digit Precison"
+                onPrecisionChanged: precission.text = newPrecision < 0 ? i18n("Automatic Precision") : newPrecision + " Digit Precision"
             }
             
             Component {
@@ -122,19 +122,19 @@ Item {
                         onClicked: mainWindowObject.setPrecision(-1)
                     }
                     PlasmaComponents.MenuItem {
-                        text: i18n("3 Digit Precison")
+                        text: i18n("3 Digit Precision")
                         onClicked: mainWindowObject.setPrecision(3)
                     }
                     PlasmaComponents.MenuItem {
-                        text: i18n("8 Digit Precison")
+                        text: i18n("8 Digit Precision")
                         onClicked: mainWindowObject.setPrecision(8)
                     }
                     PlasmaComponents.MenuItem {
-                        text: i18n("15 Digit Precison")
+                        text: i18n("15 Digit Precision")
                         onClicked: mainWindowObject.setPrecision(15)
                     }
                     PlasmaComponents.MenuItem {
-                        text: i18n("50 Digit Precison")
+                        text: i18n("50 Digit Precision")
                         onClicked: mainWindowObject.setPrecision(50)
                     }
                     PlasmaComponents.MenuItem {
