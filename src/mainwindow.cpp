@@ -73,11 +73,10 @@ MainWindow::MainWindow() :
     m_wasMathematicalSidebarShown(true),
     m_compactMode(false),
     m_rpnMode(false),
+    m_historyLimit(0),
     m_insert(false)
 {
     setObjectName("abakusMainWindow");
-
-    slotDegrees();
 
     m_visibleHistoryItemIndices.clear();
 
@@ -351,6 +350,9 @@ void MainWindow::loadConfig()
     Abakus::m_prec = precision;
     emit precisionChanged(Abakus::m_prec);
     redrawResults();
+    
+    m_historyLimit = config.readEntry("History Limit", 10);
+    
 
     config = KGlobal::config()->group("GUI");
 
@@ -388,6 +390,26 @@ void MainWindow::loadConfig()
         QByteArray strValue = str.toLatin1();
         parseString(strValue.data()); // Run the function definitions through the parser
     }
+    
+    
+    config = KGlobal::config()->group("History");
+    QStringList historyKeys = config.keyList();
+    QStringList historyValues;
+    ResultModelItem* resultModelItem;
+    
+    for(int i = historyKeys.count() - 1; i >= 0; --i)
+    {
+        historyValues = config.readEntry(historyKeys[i], QStringList());
+        if(historyValues[2].toInt() == ResultModelItem::Result)
+        {
+            resultModelItem = new ResultModelItem(historyValues[0], Abakus::number_t(historyValues[1].toLatin1()));
+        }
+        else
+        {
+            resultModelItem = new ResultModelItem(historyValues[0]);
+        }
+        m_resultItemModel->addResultModelItem(resultModelItem);
+    }
 }
 
 void MainWindow::saveConfig()
@@ -401,6 +423,7 @@ void MainWindow::saveConfig()
 
     config.writeEntry("Use RPN Mode", inRPNMode());
     config.writeEntry("Decimal Precision", Abakus::m_prec);
+    config.writeEntry("History Limit", m_historyLimit);
 
     
     config = KGlobal::config()->group("GUI");
@@ -417,7 +440,7 @@ void MainWindow::saveConfig()
     
     config = KGlobal::config()->group("Variables");
     
-    QStringList list;
+    QStringList saveList;
     QStringList values = NumeralModel::instance()->valueNames();
     QStringList::ConstIterator it = values.begin();
     
@@ -428,20 +451,20 @@ void MainWindow::saveConfig()
         if(NumeralModel::instance()->isValueReadOnly(*it))
             continue;
         
-        list += QString("%1=%2")
+        saveList += QString("%1=%2")
         .arg(*it)
         .arg(NumeralModel::instance()->value(*it).toString());
     }
     
-    config.writeEntry("Saved Variables", list);
+    config.writeEntry("Saved Variables", saveList);
 
 
     config = KGlobal::config()->group("Functions");
 
     FunctionModel *manager = FunctionModel::instance();
 
+    saveList.clear();
     QStringList userFunctions = manager->functionList(FunctionModel::UserDefined);
-    QStringList saveList;
 
     foreach(QString functionName, userFunctions)
     {
@@ -453,7 +476,24 @@ void MainWindow::saveConfig()
     }
 
     config.writeEntry("FunctionList", saveList);
-
+    
+    
+    config = KGlobal::config()->group("History");
+    config.deleteGroup();
+    
+    QList<ResultModelItem*> historyList = m_resultItemModel->resultList();
+    int historyListLastIndex = historyList.count() - 1;
+    int fieldWidth = QString("%1").arg(m_historyLimit).length();
+    
+    for(int i = historyList.count() - 1, j = 0; i >= 0 && j < m_historyLimit; --i, ++j)
+    {
+        saveList.clear();
+        saveList << historyList[i]->expression();
+        saveList << historyList[i]->result();
+        saveList << QString("%1").arg(historyList[i]->type());
+        config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveList);
+    }
+    
     config.sync();
 }
 

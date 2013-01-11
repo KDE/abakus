@@ -41,6 +41,8 @@ class ResultModel : public QAbstractListModel
     ResultModel(QObject *parent);
     ~ResultModel();
     
+    void addResultModelItem(ResultModelItem* item);
+    
     void addResult(const QString &expr, const Abakus::number_t &result);
     void addMessage(const QString &msg);
     
@@ -51,6 +53,8 @@ class ResultModel : public QAbstractListModel
     bool stackValue(unsigned position, Abakus::number_t &result);
     
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    
+    QList<ResultModelItem*> resultList();
 
     public slots:
     void slotRedrawItems(); ///< Called when precision length changes.
@@ -61,7 +65,7 @@ class ResultModel : public QAbstractListModel
 
     private:
     QList<ResultModelItem*> m_resultModelItems;
-    int historyIndex;
+    int m_historyIndex;
 };
 
 #endif

@@ -26,7 +26,7 @@
 #include <QtGui/QStandardItemModel>
 
 ResultModel::ResultModel(QObject *parent)
-    : QAbstractListModel(parent), historyIndex(-1)
+    : QAbstractListModel(parent), m_historyIndex(-1)
 {
     QHash<int, QByteArray> roles;
     roles[ExpressionRole] = "expression";
@@ -41,59 +41,65 @@ ResultModel::~ResultModel()
     clear();
 }
 
-void ResultModel::addResult(const QString &expr, const Abakus::number_t &result)
+void ResultModel::addResultModelItem(ResultModelItem* item)
 {
-    updateStackMarkers();
-    
-    ResultModelItem* resultModelItem = new ResultModelItem(expr, result);
+    if(item->type() == ResultModelItem::Result)
+    {
+        updateStackMarkers();
+    }
     
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_resultModelItems << resultModelItem;
+    m_resultModelItems << item;
     endInsertRows();
     
-    historyIndex = m_resultModelItems.count() - 1;
+    m_historyIndex = m_resultModelItems.count() - 1;
+}
+
+void ResultModel::addResult(const QString &expr, const Abakus::number_t &result)
+{
+    ResultModelItem* resultModelItem = new ResultModelItem(expr, result);
+    
+    addResultModelItem(resultModelItem);
 }
 
 void ResultModel::addMessage(const QString &msg)
 {
     ResultModelItem* resultModelItem = new ResultModelItem(msg);
     
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_resultModelItems << resultModelItem;
-    endInsertRows();
+    addResultModelItem(resultModelItem);
 }
 
 QString ResultModel::previousExpression()
 {
-    if(historyIndex >= 0)
+    if(m_historyIndex >= 0)
     {
-        --historyIndex;
+        --m_historyIndex;
     }
     
-    if(historyIndex < 0 || historyIndex >= m_resultModelItems.count())
+    if(m_historyIndex < 0 || m_historyIndex >= m_resultModelItems.count())
     {
         return QString();
     }
     else
     {
-        return m_resultModelItems.at(historyIndex)->expression();
+        return m_resultModelItems.at(m_historyIndex)->expression();
     }
 }
 
 QString ResultModel::nextExpression()
 {
-    if(historyIndex < m_resultModelItems.count())
+    if(m_historyIndex < m_resultModelItems.count())
     {
-        ++historyIndex;
+        ++m_historyIndex;
     }
     
-    if(historyIndex < 0 || historyIndex >= m_resultModelItems.count())
+    if(m_historyIndex < 0 || m_historyIndex >= m_resultModelItems.count())
     {
         return QString();
     }
     else
     {
-        return m_resultModelItems.at(historyIndex)->expression();
+        return m_resultModelItems.at(m_historyIndex)->expression();
     }
 }
 
@@ -192,6 +198,11 @@ void ResultModel::clear()
     }
     resetResultModelItemIndex();
     endRemoveRows();
+}
+
+QList< ResultModelItem* > ResultModel::resultList()
+{
+    return m_resultModelItems;
 }
 
 #include "resultmodel.moc"
