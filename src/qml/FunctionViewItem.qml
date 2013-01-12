@@ -64,7 +64,7 @@ Row {
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                visible: model.typeString == "User Functions" ? description.itemHovered : false
+                visible: model.typeString == "User Defined" ? description.itemHovered : false
                 text: "---"
                 color: "white"
             }
