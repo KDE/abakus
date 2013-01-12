@@ -49,6 +49,8 @@ class FunctionModel : public QAbstractListModel
     bool addFunction(BaseFunction *fn, const QString &dependantVar);
     bool addFunction(const QString &name, function_t fn, const QString &desc);
     void removeFunction(const QString &name);
+    
+    void addBuitInFunctions();
 
     typedef enum { Builtin, UserDefined, All } FunctionType;
 

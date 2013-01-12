@@ -75,6 +75,8 @@ FunctionModel *FunctionModel::instance()
 FunctionModel::FunctionModel(QObject *parent) :
     QAbstractListModel(parent)
 {
+    setObjectName("FunctionManager");
+    
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     roles[ValueRole] = "value";
@@ -82,7 +84,7 @@ FunctionModel::FunctionModel(QObject *parent) :
     roles[TypeStringRole] = "typeString";
     setRoleNames(roles);
     
-    setObjectName("FunctionManager");
+    addBuitInFunctions();
 }
 
 FunctionModel::~FunctionModel()
@@ -177,43 +179,36 @@ bool FunctionModel::addFunction(const QString &name, function_t fn, const QStrin
     return false;
 }
 
-#define DECLARE_FUNC(name, fn, desc) bool dummy##name = FunctionModel::instance()->addFunction(#name, fn, desc)
-
-// Declares a function name that is implemented by the function of a different
-// name. e.g. atan -> Abakus::number_t::arctan()
-#define DECLARE_FUNC2(name, fnName, desc) DECLARE_FUNC(name, &Abakus::number_t::fnName, desc)
-
-// Declares a function name that is implemented by the function of the
-// same base name.
-#define DECLARE_FUNC1(name, desc) DECLARE_FUNC2(name, name, desc)
-
-DECLARE_FUNC1(sin, i18n("Trigonometric sine"));
-DECLARE_FUNC1(cos, i18n("Trigonometric cosine"));
-DECLARE_FUNC1(tan, i18n("Trigonometric tangent"));
-
-DECLARE_FUNC1(sinh, i18n("Hyperbolic sine"));
-DECLARE_FUNC1(cosh, i18n("Hyperbolic cosine"));
-DECLARE_FUNC1(tanh, i18n("Hyperbolic tangent"));
-
-DECLARE_FUNC1(atan, i18n("Inverse tangent"));
-DECLARE_FUNC1(acos, i18n("Inverse cosine"));
-DECLARE_FUNC1(asin, i18n("Inverse sine"));
-
-DECLARE_FUNC1(asinh, i18n("Inverse hyperbolic sine"));
-DECLARE_FUNC1(acosh, i18n("Inverse hyperbolic cosine"));
-DECLARE_FUNC1(atanh, i18n("Inverse hyperbolic tangent"));
-
-DECLARE_FUNC1(abs, i18n("Absolute value of number"));
-DECLARE_FUNC1(sqrt, i18n("Square root"));
-DECLARE_FUNC1(ln, i18n("Natural logarithm (base e)"));
-DECLARE_FUNC1(log, i18n("Logarithm (base 10)"));
-DECLARE_FUNC1(exp, i18n("Natural exponential function"));
-
-DECLARE_FUNC1(round, i18n("Round to nearest number"));
-DECLARE_FUNC1(ceil, i18n("Nearest greatest integer"));
-DECLARE_FUNC1(floor, i18n("Nearest lesser integer"));
-DECLARE_FUNC2(int, integer, i18n("Integral part of number"));
-DECLARE_FUNC1(frac, i18n("Fractional part of number"));
+void FunctionModel::addBuitInFunctions()
+{
+    addFunction("sin", &Abakus::number_t::sin, i18n("Trigonometric sine"));
+    addFunction("cos", &Abakus::number_t::cos, i18n("Trigonometric cosine"));
+    addFunction("tan", &Abakus::number_t::tan, i18n("Trigonometric tangent"));
+    
+    addFunction("sinh", &Abakus::number_t::sinh, i18n("Hyperbolic sine"));
+    addFunction("cosh", &Abakus::number_t::cosh, i18n("Hyperbolic cosine"));
+    addFunction("tanh", &Abakus::number_t::tanh, i18n("Hyperbolic tangent"));
+    
+    addFunction("atan", &Abakus::number_t::atan, i18n("Inverse tangent"));
+    addFunction("acos", &Abakus::number_t::acos, i18n("Inverse cosine"));
+    addFunction("asin", &Abakus::number_t::asin, i18n("Inverse sine"));
+    
+    addFunction("asinh", &Abakus::number_t::asinh, i18n("Inverse hyperbolic sine"));
+    addFunction("acosh", &Abakus::number_t::acosh, i18n("Inverse hyperbolic cosine"));
+    addFunction("atanh", &Abakus::number_t::atanh, i18n("Inverse hyperbolic tangent"));
+    
+    addFunction("abs",  &Abakus::number_t::abs,  i18n("Absolute value of number"));
+    addFunction("sqrt", &Abakus::number_t::sqrt, i18n("Square root"));
+    addFunction("ln",   &Abakus::number_t::ln,   i18n("Natural logarithm (base e)"));
+    addFunction("log",  &Abakus::number_t::log,  i18n("Logarithm (base 10)"));
+    addFunction("exp",  &Abakus::number_t::exp,  i18n("Natural exponential function"));
+    
+    addFunction("round", &Abakus::number_t::round,   i18n("Round to nearest number"));
+    addFunction("ceil",  &Abakus::number_t::ceil,    i18n("Nearest greatest integer"));
+    addFunction("floor", &Abakus::number_t::floor,   i18n("Nearest lesser integer"));
+    addFunction("int",   &Abakus::number_t::integer, i18n("Integral part of number"));
+    addFunction("frac",  &Abakus::number_t::frac,    i18n("Fractional part of number"));
+}
 
 Function *FunctionModel::function(const QString &name) const
 {
