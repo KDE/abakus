@@ -53,8 +53,8 @@ QString FunctionModelItem::typeString() const
 {
     switch(m_type)
     {
-        case BuiltInFunction: return i18n("Built-In Functions");
-        case UserFunction: return i18n("User Functions");
+        case BuiltInFunction: return i18n("Built-In");
+        case UserFunction: return i18n("User Defined");
         default: return QString();
     }
 }
