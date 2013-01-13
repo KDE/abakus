@@ -34,6 +34,7 @@ class FunctionModel : public QAbstractListModel
     public:
     enum NumeralRoles {
         NameRole = Qt::UserRole + 1,
+        VariableRole,
         ValueRole,
         DescriptionRole,
         TypeStringRole

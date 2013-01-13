@@ -39,6 +39,16 @@ QString FunctionModelItem::name() const
     return m_function->name;
 }
 
+QString FunctionModelItem::variable() const
+{
+    if(m_type == UserFunction)
+    {
+        return m_function->userFn->varName;
+    }
+    
+    return "x";
+}
+
 QString FunctionModelItem::value() const
 {
     return m_value;

@@ -84,7 +84,7 @@ Item {
                 
                 model: functionModel
                 delegate: MathExpressionItem {
-                    nameString: model.name
+                    nameString: model.name + "(" + model.variable + ")"
                     valueString: model.value
                     typeString: model.typeString
                     onSelected: root.functionSelected(model.name)

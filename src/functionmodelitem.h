@@ -32,6 +32,7 @@ public:
     ~FunctionModelItem();
 
     QString name() const;
+    QString variable() const;
     QString value() const;
     QString description() const;
     QString typeString() const;

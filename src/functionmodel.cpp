@@ -79,6 +79,7 @@ FunctionModel::FunctionModel(QObject *parent) :
     
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
+    roles[VariableRole] = "variable";
     roles[ValueRole] = "value";
     roles[DescriptionRole] = "description";
     roles[TypeStringRole] = "typeString";
@@ -139,6 +140,10 @@ QVariant FunctionModel::data(const QModelIndex & index, int role) const
     if (role == NameRole)
     {
         return functionModelItem->name();
+    }
+    else if (role == VariableRole)
+    {
+        return functionModelItem->variable();
     }
     else if (role == ValueRole)
     {
