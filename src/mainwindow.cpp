@@ -90,6 +90,10 @@ MainWindow::MainWindow() :
     // Set view optimizations not already done for QDeclarativeView
     m_declarativeView->setAttribute(Qt::WA_OpaquePaintEvent);
     m_declarativeView->setAttribute(Qt::WA_NoSystemBackground);
+    // show the window background
+    m_declarativeView->setStyleSheet("background:transparent;");
+    m_declarativeView->setAttribute(Qt::WA_TranslucentBackground);
+    m_declarativeView->setWindowFlags(Qt::FramelessWindowHint);
 
     // initialize kdeclarative
     KDeclarative kDeclarative;
