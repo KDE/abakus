@@ -41,9 +41,12 @@ Item {
                 clip: true
                 
                 model: numeralModel
-                delegate: NumeralViewItem {
-                    onNumeralSelected: root.numeralSelected(numeralName)
-                    onNumeralRemoved: root.numeralRemoved(numeralName)
+                delegate: MathExpressionItem {
+                    nameString: model.name
+                    valueString: model.valueString
+                    typeString: model.typeString
+                    onSelected: root.numeralSelected(model.name)
+                    onRemoved: root.numeralRemoved(model.name)
                 }
                 
                 section.property: "typeString"
@@ -80,9 +83,12 @@ Item {
                 clip: true
                 
                 model: functionModel
-                delegate: FunctionViewItem {
-                    onFunctionSelected: root.functionSelected(functionName)
-                    onFunctionRemoved: root.functionRemoved(functionName)
+                delegate: MathExpressionItem {
+                    nameString: model.name
+                    valueString: model.value
+                    typeString: model.typeString
+                    onSelected: root.functionSelected(model.name)
+                    onRemoved: root.functionRemoved(model.name)
                 }
                 
                 section.property: "typeString"
