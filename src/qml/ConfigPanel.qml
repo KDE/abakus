@@ -24,7 +24,10 @@ Item {
             checkable: true
             iconSource: "configure"
             
-            onClicked: settingsPanelVisibleChanged(checked)
+            onCheckedChanged: {
+                if(checked) compactMode.checked = false
+                settingsPanelVisibleChanged(checked)
+            }
         }
         
         PlasmaComponents.ToolButton {
@@ -34,7 +37,10 @@ Item {
             checkable:true
             iconSource: "merge"
             
-            onClicked: mainWindowObject.slotToggleCompactMode()
+            onCheckedChanged: {
+                if(checked) settings.checked = false
+                mainWindowObject.slotToggleCompactMode()
+            }
             
             Connections {
                 target: mainWindowObject
