@@ -80,8 +80,9 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void historyPrevious();
     Q_INVOKABLE void historyNext();
     
-    Q_INVOKABLE void slotToggleMathematicalSidebar();
+    Q_INVOKABLE void setCompactMode(bool newMode);
     Q_INVOKABLE void slotToggleCompactMode();
+    Q_INVOKABLE void slotToggleMathematicalSidebar();
     Q_INVOKABLE void slotToggleExpressionMode();
     
     Q_INVOKABLE void removeNumeral(const QString &name);
@@ -104,8 +105,6 @@ class MainWindow : public KMainWindow
 
     void slotDegrees();
     void slotRadians();
-
-    void slotToggleMenuBar();
 
     private:
     int getParenthesesLevel(const QString &str);

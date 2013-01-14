@@ -39,7 +39,7 @@ Item {
             
             onCheckedChanged: {
                 if(checked) settings.checked = false
-                mainWindowObject.slotToggleCompactMode()
+                mainWindowObject.setCompactMode(checked)
             }
             
             Connections {

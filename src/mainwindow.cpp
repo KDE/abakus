@@ -546,11 +546,6 @@ void MainWindow::setupLayout()
     m_helpMenu = helpMenu->menu();
 }
 
-void MainWindow::slotToggleMenuBar()
-{
-    menuBar()->setShown(menuBar()->isHidden());
-}
-
 void MainWindow::slotToggleMathematicalSidebar()
 {
     bool show = !m_mathematicalSidebarVisible;
@@ -558,6 +553,14 @@ void MainWindow::slotToggleMathematicalSidebar()
 
     if(m_compactMode) {
         m_wasMathematicalSidebarShown = m_mathematicalSidebarVisible;
+        slotToggleCompactMode();
+    }
+}
+
+void MainWindow::setCompactMode(bool newMode)
+{
+    if(m_compactMode != newMode)
+    {
         slotToggleCompactMode();
     }
 }
