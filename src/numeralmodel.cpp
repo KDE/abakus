@@ -44,9 +44,9 @@ NumeralModel::NumeralModel(QObject *parent) : QAbstractListModel(parent)
     setRoleNames(roles);
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_numeralModelItems << new NumeralModelItem("ans", Abakus::number_t(42), NumeralModelItem::BuiltInVariable);
-    m_numeralModelItems << new NumeralModelItem("pi", Abakus::number_t::PI, NumeralModelItem::Constant, i18n("pi (π): 3.1415926"));
-    m_numeralModelItems << new NumeralModelItem("e", Abakus::number_t::E, NumeralModelItem::Constant, i18n("Natural exponential base: 2.7182818"));
+    m_numeralModelItems << new NumeralModelItem("ans", Abakus::number_t(42), NumeralModelItem::BuiltIn);
+    m_numeralModelItems << new NumeralModelItem("pi", Abakus::number_t::PI, NumeralModelItem::BuiltIn, i18n("pi (π): 3.1415926"));
+    m_numeralModelItems << new NumeralModelItem("e", Abakus::number_t::E, NumeralModelItem::BuiltIn, i18n("Natural exponential base: 2.7182818"));
     endInsertRows();
 
     setObjectName ("ValueManager");
@@ -141,7 +141,7 @@ bool NumeralModel::isValueReadOnly(const QString &name) const
     int numeralIndex = numeralModelItemIndex(name);
     if(numeralIndex != -1)
     {
-        return m_numeralModelItems[numeralIndex]->type() != NumeralModelItem::UserVariable;
+        return m_numeralModelItems[numeralIndex]->type() != NumeralModelItem::UserDefined;
     }
 
     return false;
@@ -157,15 +157,15 @@ void NumeralModel::setValue(const QString &name, const Abakus::number_t value)
     }
     else if(numeralIndex == -1)
     {
-        NumeralModelItem* numeralModelItem = new NumeralModelItem(name, value, NumeralModelItem::UserVariable);
-        int numeralIndexOfFirstConstant = numeralModelItemIndex(NumeralModelItem::Constant);
-        if(numeralIndexOfFirstConstant == -1)
+        NumeralModelItem* numeralModelItem = new NumeralModelItem(name, value, NumeralModelItem::UserDefined);
+        int numeralIndexOfFirstBuildInNumeral = numeralModelItemIndex(NumeralModelItem::BuiltIn);
+        if(numeralIndexOfFirstBuildInNumeral == -1)
         {
-            numeralIndexOfFirstConstant = rowCount();
+            numeralIndexOfFirstBuildInNumeral = rowCount();
         }
         
-        beginInsertRows(QModelIndex(), numeralIndexOfFirstConstant, numeralIndexOfFirstConstant);
-        m_numeralModelItems.insert(numeralIndexOfFirstConstant, numeralModelItem);
+        beginInsertRows(QModelIndex(), numeralIndexOfFirstBuildInNumeral, numeralIndexOfFirstBuildInNumeral);
+        m_numeralModelItems.insert(numeralIndexOfFirstBuildInNumeral, numeralModelItem);
         endInsertRows();
     }
 }

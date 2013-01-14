@@ -45,9 +45,8 @@ QString NumeralModelItem::typeString() const
 {
     switch(m_type)
     {
-        case BuiltInVariable: return i18n("Built-In");
-        case UserVariable: return i18n("User Defined");
-        case Constant: return i18n("Constants");
+        case BuiltIn: return i18n("Built-In");
+        case UserDefined: return i18n("User Defined");
         default: return QString();
     }
 }

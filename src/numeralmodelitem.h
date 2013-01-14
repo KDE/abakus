@@ -26,7 +26,7 @@
 class NumeralModelItem
 {
 public:
-    enum NumeralItemType { BuiltInVariable, UserVariable, Constant };
+    enum NumeralItemType { BuiltIn, UserDefined};
     
     NumeralModelItem(const QString &name, const Abakus::number_t &value, NumeralItemType type, const QString &description = "");
 

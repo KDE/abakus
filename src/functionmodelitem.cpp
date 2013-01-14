@@ -41,7 +41,7 @@ QString FunctionModelItem::name() const
 
 QString FunctionModelItem::variable() const
 {
-    if(m_type == UserFunction)
+    if(m_type == UserDefined)
     {
         return m_function->userFn->varName;
     }
@@ -63,8 +63,8 @@ QString FunctionModelItem::typeString() const
 {
     switch(m_type)
     {
-        case BuiltInFunction: return i18n("Built-In");
-        case UserFunction: return i18n("User Defined");
+        case BuiltIn: return i18n("Built-In");
+        case UserDefined: return i18n("User Defined");
         default: return QString();
     }
 }
@@ -78,7 +78,7 @@ void FunctionModelItem::setFunction(Function* function)
 {
     delete m_function;
     m_function = function;
-    if(m_type == BuiltInFunction)
+    if(m_type == BuiltIn)
     {
         m_value = m_function->description;
     }

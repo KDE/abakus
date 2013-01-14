@@ -26,7 +26,7 @@
 class FunctionModelItem
 {
 public:
-    enum FunctionItemType { BuiltInFunction, UserFunction };
+    enum FunctionItemType { BuiltIn, UserDefined };
     
     FunctionModelItem(Function* function, FunctionItemType type);
     ~FunctionModelItem();

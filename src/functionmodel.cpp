@@ -176,7 +176,7 @@ bool FunctionModel::addFunction(const QString &name, function_t fn, const QStrin
     newFn->returnsTrig = fnName.contains(returnTrigRE);
     newFn->needsTrig = fnName.contains(needsTrigRE);
 
-    FunctionModelItem* functionModelItem = new FunctionModelItem(newFn, FunctionModelItem::BuiltInFunction);
+    FunctionModelItem* functionModelItem = new FunctionModelItem(newFn, FunctionModelItem::BuiltIn);
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_functionModelItems << functionModelItem;
     endInsertRows();
@@ -235,7 +235,7 @@ bool FunctionModel::isFunction(const QString &name)
 bool FunctionModel::isFunctionUserDefined(const QString &name)
 {
     int functionIndex = functionModelItemIndex(name);
-    return (functionIndex != -1) && (m_functionModelItems[functionIndex]->type() == FunctionModelItem::UserFunction);
+    return (functionIndex != -1) && (m_functionModelItems[functionIndex]->type() == FunctionModelItem::UserDefined);
 }
 
 bool FunctionModel::addFunction(BaseFunction *fn, const QString &dependantVar)
@@ -272,8 +272,8 @@ bool FunctionModel::addFunction(BaseFunction *fn, const QString &dependantVar)
     }
     else if(functionIndex == -1)
     {
-        FunctionModelItem* functionModelItem = new FunctionModelItem(fnTabEntry, FunctionModelItem::UserFunction);
-        int functionIndexOfFirstBuiltInFunction = functionModelItemIndex(FunctionModelItem::BuiltInFunction);
+        FunctionModelItem* functionModelItem = new FunctionModelItem(fnTabEntry, FunctionModelItem::UserDefined);
+        int functionIndexOfFirstBuiltInFunction = functionModelItemIndex(FunctionModelItem::BuiltIn);
         if(functionIndexOfFirstBuiltInFunction == -1)
         {
             functionIndexOfFirstBuiltInFunction = rowCount();
@@ -306,7 +306,7 @@ QStringList FunctionModel::functionList(FunctionModel::FunctionType type)
         case Builtin:
             foreach(FunctionModelItem* functionModelItem, m_functionModelItems)
             {
-                if(functionModelItem->type() == FunctionModelItem::BuiltInFunction)
+                if(functionModelItem->type() == FunctionModelItem::BuiltIn)
                 {
                     functions += functionModelItem->name();
                 }
@@ -316,7 +316,7 @@ QStringList FunctionModel::functionList(FunctionModel::FunctionType type)
         case UserDefined:
             foreach(FunctionModelItem* functionModelItem, m_functionModelItems)
             {
-                if(functionModelItem->type() == FunctionModelItem::UserFunction)
+                if(functionModelItem->type() == FunctionModelItem::UserDefined)
                 {
                     functions += functionModelItem->name();
                 }
