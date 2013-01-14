@@ -31,8 +31,8 @@ ResultModelItem::ResultModelItem(const QString &expression, const Abakus::number
 {
 }
 
-ResultModelItem::ResultModelItem(const QString &message)
-: m_expression(message), m_resultValue(0), m_result(""), m_tag(0), m_index(globalIndex++), m_type(Message)
+ResultModelItem::ResultModelItem(const QString &expression, const QString &result)
+: m_expression(expression), m_resultValue(0), m_result(result), m_tag(0), m_index(globalIndex++), m_type(Message)
 {
 }
 

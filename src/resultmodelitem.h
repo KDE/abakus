@@ -31,7 +31,7 @@ public:
     enum ResultItemType { Result, Message };
     
     ResultModelItem(const QString &expression, const Abakus::number_t &result);
-    ResultModelItem(const QString &message);
+    ResultModelItem(const QString &expression, const QString &result);
 
     QString expression() const;
     QString result() const;

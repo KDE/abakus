@@ -62,9 +62,9 @@ void ResultModel::addResult(const QString &expr, const Abakus::number_t &result)
     addResultModelItem(resultModelItem);
 }
 
-void ResultModel::addMessage(const QString &msg)
+void ResultModel::addMessage(const QString &expr, const QString &result)
 {
-    ResultModelItem* resultModelItem = new ResultModelItem(msg);
+    ResultModelItem* resultModelItem = new ResultModelItem(expr, result);
     
     addResultModelItem(resultModelItem);
 }

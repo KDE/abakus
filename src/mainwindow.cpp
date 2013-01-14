@@ -190,12 +190,12 @@ void MainWindow::slotEvaluate(const QString &expression)
 
             case Result::Null: // OK, no result to speak of
                 resultVal = i18n("OK");
-                m_resultItemModel->addMessage(resultVal);
+                m_resultItemModel->addMessage(str, resultVal);
             break;
 
             default:
                 resultVal = Result::lastResult()->message();
-                m_resultItemModel->addMessage(resultVal);
+                m_resultItemModel->addMessage(str, resultVal);
         }
     }
     
@@ -410,7 +410,7 @@ void MainWindow::loadConfig()
         }
         else
         {
-            resultModelItem = new ResultModelItem(historyValues[0]);
+            resultModelItem = new ResultModelItem(historyValues[0], historyValues[1]);
         }
         m_resultItemModel->addResultModelItem(resultModelItem);
     }
@@ -606,7 +606,7 @@ QString MainWindow::interpolateExpression(const QString &text)
         unsigned numPos = stackStr.mid(1).toUInt();
 
         if(!m_resultItemModel->stackValue(numPos, value)) {
-            m_resultItemModel->addMessage(i18n("Marker %1 is not set", stackStr));
+            m_resultItemModel->addMessage(str, i18n("Marker %1 is not set", stackStr));
             return QString();
         }
 
