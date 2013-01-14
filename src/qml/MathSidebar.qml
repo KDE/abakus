@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.plasma.extras 0.1 as PlasmaExtras
 
 Item {
     id: root
@@ -28,16 +29,13 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         
-        PlasmaComponents.Page {
+        PlasmaExtras.ScrollArea {
             id: numeralsTab
             anchors.fill: parent
             
             ListView {
                 id: numerals
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                anchors.right: numeralsScrollBar.visible ? numeralsScrollBar.left : parent.right
+                anchors.fill: parent
                 clip: true
                 
                 model: numeralModel
@@ -62,24 +60,15 @@ Item {
                     }
                 }
             }
-            
-            PlasmaComponents.ScrollBar {
-                id: numeralsScrollBar
-                flickableItem: numerals
-                anchors.right: parent.right
-            }
         }
         
-        PlasmaComponents.Page {
+        PlasmaExtras.ScrollArea {
             id: functionsTab
             anchors.fill: parent
-            
+                
             ListView {
                 id: functions
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                anchors.right: functionsScrollBar.visible ? functionsScrollBar.left : parent.right
+                anchors.fill: parent
                 clip: true
                 
                 model: functionModel
@@ -103,12 +92,6 @@ Item {
                         text: section
                     }
                 }
-            }
-            
-            PlasmaComponents.ScrollBar {
-                id: functionsScrollBar
-                flickableItem: functions
-                anchors.right: parent.right
             }
         }
     }
