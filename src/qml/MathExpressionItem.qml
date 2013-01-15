@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import org.kde.plasma.core 0.1 as PlasmaCore
 
 Item {
     id: root
@@ -67,26 +68,18 @@ Item {
             }
         }
         
-        Rectangle { //TODO: replace with image
+        
+        PlasmaCore.IconItem {
             width: parent.height
             height: parent.height
             anchors.right: parent.right
-            color: root.itemHovered ? "red" : "transparent"
             visible: root.itemRemovable
-        
-            Text {
-                anchors.fill: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                visible: root.itemHovered
-                text: "---"
-                color: "white"
-            }
+            source: root.itemHovered ? "list-remove" : ""
             
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: root.itemRemovable
-                onEntered: root.itemHovered = true
+                onEntered: {root.itemHovered = true; enabled: true}
                 onExited: root.itemHovered = false
                 onClicked: root.removed()
             }
