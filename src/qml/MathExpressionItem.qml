@@ -1,10 +1,13 @@
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 
-Item {
+PlasmaCore.FrameSvgItem {
     id: root
     width: parent.width
     height: 20
+    
+    imagePath: "widgets/listitem"
+    prefix: itemHovered ? "pressed" : "normal"
     
     signal selected()
     signal removed()
@@ -32,7 +35,7 @@ Item {
         
         MouseArea {
             anchors.fill: parent
-            hoverEnabled: root.itemRemovable
+            hoverEnabled: true
             onClicked: root.selected()
             onDoubleClicked: console.log("TODO")
             onEntered: root.itemHovered = true
@@ -60,7 +63,7 @@ Item {
             
             MouseArea {
                 anchors.fill: parent
-                hoverEnabled: root.itemRemovable
+                hoverEnabled: true
                 onClicked: root.selected()
                 onDoubleClicked: console.log("TODO")
                 onEntered: root.itemHovered = true
@@ -79,7 +82,7 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: root.itemRemovable
-                onEntered: {root.itemHovered = true; enabled: true}
+                onEntered: root.itemHovered = true
                 onExited: root.itemHovered = false
                 onClicked: root.removed()
             }
