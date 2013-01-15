@@ -1,37 +1,41 @@
 import QtQuick 1.1
+import org.kde.plasma.core 0.1 as PlasmaCore
 
 Item {
     id: root
-    opacity: 0.5
     clip: true
     
-    property alias text: sign.text
+    property bool sidebarShown
+    property bool itemHovered
     
     signal toggleSidebar()
     
-    Rectangle {
+    PlasmaCore.FrameSvgItem {
         width: parent.width + 10
         height: parent.height
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        color: "lightgrey"
-        radius: 3
+        
+        imagePath: "widgets/listitem"
+        prefix: itemHovered ? "pressed" : ""
     }
     
-    Text {
+    PlasmaCore.SvgItem {
         id: sign
-        anchors.fill: parent
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        text: sidebar.sidebarGripSign
+        width: parent.width < parent.height ? parent.width : parent.height
+        height: width
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        svg: PlasmaCore.Svg { imagePath: "widgets/arrows" }
+        elementId: root.sidebarShown ? "right-arrow" : "left-arrow"
     }
     
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
         
-        onEntered: root.opacity = 1
-        onExited: root.opacity = 0.5
+        onEntered: root.itemHovered = true
+        onExited: root.itemHovered = false
         
         onClicked: toggleSidebar()
     }

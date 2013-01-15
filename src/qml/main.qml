@@ -46,7 +46,6 @@ Item {
             height: toolbarHeight
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            text: sidebar.sidebarGripSign
             
             onToggleSidebar: mainWindow.slotToggleMathematicalSidebar()
         }
@@ -151,8 +150,6 @@ Item {
         anchors.left: parent.right
         anchors.bottom: parent.bottom
         
-        property string sidebarGripSign: "<"
-        
         onNumeralSelected: editor.text += numeralName
         onNumeralRemoved: mainWindow.removeNumeral(numeralName)
         
@@ -165,11 +162,11 @@ Item {
             onMathematicalSidebarVisibleChanged: {
                 if(visible) {
                     sidebar.state = "shown"
-                    sidebar.sidebarGripSign = ">"
+                    sidebarGrip.sidebarShown = true
                 }
                 else {
                     sidebar.state = ""
-                    sidebar.sidebarGripSign = "<"
+                    sidebarGrip.sidebarShown = false
                 }
             }
         }
