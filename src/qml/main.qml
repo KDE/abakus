@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.extras 0.1 as PlasmaExtras
 
@@ -60,74 +61,83 @@ Item {
         }
     }
     
-    //PlasmaExtras.ScrollArea {
-    Item {
+    PlasmaCore.FrameSvgItem {
+        id: historyBase
         anchors.top: toolbar.bottom
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: editor.top
-        
-        ListView {
-            id: history
-            anchors.fill: parent
-            currentIndex: count -1
-            clip: true
-            
-            property int minTagSize: 0
-            
-            model: resultModel
-            delegate: ResultViewItem {
-                currentHistoryIndex: history.currentIndex
-                currentMinTagSize: history.minTagSize
-                
-                onExpressionSelected: editor.text = expression
-                onResultSelected: editor.text += result
-                onTagSelected: editor.text += tag
-                
-                Component.onCompleted: {
-                    mainWindow.addVisibleHistoryItemIndex(model.index)
-                    history.updateTagWidth()
-                }
-                
-                Component.onDestruction: {
-                    mainWindow.removeVisibleHistoryItemIndex(model.index)
-                    history.updateTagWidth()
-                }
-            }
-            
-            Text {
-                id: tagItemDummy
-                font.pixelSize: 12
-                font.italic: true
-                visible: false
-            }
-            
-            function updateTagWidth() {
-                var i = 0
-                var itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
-                var minTagSize = 0
-                
-                while(itemIndexNext > -1)
-                {
-                    tagItemDummy.text = mainWindow.getTag(itemIndexNext)
-                    if(minTagSize < tagItemDummy.width)
-                    {
-                        minTagSize = tagItemDummy.width
-                    }
-                    ++i
-                    itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
-                }
-                
-                tagItemDummy.text = ""
-                history.minTagSize = minTagSize
-            }
 
-            Connections {
-                target: mainWindow
+        imagePath: "widgets/frame"
+        prefix: "sunken"
+
+        //PlasmaExtras.ScrollArea {
+        Item {
+            anchors.fill: parent
+            anchors.margins: 2
+            
+            ListView {
+                id: history
+                anchors.fill: parent
+                currentIndex: count -1
+                clip: true
                 
-                onHistoryVisibleChanged: {
-                    history.visible = visible
-                    history.opacity = visible ? 1 : 0
+                property int minTagSize: 0
+                
+                model: resultModel
+                delegate: ResultViewItem {
+                    currentHistoryIndex: history.currentIndex
+                    currentMinTagSize: history.minTagSize
+                    
+                    onExpressionSelected: editor.text = expression
+                    onResultSelected: editor.text += result
+                    onTagSelected: editor.text += tag
+                    
+                    Component.onCompleted: {
+                        mainWindow.addVisibleHistoryItemIndex(model.index)
+                        history.updateTagWidth()
+                    }
+                    
+                    Component.onDestruction: {
+                        mainWindow.removeVisibleHistoryItemIndex(model.index)
+                        history.updateTagWidth()
+                    }
+                }
+                
+                Text {
+                    id: tagItemDummy
+                    font.pixelSize: 12
+                    font.italic: true
+                    visible: false
+                }
+                
+                function updateTagWidth() {
+                    var i = 0
+                    var itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
+                    var minTagSize = 0
+                    
+                    while(itemIndexNext > -1)
+                    {
+                        tagItemDummy.text = mainWindow.getTag(itemIndexNext)
+                        if(minTagSize < tagItemDummy.width)
+                        {
+                            minTagSize = tagItemDummy.width
+                        }
+                        ++i
+                        itemIndexNext = mainWindow.getVisibleHistoryItemIndex(i)
+                    }
+                    
+                    tagItemDummy.text = ""
+                    history.minTagSize = minTagSize
+                }
+
+                Connections {
+                    target: mainWindow
+                    
+                    onHistoryVisibleChanged: {
+                        historyBase.visible = visible
+                        historyBase.opacity = visible ? 1 : 0
+                    }
                 }
             }
         }
