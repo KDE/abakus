@@ -3,7 +3,6 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 
 Item {
     id: root
-    clip: true
     
     property bool sidebarShown
     property bool itemHovered
@@ -11,7 +10,7 @@ Item {
     signal toggleSidebar()
     
     PlasmaCore.FrameSvgItem {
-        width: parent.width + 10
+        width: parent.width + 5
         height: parent.height
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter

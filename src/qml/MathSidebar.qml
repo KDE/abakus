@@ -16,19 +16,22 @@ Item {
     
     PlasmaComponents.TabBar {
         id: sidebarTabBar
-        width: parent.width
+        anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
+        anchors.leftMargin: 3
+        
         PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: i18n("Numerals") }
         PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: i18n("Functions") }
     }
     
     PlasmaComponents.TabGroup {
         id: sidebarTabGroup
-        width: parent.width
+        anchors.left: parent.left
         anchors.top: sidebarTabBar.bottom
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        anchors.leftMargin: 3
         
         PlasmaExtras.ScrollArea {
             id: numeralsTab

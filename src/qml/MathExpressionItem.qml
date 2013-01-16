@@ -17,12 +17,14 @@ PlasmaCore.FrameSvgItem {
     property string typeString
     property bool itemRemovable: typeString == "User Defined"
     property bool itemHovered: false
+    property bool removeItemHovered: false
     
     Item {
         width: 50
         height: parent.height
         anchors.left: parent.left
         anchors.top: parent.top
+        anchors.leftMargin: 3
         
         Text {
             anchors.fill: parent
@@ -71,19 +73,25 @@ PlasmaCore.FrameSvgItem {
             }
         }
         
-        
-        PlasmaCore.IconItem {
+        PlasmaCore.FrameSvgItem {
             width: parent.height
             height: parent.height
             anchors.right: parent.right
             visible: root.itemRemovable
-            source: root.itemHovered ? "list-remove" : ""
             
+            imagePath: "widgets/listitem"
+            prefix: root.removeItemHovered ? "pressed" : ""
+            
+            PlasmaCore.IconItem {
+                anchors.fill: parent
+                source: root.itemHovered || root.removeItemHovered ? "list-remove" : ""
+            }
+                
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: root.itemRemovable
-                onEntered: root.itemHovered = true
-                onExited: root.itemHovered = false
+                onEntered: root.removeItemHovered = true
+                onExited: root.removeItemHovered = false
                 onClicked: root.removed()
             }
         }
