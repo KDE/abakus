@@ -14,6 +14,8 @@ Item {
     signal functionSelected(string functionName)
     signal functionRemoved(string functionName)
     
+    signal rejectFocus()
+    
     PlasmaComponents.TabBar {
         id: sidebarTabBar
         anchors.left: parent.left
@@ -23,6 +25,8 @@ Item {
         
         PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: i18n("Numerals") }
         PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: i18n("Functions") }
+        
+        
     }
     
     PlasmaComponents.TabGroup {
@@ -49,6 +53,7 @@ Item {
                     typeString: model.typeString
                     onSelected: root.numeralSelected(model.name)
                     onRemoved: root.numeralRemoved(model.name)
+                    onFocusChanged: root.rejectFocus()
                 }
                 
                 section.property: "typeString"
@@ -85,6 +90,7 @@ Item {
                     typeString: model.typeString
                     onSelected: root.functionSelected(model.name)
                     onRemoved: root.functionRemoved(model.name)
+                    onFocusChanged: root.rejectFocus()
                 }
                 
                 section.property: "typeString"

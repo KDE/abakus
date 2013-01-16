@@ -1,7 +1,7 @@
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
-Item {
+FocusScope {
     id: root
     
     property alias text: textField.text
@@ -11,6 +11,7 @@ Item {
         id: textField
         anchors.fill: parent
         font.pixelSize: 12
+        focus: true
         clearButtonShown: true
         placeholderText: i18n("Enter expression")
         
@@ -27,7 +28,7 @@ Item {
         Connections {
             target: mainWindowObject
             
-            onSetEditorText: editor.text = editorText
+            onSetEditorText: textField.text = editorText
         }
     }
 }

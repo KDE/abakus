@@ -156,6 +156,8 @@ Item {
         onFunctionSelected: editor.text += functionName
         onFunctionRemoved: mainWindow.removeFunction(functionName)
         
+        onRejectFocus: editor.focus = true
+        
         Connections {
             target: mainWindow
             
@@ -187,8 +189,7 @@ Item {
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: parent.bottom
+        focus: true
         mainWindowObject: mainWindow
     }
-
-    Component.onCompleted: editor.forceActiveFocus()
 }
