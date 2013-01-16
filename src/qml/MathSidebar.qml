@@ -7,6 +7,9 @@ Item {
     id: root
     
     property alias tabBarHeight: sidebarTabBar.height
+    property string activeTab
+    
+    signal currentMathSidebarTabChanged(string tabString)
     
     signal numeralSelected(string numeralName)
     signal numeralRemoved(string numeralName)
@@ -16,6 +19,19 @@ Item {
     
     signal rejectFocus()
     
+    onActiveTabChanged: {
+        if(activeTab == "numerals")
+        {
+            sidebarTabBar.currentTab = numeralsTabButton
+            sidebarTabGroup.currentTab = numeralsTab 
+        }
+        else
+        {
+            sidebarTabBar.currentTab = functionsTabButton
+            sidebarTabGroup.currentTab = functionsTab 
+        }
+    }
+    
     PlasmaComponents.TabBar {
         id: sidebarTabBar
         anchors.left: parent.left
@@ -23,10 +39,10 @@ Item {
         anchors.top: parent.top
         anchors.leftMargin: 3
         
-        PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: i18n("Numerals") }
-        PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: i18n("Functions") }
+        PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: i18n("Numerals"); property string tabString: "numerals" }
+        PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: i18n("Functions"); property string tabString: "functions" }
         
-        
+        onCurrentTabChanged: root.currentMathSidebarTabChanged(sidebarTabBar.currentTab.tabString)
     }
     
     PlasmaComponents.TabGroup {

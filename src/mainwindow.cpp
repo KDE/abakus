@@ -69,6 +69,7 @@ MainWindow::MainWindow() :
     m_actionCollection(new KActionCollection(this)),
     m_resultItemModel (new ResultModel(this)),
     m_newSize(QSize(600, 300)), m_oldSize(QSize(600, 300)),
+    m_mathematicalSidebarActiveTab("numerals"),
     m_mathematicalSidebarVisible(true),
     m_wasMathematicalSidebarShown(true),
     m_compactMode(false),
@@ -362,12 +363,15 @@ void MainWindow::loadConfig()
 
     bool showMathematicalSidebar = config.readEntry("ShowMathematicalSidebar", true);
     setMathematicalSidebarVisible(showMathematicalSidebar);
+    
+    m_mathematicalSidebarActiveTab = config.readEntry("MathematicalSidebarActiveTab", "numerals");
+    setMathematicalActiveTab(m_mathematicalSidebarActiveTab);
 
     bool compactMode = config.readEntry("InCompactMode", false);
 
     if(compactMode)
     {
-        QTimer::singleShot(0, this, SLOT(slotToggleCompactMode()));
+        slotToggleCompactMode();
     }
 
 
@@ -440,6 +444,8 @@ void MainWindow::saveConfig()
     else {
         config.writeEntry("ShowMathematicalSidebar", m_wasMathematicalSidebarShown);
     }
+    
+    config.writeEntry("MathematicalSidebarActiveTab", m_mathematicalSidebarActiveTab);
     
     
     config = KGlobal::config()->group("Variables");
@@ -544,6 +550,11 @@ void MainWindow::setupLayout()
     
     KHelpMenu* helpMenu = new KHelpMenu(this, KCmdLineArgs::aboutData(), true, m_actionCollection);
     m_helpMenu = helpMenu->menu();
+}
+
+void MainWindow::mathematicalSidebarActiveTabChanged(const QString& activeTab)
+{
+    m_mathematicalSidebarActiveTab = activeTab;
 }
 
 void MainWindow::slotToggleMathematicalSidebar()

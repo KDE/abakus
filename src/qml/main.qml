@@ -150,6 +150,8 @@ Item {
         anchors.left: parent.right
         anchors.bottom: parent.bottom
         
+        onCurrentMathSidebarTabChanged: mainWindow.mathematicalSidebarActiveTabChanged(tabString)
+        
         onNumeralSelected: editor.text += numeralName
         onNumeralRemoved: mainWindow.removeNumeral(numeralName)
         
@@ -171,6 +173,8 @@ Item {
                     sidebarGrip.sidebarShown = false
                 }
             }
+            
+            onSetMathematicalActiveTab: sidebar.activeTab = activeTab
         }
         
         states: State {
