@@ -125,7 +125,7 @@ class MainWindow : public KMainWindow
     QMenu* m_helpMenu;
     KActionCollection* m_actionCollection;
     ResultModel *m_resultItemModel;
-    QSize m_newSize, m_oldSize;
+    QSize m_size;
 
 //    AbakusIface *m_dcopInterface;
     

@@ -68,7 +68,7 @@ MainWindow::MainWindow() :
     m_helpMenu(0),
     m_actionCollection(new KActionCollection(this)),
     m_resultItemModel (new ResultModel(this)),
-    m_newSize(QSize(600, 300)), m_oldSize(QSize(600, 300)),
+    m_size(QSize(600, 220)),
     m_mathematicalSidebarActiveTab("numerals"),
     m_mathematicalSidebarVisible(true),
     m_wasMathematicalSidebarShown(true),
@@ -299,10 +299,14 @@ void MainWindow::removeVisibleHistoryItemIndex(int itemIndex)
 
 void MainWindow::slotUpdateSize()
 {
-    if(m_newSize != QSize(0, 0))
-        resize(m_newSize);
-    else
+    if(m_compactMode)
+    {
         resize(width(), minimumSize().height());
+    }
+    else
+    {
+        resize(m_size);
+    }
 }
 
 void MainWindow::slotDegrees()
@@ -373,6 +377,9 @@ void MainWindow::loadConfig()
     {
         slotToggleCompactMode();
     }
+    
+    m_size = config.readEntry("Size", QSize(600, 220));
+    slotUpdateSize();
 
 
     config = KGlobal::config()->group("Variables");
@@ -438,14 +445,18 @@ void MainWindow::saveConfig()
 
     config.writeEntry("InCompactMode", m_compactMode);
 
-    if(!m_compactMode) {
+    if(!m_compactMode)
+    {
         config.writeEntry("ShowMathematicalSidebar", m_mathematicalSidebarVisible);
+        m_size = size();
     }
     else {
         config.writeEntry("ShowMathematicalSidebar", m_wasMathematicalSidebarShown);
     }
     
     config.writeEntry("MathematicalSidebarActiveTab", m_mathematicalSidebarActiveTab);
+    
+    config.writeEntry("Size", m_size);
     
     
     config = KGlobal::config()->group("Variables");
@@ -579,24 +590,21 @@ void MainWindow::setCompactMode(bool newMode)
 void MainWindow::slotToggleCompactMode()
 {
     m_compactMode = !m_compactMode;
-    if(m_compactMode) {
+    if(m_compactMode)
+    {
         m_wasMathematicalSidebarShown = m_mathematicalSidebarVisible;
 
         setMathematicalSidebarVisible(false);
         setHistoryVisible(false);
-
-        m_oldSize = size();
-        m_newSize = QSize(0, 0);
-        QTimer::singleShot(0, this, SLOT(slotUpdateSize()));
+        
+        m_size = size();
     }
     else {
         setHistoryVisible(true);
         setMathematicalSidebarVisible(m_wasMathematicalSidebarShown);
-
-        m_newSize = m_oldSize;
-        QTimer::singleShot(0, this, SLOT(slotUpdateSize()));
     }
     
+    slotUpdateSize();
     emit compactModeChanged(m_compactMode);
 }
 
