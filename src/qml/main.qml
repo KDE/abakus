@@ -19,13 +19,14 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: sidebar.left
+        clip: true
         
         ConfigPanel {
             id: configPanel
             width: parent.width
             height: toolbarHeight
             anchors.left: parent.left
-            anchors.bottom: parent. bottom
+            anchors.top: parent. top
             mainWindowObject: mainWindow
             
             onSettingsPanelVisibleChanged: toolbar.state = settingsVisible ? "settingsVisible" : ""
@@ -36,7 +37,7 @@ Item {
             height: toolbarHeight
             anchors.right: sidebarGrip.left
             anchors.rightMargin: 5
-            anchors.bottom: parent.bottom
+            anchors.top: parent.top
             mainWindowObject: mainWindow
         }
         
@@ -45,7 +46,7 @@ Item {
             width: 15
             height: toolbarHeight
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
+            anchors.top: parent.top
             
             onToggleSidebar: mainWindow.slotToggleMathematicalSidebar()
         }

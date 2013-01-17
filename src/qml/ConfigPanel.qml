@@ -67,13 +67,13 @@ Item {
         height: 80
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: toolbarButtons.top
+        anchors.top: toolbarButtons.bottom
         
         Column {
             width: 150
             height: parent.height
             anchors.left: parent.left
-            anchors.bottom: parent. bottom
+            anchors.top: parent. top
             
             PlasmaComponents.ToolButton {
                 id: configureShortcuts
