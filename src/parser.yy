@@ -166,6 +166,13 @@ S: SET FUNC ASSIGN EXP {
 S: SET IDENT ASSIGN EXP {
     ++gCheckIdents;
 
+    if(NumeralModel::instance()->isValueSet($2->name())) {
+        QString s(i18n("You can't assign to variable %1", QString($2->name())));
+        Result::setLastResult(s);
+
+        YYABORT;
+    }
+
     QString funcName = $2->name();
     QString ident = $3->name();
 
