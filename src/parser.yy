@@ -52,7 +52,7 @@ int yyerror(const char *);
     Identifier *ident;
 }
 
-%token <value> NUM
+%token <value> NUM NUMBIN NUMOCT NUMHEX
 %type <node> EXP FACTOR TERM S NUMBER VALUE FINAL
 %type <fn> FUNC
 %token <fn> FN
@@ -337,6 +337,57 @@ NUMBER: NUM {
             yytext[i] = '.';
 
     Abakus::number_t value(yytext);
+
+    $$ = new NumericValue(value);
+}
+
+NUMBER: NUMBIN {
+    KLocale *locale = KGlobal::locale();
+    QChar decimal = locale->decimalSymbol()[0];
+
+    // Replace current decimal separator with US Decimal separator to be
+    // evil.
+    unsigned len = strlen(yytext);
+    for(unsigned i = 0; i < len; ++i)
+        if(yytext[i] == decimal)
+            yytext[i] = '.';
+
+    Abakus::number_t value(yytext, 2);
+
+    $$ = new NumericValue(value);
+}
+
+NUMBER: NUMOCT {
+    KLocale *locale = KGlobal::locale();
+    QChar decimal = locale->decimalSymbol()[0];
+
+    // Replace current decimal separator with US Decimal separator to be
+    // evil.
+    unsigned len = strlen(yytext);
+    for(unsigned i = 0; i < len; ++i)
+        if(yytext[i] == decimal)
+            yytext[i] = '.';
+
+    yytext[0] = ' ';
+    yytext[1] = '0';
+
+    Abakus::number_t value(yytext, 8);
+
+    $$ = new NumericValue(value);
+}
+
+NUMBER: NUMHEX {
+    KLocale *locale = KGlobal::locale();
+    QChar decimal = locale->decimalSymbol()[0];
+
+    // Replace current decimal separator with US Decimal separator to be
+    // evil.
+    unsigned len = strlen(yytext);
+    for(unsigned i = 0; i < len; ++i)
+        if(yytext[i] == decimal)
+            yytext[i] = '.';
+
+    Abakus::number_t value(yytext, 16);
 
     $$ = new NumericValue(value);
 }

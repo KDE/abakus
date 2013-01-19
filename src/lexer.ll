@@ -34,6 +34,8 @@ int yyparse(void);
 %}
 
 DIGITS [0-9]+
+BIN [0-1]+
+OCT [0-7]+
 HEX [0-9A-Fa-f]+
 %%
 
@@ -81,11 +83,25 @@ HEX [0-9A-Fa-f]+
     return NUM;
 }
 
+ /* Read Bin */
+0b({BIN}+)? {
+    yyCurTokenPos += yyThisTokenLength;
+    yyThisTokenLength = yyleng;
+    return NUMBIN;
+}
+
+ /* Read Oct */
+0o({OCT}+)? {
+    yyCurTokenPos += yyThisTokenLength;
+    yyThisTokenLength = yyleng;
+    return NUMOCT;
+}
+
  /* Read Hex */
 0x({HEX}+)? {
     yyCurTokenPos += yyThisTokenLength;
     yyThisTokenLength = yyleng;
-    return NUM;
+    return NUMHEX;
 }
 
  /* Read numbers with at least the integral part, such as +4234, -34e8, etc.

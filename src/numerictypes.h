@@ -71,9 +71,11 @@ public:
     /// Create number from textual representation, useful for ginormously
     /// precise numbers.
     number(const char *str);
+    number(const char *str, const int base);
 
     /// Likewise
     explicit number(const QByteArray &str);
+    explicit number(const QByteArray &str, const int base);
 
     /// Convienience constructor to create a number from an integer.
     explicit number(int i);
@@ -250,17 +252,30 @@ public:
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set(m_t, other.m_t, RoundDirection);
     }
-
+    
     number(const char *str)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str, 10, RoundDirection);
     }
 
+    number(const char *str, const int base)
+    {
+        m_t = (mpfr_ptr) new __mpfr_struct;
+        mpfr_init_set_str (m_t, str, base, RoundDirection);
+    }
+
+    //explicit number(const QByteArray &str, const int base)
     explicit number(const QByteArray &str)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str.constData(), 10, RoundDirection);
+    }
+    
+    explicit number(const QByteArray &str, const int base)
+    {
+        m_t = (mpfr_ptr) new __mpfr_struct;
+        mpfr_init_set_str (m_t, str.constData(), base, RoundDirection);
     }
 
     explicit number(int i)
