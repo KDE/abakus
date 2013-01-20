@@ -8,7 +8,7 @@ Item {
     width: 500
     height: 300
 
-    property int sidebarWidth: 200
+    property int sidebarWidth: sidebar.width
     property int sidebarTabBarHeight: 25
     property int toolbarHeight: 25
     property int editorHeight: 25
@@ -19,7 +19,6 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: sidebar.left
-        clip: true
         
         ConfigPanel {
             id: configPanel
@@ -47,8 +46,11 @@ Item {
             height: toolbarHeight
             anchors.right: parent.right
             anchors.top: parent.top
+            sidebarItem: sidebar
             
             onToggleSidebar: mainWindow.slotToggleMathematicalSidebar()
+            
+            onSidebarWidthChanged: mainWindow.mathematicalSidebarWidthChanged(newWidth)
         }
         
         states: State {
@@ -145,7 +147,7 @@ Item {
 
     MathSidebar {
         id: sidebar
-        width: sidebarWidth
+        width: 200
         tabBarHeight: sidebarTabBarHeight
         anchors.top: parent.top
         anchors.left: parent.right
@@ -176,6 +178,8 @@ Item {
             }
             
             onSetMathematicalActiveTab: sidebar.activeTab = activeTab
+            
+            onSetMathematicalSidebarWidth: sidebar.width = width
         }
         
         states: State {

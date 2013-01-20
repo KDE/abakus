@@ -70,6 +70,7 @@ MainWindow::MainWindow() :
     m_resultItemModel (new ResultModel(this)),
     m_size(QSize(600, 220)),
     m_mathematicalSidebarActiveTab("numerals"),
+    m_mathematicalSidebarWidth(200),
     m_mathematicalSidebarVisible(true),
     m_wasMathematicalSidebarShown(true),
     m_compactMode(false),
@@ -370,6 +371,9 @@ void MainWindow::loadConfig()
     
     m_mathematicalSidebarActiveTab = config.readEntry("MathematicalSidebarActiveTab", "numerals");
     setMathematicalActiveTab(m_mathematicalSidebarActiveTab);
+    
+    m_mathematicalSidebarWidth = config.readEntry("MathematicalSidebarWidth", 200);
+    setMathematicalSidebarWidth(m_mathematicalSidebarWidth);
 
     bool compactMode = config.readEntry("InCompactMode", false);
 
@@ -455,6 +459,7 @@ void MainWindow::saveConfig()
     }
     
     config.writeEntry("MathematicalSidebarActiveTab", m_mathematicalSidebarActiveTab);
+    config.writeEntry("MathematicalSidebarWidth", m_mathematicalSidebarWidth);
     
     config.writeEntry("Size", m_size);
     
@@ -566,6 +571,11 @@ void MainWindow::setupLayout()
 void MainWindow::mathematicalSidebarActiveTabChanged(const QString& activeTab)
 {
     m_mathematicalSidebarActiveTab = activeTab;
+}
+
+void MainWindow::mathematicalSidebarWidthChanged(const int newWidth)
+{
+    m_mathematicalSidebarWidth = newWidth;
 }
 
 void MainWindow::slotToggleMathematicalSidebar()

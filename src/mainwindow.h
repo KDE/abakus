@@ -84,6 +84,7 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void slotToggleCompactMode();
     Q_INVOKABLE void slotToggleMathematicalSidebar();
     Q_INVOKABLE void mathematicalSidebarActiveTabChanged(const QString &activeTab);
+    Q_INVOKABLE void mathematicalSidebarWidthChanged(const int newWidth);
     Q_INVOKABLE void slotToggleExpressionMode();
     
     Q_INVOKABLE void removeNumeral(const QString &name);
@@ -99,6 +100,7 @@ class MainWindow : public KMainWindow
     void historyVisibleChanged(const bool &visible);
     void mathematicalSidebarVisibleChanged(const bool &visible);
     void setMathematicalActiveTab(const QString &activeTab);
+    void setMathematicalSidebarWidth(const int &width);
     void compactModeChanged(const bool &active);
     void precisionChanged(int newPrecision);
     
@@ -133,6 +135,7 @@ class MainWindow : public KMainWindow
     QDeclarativeContext *m_declarativeContext;
 
     QString m_mathematicalSidebarActiveTab;
+    int m_mathematicalSidebarWidth;
     bool m_mathematicalSidebarVisible;
     bool m_wasMathematicalSidebarShown;
     bool m_compactMode;

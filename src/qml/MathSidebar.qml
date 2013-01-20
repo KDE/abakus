@@ -37,7 +37,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.leftMargin: 3
+        anchors.leftMargin: 2
         
         PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: i18n("Numerals"); property string tabString: "numerals" }
         PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: i18n("Functions"); property string tabString: "functions" }
@@ -51,7 +51,7 @@ Item {
         anchors.top: sidebarTabBar.bottom
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 3
+        anchors.leftMargin: 2
         
         PlasmaExtras.ScrollArea {
             id: numeralsTab
