@@ -4,17 +4,17 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 Item {
     id: root
     
-    property alias settingsPanelHeigth: settingsPanel.height
-    property int buttonHeight: height
+    property int settingsPanelHeigth: 80
+    property int buttonHeight
     property QtObject mainWindowObject
     
     signal settingsPanelVisibleChanged(bool settingsVisible)
     
     PlasmaComponents.ButtonRow {
         id: toolbarButtons
-        height: parent.height
-        anchors.left: parent.left
-        anchors.bottom: parent. bottom
+        height: root.buttonHeight
+        anchors.left: root.left
+        anchors.top: root.top
         exclusive: false
         
         PlasmaComponents.ToolButton {
@@ -64,10 +64,11 @@ Item {
     
     Item {
         id: settingsPanel
-        height: 80
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.left: root.left
+        anchors.right: root.right
         anchors.top: toolbarButtons.bottom
+        anchors.bottom: root.bottom
+        clip: true
         
         Column {
             width: 150

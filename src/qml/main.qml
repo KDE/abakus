@@ -5,14 +5,12 @@ import org.kde.plasma.extras 0.1 as PlasmaExtras
 
 Item {
     id: baseItem
-    width: 500
-    height: 300
-
+    
     property int sidebarWidth: sidebar.width
     property int sidebarTabBarHeight: 25
     property int toolbarHeight: 25
     property int editorHeight: 25
-
+    
     Item {
         id: toolbar
         height: toolbarHeight
@@ -23,9 +21,10 @@ Item {
         ConfigPanel {
             id: configPanel
             width: parent.width
-            height: toolbarHeight
+            height: parent.height
             anchors.left: parent.left
-            anchors.top: parent. top
+            anchors.top: parent.top
+            buttonHeight: toolbarHeight
             mainWindowObject: mainWindow
             
             onSettingsPanelVisibleChanged: toolbar.state = settingsVisible ? "settingsVisible" : ""
@@ -69,10 +68,10 @@ Item {
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: editor.top
-
+        
         imagePath: "widgets/frame"
         prefix: "sunken"
-
+        
         //PlasmaExtras.ScrollArea {
         Item {
             anchors.fill: parent
@@ -132,7 +131,7 @@ Item {
                     tagItemDummy.text = ""
                     history.minTagSize = minTagSize
                 }
-
+                
                 Connections {
                     target: mainWindow
                     
@@ -144,7 +143,7 @@ Item {
             }
         }
     }
-
+    
     MathSidebar {
         id: sidebar
         width: 200
@@ -191,7 +190,7 @@ Item {
             AnchorAnimation { duration: 100; easing.type: Easing.InOutQuad }
         }
     }
-
+    
     Editor {
         id: editor
         height: editorHeight
