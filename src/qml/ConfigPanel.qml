@@ -77,6 +77,66 @@ Item {
             anchors.left: parent.left
             anchors.top: parent. top
             
+            Row {
+                width: parent.width
+                
+                PlasmaComponents.Label {
+                    id: precissionLabel
+                    height: buttonHeight
+                    verticalAlignment: Text.AlignVCenter
+                    text: i18n("Decimal Precision:")
+                }
+                    
+                PlasmaComponents.TextField {
+                    id: precission
+                    width: parent.width - precissionLabel.width
+                    height: buttonHeight
+                    readOnly: true
+                    validator: IntValidator{bottom: 1; top: 75;}
+                    
+                    property string oldPrecision
+                    
+                    onAccepted: {
+                        precission.readOnly = true
+                        mainWindowObject.setPrecision(parseInt(precission.text))
+                    }
+                    
+                    onActiveFocusChanged: {
+                        if(!activeFocus && !readOnly)
+                        {
+                            readOnly = true
+                            text = oldPrecision
+                        }
+                    }
+                    
+                    PlasmaComponents.ToolButton {
+                        width: height
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.margins: 1
+                        flat: true
+                        iconSource: precission.readOnly ? "arrow-down" : "key-enter"
+                        
+                        property ContextMenu contextMenu
+                        onClicked: {
+                            if (precission.readOnly)
+                            {
+                                if (!contextMenu) {
+                                    contextMenu = contextMenuComponent.createObject(precission)
+                                }
+                                contextMenu.open()
+                            }
+                            else if(precission.acceptableInput)
+                            {
+                                precission.readOnly = true
+                                mainWindowObject.setPrecision(parseInt(precission.text))
+                            }
+                        }
+                    }
+                }
+            }
+            
             PlasmaComponents.ToolButton {
                 id: configureShortcuts
                 width: parent.width
@@ -99,26 +159,10 @@ Item {
                 onClicked: mainWindowObject.clearHistory()
             }
             
-            PlasmaComponents.ToolButton {
-                id: precission
-                width: parent.width
-                height: buttonHeight
-                flat: true
-                iconSource: ""
-                text: i18n("Automatic Precision")
-                property ContextMenu contextMenu
-                onClicked: {
-                    if (!contextMenu) {
-                        contextMenu = contextMenuComponent.createObject(precission)
-                    }
-                    contextMenu.open()
-                }
-            }
-            
             Connections {
                 target: mainWindowObject
                 
-                onPrecisionChanged: precission.text = newPrecision < 0 ? i18n("Automatic Precision") : newPrecision + " Digit Precision"
+                onPrecisionChanged: precission.text = newPrecision < 0 ? i18n("Auto") : newPrecision
             }
             
             Component {
@@ -126,28 +170,17 @@ Item {
                 PlasmaComponents.ContextMenu {
                     visualParent: precission
                     PlasmaComponents.MenuItem {
-                        text: i18n("Automatic Precision")
+                        text: i18n("Automatic")
                         onClicked: mainWindowObject.setPrecision(-1)
                     }
                     PlasmaComponents.MenuItem {
-                        text: i18n("3 Digit Precision")
-                        onClicked: mainWindowObject.setPrecision(3)
-                    }
-                    PlasmaComponents.MenuItem {
-                        text: i18n("8 Digit Precision")
-                        onClicked: mainWindowObject.setPrecision(8)
-                    }
-                    PlasmaComponents.MenuItem {
-                        text: i18n("15 Digit Precision")
-                        onClicked: mainWindowObject.setPrecision(15)
-                    }
-                    PlasmaComponents.MenuItem {
-                        text: i18n("50 Digit Precision")
-                        onClicked: mainWindowObject.setPrecision(50)
-                    }
-                    PlasmaComponents.MenuItem {
-                        text: i18n("Custom Precision...")
-                        onClicked: mainWindowObject.setPrecision(-2)
+                        text: i18n("Custom (1-75)")
+                        onClicked: {
+                            precission.oldPrecision = precission.text
+                            precission.text = ""
+                            precission.focus = true
+                            precission.readOnly = false
+                        }
                     }
                 }
             }

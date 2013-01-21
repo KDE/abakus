@@ -11,6 +11,8 @@ Item {
     property int toolbarHeight: 25
     property int editorHeight: 25
     
+    Keys.onPressed: if(event.key == Qt.Key_Escape) editor.focus = true
+    
     Item {
         id: toolbar
         height: toolbarHeight
@@ -27,7 +29,10 @@ Item {
             buttonHeight: toolbarHeight
             mainWindowObject: mainWindow
             
-            onSettingsPanelVisibleChanged: toolbar.state = settingsVisible ? "settingsVisible" : ""
+            onSettingsPanelVisibleChanged: {
+                toolbar.state = settingsVisible ? "settingsVisible" : ""
+                editor.focus = !settingsVisible
+            }
         }
         
         TrigonometricMode {

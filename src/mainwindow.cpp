@@ -36,7 +36,6 @@
 #include <KDebug>
 #include <kdeclarative.h>
 #include <KHelpMenu>
-#include <KInputDialog>
 #include <KMenu>
 #include <KShortcutsDialog>
 #include <KStandardDirs>
@@ -621,25 +620,8 @@ QString MainWindow::interpolateExpression(const QString &text)
 
 void MainWindow::setPrecision(int precision)
 {
-    switch(precision)
-    {
-        case -2:
-        {
-            bool ok = false;
-            int precision = KInputDialog::getInteger(i18n("Select number of decimal digits to display"),
-            i18n("Decimal precision:"), Abakus::m_prec, 0, 75, 1, &ok, this);
-            
-            if(ok)
-            {
-                Abakus::m_prec = precision;
-                redrawResults();
-            }
-            break;
-        }
-        default:
-            Abakus::m_prec = precision;
-            redrawResults();
-    }
+    Abakus::m_prec = precision;
+    redrawResults();
     
     emit precisionChanged(Abakus::m_prec);
 }
