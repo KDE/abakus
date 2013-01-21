@@ -75,7 +75,7 @@ MainWindow::MainWindow() :
     m_wasMathematicalSidebarShown(true),
     m_compactMode(false),
     m_rpnMode(false),
-    m_historyLimit(0),
+    m_historyLimit(500),
     m_insert(false)
 {
     setObjectName("abakusMainWindow");
@@ -360,7 +360,7 @@ void MainWindow::loadConfig()
 
     Abakus::m_prec = precision;
     
-    m_historyLimit = config.readEntry("History Limit", 10);
+    m_historyLimit = config.readEntry("History Limit", 500);
     
 
     config = KGlobal::config()->group("GUI");
