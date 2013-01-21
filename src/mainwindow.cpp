@@ -19,51 +19,27 @@
  */
 #include "mainwindow.h"
 
-#include <kmenu.h>
-#include <kmenubar.h>
-#include <kstandardaction.h>
-#include <kstandardshortcut.h>
-#include <kshortcut.h>
-#include <kdebug.h>
-#include <kconfig.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kapplication.h>
-#include <kconfigbase.h>
-#include <kaction.h>
-#include <kactioncollection.h>
-#include <kshortcutsdialog.h>
-#include <khelpmenu.h>
-#include <kcmdlineargs.h>
-#include <kconfiggroup.h>
-#include <kinputdialog.h>
-#include <kdeclarative.h>
-
-#include <QtGui/QLineEdit>
-#include <QtGui/QTreeView>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItemIterator>
-#include <QtGui/QStandardItem>
-#include <QtGui/QStandardItemModel>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QHeaderView>
-#include <QtCore/QTimer>
-#include <QToolTip>
-
-#include <KStandardDirs>
-#include <QDeclarativeView>
-#include <QDeclarativeContext>
-
-#include "editor.h"
-#include "evaluator.h"
 #include "functionmodel.h"
 #include "numeralmodel.h"
-#include "node.h"
-#include "rpnmuncher.h"
-//#include "dcopIface.h"
 #include "result.h"
 #include "resultmodel.h"
+#include "rpnmuncher.h"
+
+#include <QDeclarativeContext>
+#include <QDeclarativeView>
+#include <QToolTip>
+
+#include <KAction>
+#include <KActionCollection>
+#include <KConfig>
+#include <KCmdLineArgs>
+#include <KDebug>
+#include <kdeclarative.h>
+#include <KHelpMenu>
+#include <KInputDialog>
+#include <KMenu>
+#include <KShortcutsDialog>
+#include <KStandardDirs>
 
 MainWindow::MainWindow() :
     m_helpMenu(0),
