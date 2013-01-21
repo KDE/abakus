@@ -4,6 +4,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 Item {
     id: root
     
+    property alias copactModeActive: compactMode.checked
     property int settingsPanelHeigth: 80
     property int buttonHeight
     property QtObject mainWindowObject

@@ -68,6 +68,7 @@ Item {
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: editor.top
+        visible: !configPanel.copactModeActive
         
         imagePath: "widgets/frame"
         prefix: "sunken"
@@ -132,14 +133,7 @@ Item {
                     history.minTagSize = minTagSize
                 }
                 
-                Connections {
-                    target: mainWindow
-                    
-                    onHistoryVisibleChanged: {
-                        historyBase.visible = visible
-                        historyBase.opacity = visible ? 1 : 0
-                    }
-                }
+                Component.onCompleted: history.positionViewAtEnd()
             }
         }
     }
@@ -200,4 +194,6 @@ Item {
         focus: true
         mainWindowObject: mainWindow
     }
+    
+    Component.onCompleted: mainWindow.applySettings()
 }

@@ -72,6 +72,8 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void configureShortcuts();
     Q_INVOKABLE void setPrecision(int precision);
 
+    Q_INVOKABLE void applySettings();
+    
     Q_INVOKABLE void setDegrees();
     Q_INVOKABLE void setRadians();
     
@@ -81,7 +83,7 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void historyNext();
     
     Q_INVOKABLE void setCompactMode(bool newMode);
-    Q_INVOKABLE void slotToggleCompactMode();
+    Q_INVOKABLE void slotToggleCompactMode(bool toggle = true);
     Q_INVOKABLE void slotToggleMathematicalSidebar();
     Q_INVOKABLE void mathematicalSidebarActiveTabChanged(const QString &activeTab);
     Q_INVOKABLE void mathematicalSidebarWidthChanged(const int newWidth);
@@ -97,7 +99,6 @@ class MainWindow : public KMainWindow
     signals:
     void setEditorText(const QString &editorText);
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
-    void historyVisibleChanged(const bool &visible);
     void mathematicalSidebarVisibleChanged(const bool &visible);
     void setMathematicalActiveTab(const QString &activeTab);
     void setMathematicalSidebarWidth(const int &width);
@@ -106,9 +107,6 @@ class MainWindow : public KMainWindow
     
     private slots:
     void slotUpdateSize();
-
-    void slotDegrees();
-    void slotRadians();
 
     private:
     int getParenthesesLevel(const QString &str);
@@ -120,7 +118,6 @@ class MainWindow : public KMainWindow
     void setupLayout();
     QString interpolateExpression(const QString &text);
     
-    void setHistoryVisible(const bool &visible);
     void setMathematicalSidebarVisible(const bool &visible);
 
     private:

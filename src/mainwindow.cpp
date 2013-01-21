@@ -79,6 +79,9 @@ MainWindow::MainWindow() :
     m_insert(false)
 {
     setObjectName("abakusMainWindow");
+    
+    loadConfig();
+    setAutoSaveSettings();
 
     m_visibleHistoryItemIndices.clear();
 
@@ -111,9 +114,7 @@ MainWindow::MainWindow() :
     m_declarativeView->setFocus();
     
     setupLayout();
-    setAutoSaveSettings();
 
-    loadConfig();
 //    m_dcopInterface = new AbakusIface();
 }
 
@@ -239,12 +240,14 @@ void MainWindow::configureShortcuts()
 
 void MainWindow::setDegrees()
 {
-    slotDegrees();
+    setTrigMode(Abakus::Degrees);
+    emit trigModeChanged((int)Abakus::Degrees);
 }
 
 void MainWindow::setRadians()
 {
-    slotRadians();
+    setTrigMode(Abakus::Radians);
+    emit trigModeChanged((int)Abakus::Radians);
 }
 
 void MainWindow::clearHistory()
@@ -260,11 +263,6 @@ void MainWindow::historyPrevious()
 void MainWindow::historyNext()
 {
     emit setEditorText(m_resultItemModel->nextExpression());
-}
-
-void MainWindow::setHistoryVisible(const bool& visible)
-{
-    emit historyVisibleChanged(visible);
 }
 
 void MainWindow::setMathematicalSidebarVisible(const bool& visible)
@@ -298,6 +296,23 @@ void MainWindow::removeVisibleHistoryItemIndex(int itemIndex)
     m_visibleHistoryItemIndices.removeOne(itemIndex);
 }
 
+void MainWindow::applySettings()
+{
+    emit trigModeChanged((int)Abakus::m_trigMode);
+    emit precisionChanged(Abakus::m_prec);
+    emit setMathematicalActiveTab(m_mathematicalSidebarActiveTab);
+    emit setMathematicalSidebarWidth(m_mathematicalSidebarWidth);
+    
+    if(m_compactMode)
+    {
+        slotToggleCompactMode(false);
+    }
+    else
+    {
+        emit mathematicalSidebarVisibleChanged(m_mathematicalSidebarVisible);
+    }
+}
+
 void MainWindow::slotUpdateSize()
 {
     if(m_compactMode)
@@ -308,18 +323,6 @@ void MainWindow::slotUpdateSize()
     {
         resize(m_size);
     }
-}
-
-void MainWindow::slotDegrees()
-{
-    setTrigMode(Abakus::Degrees);
-    emit trigModeChanged((int)Abakus::Degrees);
-}
-
-void MainWindow::slotRadians()
-{
-    setTrigMode(Abakus::Radians);
-    emit trigModeChanged((int)Abakus::Radians);
 }
 
 int MainWindow::getParenthesesLevel(const QString &str)
@@ -342,11 +345,9 @@ void MainWindow::loadConfig()
     QString mode = config.readEntry("Trigonometric mode", "Degrees");
     if(mode == "Degrees") {
         setTrigMode(Abakus::Degrees);
-        emit trigModeChanged((int)Abakus::Degrees);
     }
     else {
         setTrigMode(Abakus::Radians);
-        emit trigModeChanged((int)Abakus::Radians);
     }
 
     m_rpnMode = config.readEntry("Use RPN Mode", false);
@@ -358,29 +359,17 @@ void MainWindow::loadConfig()
     }
 
     Abakus::m_prec = precision;
-    emit precisionChanged(Abakus::m_prec);
-    redrawResults();
     
     m_historyLimit = config.readEntry("History Limit", 10);
     
 
     config = KGlobal::config()->group("GUI");
 
-    bool showMathematicalSidebar = config.readEntry("ShowMathematicalSidebar", true);
-    setMathematicalSidebarVisible(showMathematicalSidebar);
-    
+    m_mathematicalSidebarVisible = config.readEntry("ShowMathematicalSidebar", true);
     m_mathematicalSidebarActiveTab = config.readEntry("MathematicalSidebarActiveTab", "numerals");
-    setMathematicalActiveTab(m_mathematicalSidebarActiveTab);
-    
     m_mathematicalSidebarWidth = config.readEntry("MathematicalSidebarWidth", 200);
-    setMathematicalSidebarWidth(m_mathematicalSidebarWidth);
 
-    bool compactMode = config.readEntry("InCompactMode", false);
-
-    if(compactMode)
-    {
-        slotToggleCompactMode();
-    }
+    m_compactMode = config.readEntry("InCompactMode", false);
     
     m_size = config.readEntry("Size", QSize(600, 220));
     slotUpdateSize();
@@ -530,12 +519,12 @@ void MainWindow::setupLayout()
     KStandardAction::quit(this, SLOT(close()), m_actionCollection);
     KStandardAction::keyBindings(this, SLOT(configureShortcuts()), m_actionCollection);
 
-    QAction *a = m_actionCollection->addAction("setDegreesMode", this, SLOT(slotDegrees()));
+    QAction *a = m_actionCollection->addAction("setDegreesMode", this, SLOT(setDegrees()));
     a->setText(i18n("&Degrees"));
     a->setShortcut(Qt::SHIFT | Qt::ALT | Qt::Key_D);
     a->setChecked(trigMode() == Abakus::Degrees);
 
-    a = m_actionCollection->addAction("setRadiansMode", this, SLOT(slotRadians()));
+    a = m_actionCollection->addAction("setRadiansMode", this, SLOT(setRadians()));
     a->setText(i18n("&Radians"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_R);
     a->setChecked(trigMode() == Abakus::Radians);
@@ -597,20 +586,18 @@ void MainWindow::setCompactMode(bool newMode)
     }
 }
 
-void MainWindow::slotToggleCompactMode()
+void MainWindow::slotToggleCompactMode(bool toggle)
 {
-    m_compactMode = !m_compactMode;
+    if(toggle) m_compactMode = !m_compactMode;
+
     if(m_compactMode)
     {
         m_wasMathematicalSidebarShown = m_mathematicalSidebarVisible;
-
         setMathematicalSidebarVisible(false);
-        setHistoryVisible(false);
         
-        m_size = size();
+        if(toggle) m_size = size();
     }
     else {
-        setHistoryVisible(true);
         setMathematicalSidebarVisible(m_wasMathematicalSidebarShown);
     }
     
