@@ -535,7 +535,7 @@ void MainWindow::setupLayout()
     a->setIcon(KIcon("edit-clear-list"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_L);
 
-    a = m_actionCollection->addAction("select_edit", m_declarativeView, SLOT(setFocus()));
+    a = m_actionCollection->addAction("select_edit", this, SIGNAL(setFocusToEditor()));
     a->setText(i18n("Select Editor"));
     a->setShortcut(Qt::Key_F6);
     

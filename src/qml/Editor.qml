@@ -28,6 +28,7 @@ FocusScope {
         Connections {
             target: mainWindowObject
             
+            onSetFocusToEditor: root.focus = true
             onSetEditorText: textField.text = editorText
         }
     }

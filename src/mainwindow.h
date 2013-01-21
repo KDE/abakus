@@ -100,6 +100,7 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void removeVisibleHistoryItemIndex(int itemIndex);
     
     signals:
+    void setFocusToEditor();
     void setEditorText(const QString &editorText);
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
     void mathematicalSidebarVisibleChanged(const bool &visible);
