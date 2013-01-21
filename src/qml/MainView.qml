@@ -195,5 +195,8 @@ Item {
         mainWindowObject: mainWindow
     }
     
-    Component.onCompleted: mainWindow.applySettings()
+    Component.onCompleted: {
+        mainWindow.applySettings()
+        editor.forceActiveFocus()
+    }
 }
