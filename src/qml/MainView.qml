@@ -50,6 +50,9 @@ Item {
             onToggleSidebar: mainWindow.slotToggleMathematicalSidebar()
             
             onSidebarWidthChanged: mainWindow.mathematicalSidebarWidthChanged(newWidth)
+            
+            onShowToolTip: mainWindow.showToolTip(xPosition, yPosition, toolTipText)
+            onHideToolTip: mainWindow.hideToolTip()
         }
         
         states: State {

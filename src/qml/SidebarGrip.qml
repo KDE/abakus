@@ -11,6 +11,9 @@ Item {
     signal toggleSidebar()
     signal sidebarWidthChanged(int newWidth)
     
+    signal showToolTip(int xPosition, int yPosition, string toolTipText)
+    signal hideToolTip()
+    
     QtObject {
         id: internal
         
@@ -40,11 +43,34 @@ Item {
     }
     
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
         
+        Timer {
+            interval: 1000
+            running: mouseArea.containsMouse && !mouseArea.pressed && tooltip.length
+            
+            property string tooltip: root.sidebarShown ? i18n("Click to hide sidebar\nClick and drag to change sidebar width") : i18n("Click to show sidebar")
+            
+            onTriggered: {
+                var position = mapToItem(null, 0, height)
+                if(root.sidebarShown)
+                {
+                    root.showToolTip(position.x, position.y, tooltip)
+                }
+                else
+                {
+                    root.showToolTip(position.x, position.y, tooltip)
+                }
+            }
+        }
+        
         onEntered: root.itemHovered = true
-        onExited: root.itemHovered = false
+        onExited: {
+            root.itemHovered = false
+            root.hideToolTip()
+        }
         
         onClicked: if(!internal.sidebarWidthChanged) toggleSidebar()
         

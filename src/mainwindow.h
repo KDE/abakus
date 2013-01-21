@@ -71,6 +71,9 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void showHelpMenu(int xPosition, int yPosition);
     Q_INVOKABLE void configureShortcuts();
     Q_INVOKABLE void setPrecision(int precision);
+    
+    Q_INVOKABLE void showToolTip(const int xPosition, const int yPosition, const QString& toolTipText);
+    Q_INVOKABLE void hideToolTip();
 
     Q_INVOKABLE void applySettings();
     

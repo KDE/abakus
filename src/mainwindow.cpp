@@ -49,6 +49,7 @@
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QHeaderView>
 #include <QtCore/QTimer>
+#include <QToolTip>
 
 #include <KStandardDirs>
 #include <QDeclarativeView>
@@ -236,6 +237,16 @@ void MainWindow::showHelpMenu(int xPosition, int yPosition)
 void MainWindow::configureShortcuts()
 {
     KShortcutsDialog::configure(m_actionCollection, KShortcutsEditor::LetterShortcutsDisallowed, this);
+}
+
+void MainWindow::showToolTip(const int xPosition, const int yPosition, const QString& toolTipText)
+{
+    QToolTip::showText(mapToGlobal(QPoint(xPosition, yPosition)), toolTipText);
+}
+
+void MainWindow::hideToolTip()
+{
+    QToolTip::hideText();
 }
 
 void MainWindow::setDegrees()
