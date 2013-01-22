@@ -105,7 +105,7 @@ ENDIF(FLEX_EXECUTABLE)
 add_subdirectory(qml)
 set(abakus_SRCS
     abakus.cpp
-    dragsupport.cpp
+    #dragsupport.cpp
     #editor.cpp
     evaluator.cpp
     function.cpp
@@ -122,6 +122,7 @@ set(abakus_SRCS
     resultmodel.cpp
     resultmodelitem.cpp
     rpnmuncher.cpp
+
     #    dcopIface.skel
     )
 

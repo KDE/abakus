@@ -19,22 +19,16 @@
 %{
 
 #define QT_NO_ASCII_CAST
-#include <QtCore/QString>
+#include <QString>
 
 /* Add necessary includes here. */
-#include <kdebug.h>
-#include <klocale.h>
-#include <kglobal.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
-#include "result.h"
-#include "node.h"
 #include "functionmodel.h"
+#include "node.h"
 #include "numeralmodel.h"
+#include "result.h"
+
+#include <KLocale>
+#include <KGlobal>
 
 extern char *yytext;
 

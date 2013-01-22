@@ -18,11 +18,11 @@
  */
 
 #include "numerictypes.h"
-#include "hmath.h"
 
-#include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
+#include <KLocale>
+#include <KGlobal>
+
+#include <QRegExp>
 
 Abakus::TrigMode Abakus::m_trigMode = Abakus::Degrees;
 int Abakus::m_prec = -1;

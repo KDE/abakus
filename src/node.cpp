@@ -16,13 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <kdebug.h>
 
-#include <math.h>
-
+#include "functionmodel.h"
 #include "node.h"
 #include "numeralmodel.h"
-#include "functionmodel.h"
+
+#include <KDebug>
 
 void Node::deleteNode(Node *node)
 {

@@ -18,16 +18,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <sstream>
-#include <string>
-
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <QtCore/QRegExp>
-
 #include "hmath.h"
 #include "config-abakus.h"
+
+#include <QString>
 
 #ifdef HAVE_MPFR
 #include <mpfr.h>

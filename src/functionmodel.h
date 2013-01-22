@@ -20,13 +20,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "numerictypes.h"
 #include "function.h"
 #include "functionmodelitem.h"
 
-#include <QtCore/QAbstractListModel>
-#include <QtCore/QStringList>
-#include <QtCore/QHash>
+#include <QAbstractListModel>
 
 class FunctionModel : public QAbstractListModel
 {

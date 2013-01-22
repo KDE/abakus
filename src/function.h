@@ -21,9 +21,6 @@
 
 #include "numerictypes.h"
 
-#include <QtCore/QStringList>
-#include <QtCore/QHash>
-
 class BaseFunction;
 
 struct UserFunction

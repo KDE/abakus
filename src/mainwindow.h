@@ -20,37 +20,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <kmainwindow.h>
-
 #include "numerictypes.h"
 
-class QPoint;
-class QLineEdit;
-class QCheckBox;
-class QRadioButton;
-class QBoxLayout;
-class QListViewItem;
-class QSplitter;
-class QTimer;
-class QMenu;
-class QModelIndex;
-class QAction;
-class QDeclarativeView;
-class QDeclarativeContext;
-
-//class KComboBox;
-//class Editor;
-class KVBox;
-class KActionCollection;
+#include <KMainWindow>
 
 class ResultModel;
-class ListView;
 
-class AbakusIface;
+class KActionCollection;
 
-namespace Ui {
-    class MainWindow;
-}
+class QDeclarativeContext;
+class QDeclarativeView;
+class QMenu;
 
 // Main window class, handles events and layout and stuff
 class MainWindow : public KMainWindow

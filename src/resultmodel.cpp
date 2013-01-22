@@ -20,11 +20,6 @@
 
 #include "resultmodel.h"
 
-#include <kdebug.h>
-#include <klocale.h>
-
-#include <QtGui/QStandardItemModel>
-
 ResultModel::ResultModel(QObject *parent)
     : QAbstractListModel(parent), m_historyIndex(-1)
 {

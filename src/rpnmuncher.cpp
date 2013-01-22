@@ -16,19 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <math.h>
-
-#include <kdebug.h>
-#include <klocale.h>
-
-#include <QtCore/QStack>
-#include <QtCore/QRegExp>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
 
 #include "rpnmuncher.h"
-#include "numeralmodel.h"
 #include "functionmodel.h"
+#include "numeralmodel.h"
+
+#include <KLocale>
+#include <KDebug>
+
+#include <QStack>
+
 
 /**
  * Holds either a textual identifier, or a numeric value.

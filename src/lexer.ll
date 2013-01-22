@@ -20,12 +20,12 @@
 %{
 #define YY_NO_UNPUT
 
-#include <kdebug.h>
-
 #include "node.h"
 #include "functionmodel.h"
 #include "parser_yacc.hpp"
 #include "result.h"
+
+#include <KDebug>
 
 int yyCurTokenPos;
 int yyThisTokenLength;

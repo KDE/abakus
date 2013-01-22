@@ -16,11 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <kaboutdata.h>
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-#include <klocale.h>
-#include <kdebug.h>
+#include <KAboutData>
+#include <KApplication>
+#include <KCmdLineArgs>
+#include <KDebug>
+#include <KLocale>
 
 #include <config-abakus.h>
 

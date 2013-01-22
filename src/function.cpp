@@ -16,20 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "numerictypes.h"
-
-#include <kdebug.h>
-
-#include <QtCore/QVector>
-#include <QtCore/QString>
-#include <QtCore/QRegExp>
-
-#include <math.h>
-
 #include "function.h"
 #include "node.h"
 #include "numeralmodel.h"
-#include "hmath.h"
 
 // Applies the function identified by func, using value as a parameter.
 Abakus::number_t evaluateFunction(const Function *func, const Abakus::number_t value)

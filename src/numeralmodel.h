@@ -19,12 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <QtCore/QAbstractListModel>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-
-#include "numerictypes.h"
 #include "numeralmodelitem.h"
+#include "numerictypes.h"
+
+#include <QAbstractListModel>
 
 class NumeralModel : public QAbstractListModel
 {

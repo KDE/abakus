@@ -19,13 +19,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-class QString;
+#include "numerictypes.h"
+
 class Operand;
 
 template<class T> class QStack;
 typedef QStack<Operand> OperandStack;
-
-#include "numerictypes.h"
 
 class RPNParser
 {

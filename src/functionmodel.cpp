@@ -17,21 +17,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "numerictypes.h"
-
-#include <klocale.h>
-#include <kdebug.h>
-
-#include <QtCore/QVector>
-#include <QtCore/QString>
-#include <QtCore/QRegExp>
-
-#include <math.h>
-
 #include "functionmodel.h"
 #include "node.h"
-#include "numeralmodel.h"
-#include "hmath.h"
+#include "numerictypes.h"
+
+#include <KLocale>
 
 // Used to try and avoid recursive function definitions
 class DupFinder : public NodeFunctor
