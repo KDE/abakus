@@ -130,9 +130,6 @@ set(MPFR_LIBS)
 IF(HAVE_MPFR)
     MESSAGE("Using the MPFR high-precision mathematics library")
     SET(MPFR_LIBS mpfr gmp)
-ELSE(HAVE_MPFR)
-    SET(abakus_SRCS ${abakus_SRCS} hmath.cpp number.c)
-    SET(MPFR_LIBS m)
 ENDIF(HAVE_MPFR)
 
 kde4_add_executable(abakus ${abakus_SRCS})
@@ -142,6 +139,3 @@ install(TARGETS abakus ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES abakus.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
 
 kde4_install_icons(${ICON_INSTALL_DIR})
-
-configure_file(config-abakus.h.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/config-abakus.h)

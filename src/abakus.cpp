@@ -16,19 +16,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "mainwindow.h"
+
 #include <KAboutData>
 #include <KApplication>
 #include <KCmdLineArgs>
-#include <KDebug>
 #include <KLocale>
 
-#include <config-abakus.h>
-
-#ifdef HAVE_MPFR
 #include <mpfr.h>
-#endif
-
-#include "mainwindow.h"
 
 const char *const version = "0.92";
 
@@ -62,12 +58,7 @@ int main(int argc, char **argv)
                      ki18n("Inspiration/code for the initial design came from his Ruby implementation."),
                      "zack@kde.org");
 
-#ifdef HAVE_MPFR
     mpfr_set_default_prec(6 * 78); // 78 digits, figure about 6 bits needed.
-    kDebug() << "Using the MPFR high-precision library.\n";
-#else
-    kDebug() << "Using the internal high-precision library.\n";
-#endif
 
     KCmdLineArgs::init(argc, argv, about);
     KApplication app;

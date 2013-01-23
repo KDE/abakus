@@ -18,14 +18,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "hmath.h"
-#include "config-abakus.h"
 
 #include <QString>
 
-#ifdef HAVE_MPFR
 #include <mpfr.h>
-#endif
 
 namespace Abakus
 {
@@ -191,7 +187,6 @@ inline number<T> operator/(const number<T> &l, const number<T> &r)
     return number<T>(l.value() / r.value());
 }
 
-#ifdef HAVE_MPFR
 
 /**
  * Utility function to convert a MPFR number to a string.  This is declared
@@ -521,191 +516,6 @@ inline number<mpfr_ptr> operator/(const number<mpfr_ptr> &l, const number<mpfr_p
 
     // Abakus namespace continues.
     typedef number<mpfr_ptr> number_t;
-
-#else
-
-// Defined in numerictypes.cpp for ease of reimplementation.
-QString convertToString(const HNumber &num);
-
-/**
- * Specialization for internal HMath library, used if MPFR isn't usable.
- *
- * @author Michael Pyne <michael.pyne@kdemail.net>
- */
-template<>
-class number<HNumber>
-{
-public:
-    typedef HNumber value_type;
-
-    number(const HNumber& t = HNumber()) : m_t(t)
-    {
-    }
-    explicit number(int i) : m_t(i) { }
-    number(const number<HNumber> &other) : m_t(other.m_t) { }
-
-    /// Likewise
-    explicit number(const QByteArray &str) : m_t(str.constData()) { }
-
-    number(const char *s) : m_t(s) { }
-
-    bool operator!=(const number<HNumber> &other) const
-    {
-        return m_t != other.m_t;
-    }
-
-    bool operator==(const number<HNumber> &other) const
-    {
-        return m_t == other.m_t;
-    }
-
-    bool operator<(const number<HNumber> &other) const
-    {
-        return m_t < other.m_t;
-    }
-
-    bool operator>(const number<HNumber> &other) const
-    {
-        return m_t > other.m_t;
-    }
-
-    bool operator<=(const number<HNumber> &other) const
-    {
-        return m_t <= other.m_t;
-    }
-
-    bool operator>=(const number<HNumber> &other) const
-    {
-        return m_t >= other.m_t;
-    }
-
-    number<HNumber> &operator=(const number<HNumber> &other)
-    {
-        m_t = other.m_t;
-        return *this;
-    }
-
-    HNumber asRadians() const
-    {
-        if(m_trigMode == Degrees)
-            return m_t * PI / HNumber("180.0");
-        else
-            return m_t;
-    }
-
-    HNumber toTrig(const HNumber &num) const
-    {
-        // Assumes num is in radians.
-        if(m_trigMode == Degrees)
-            return num * HNumber("180.0") / PI;
-        else
-            return num;
-    }
-
-    number<HNumber> sin() const
-    {
-        return HMath::sin(asRadians());
-    }
-
-    number<HNumber> cos() const
-    {
-        return HMath::cos(asRadians());
-    }
-
-    number<HNumber> tan() const
-    {
-        return HMath::tan(asRadians());
-    }
-
-    number<HNumber> asin() const
-    {
-        return toTrig(HMath::asin(m_t));
-    }
-
-    number<HNumber> acos() const
-    {
-        return toTrig(HMath::acos(m_t));
-    }
-
-    number<HNumber> atan() const
-    {
-        return toTrig(HMath::atan(m_t));
-    }
-
-    number<HNumber> floor() const
-    {
-        if(HMath::frac(m_t) == HNumber("0.0"))
-            return integer();
-        if(HMath::integer(m_t) < HNumber("0.0"))
-            return HMath::integer(m_t) - 1;
-        return integer();
-    }
-
-    number<HNumber> ceil() const
-    {
-        return floor().value() + HNumber(1);
-    }
-
-/* There is a lot of boilerplate ahead, so define a macro to declare and
- * define some functions for us to forward the call to HMath.
- */
-#define DECLARE_IMPL(name) number<value_type> name() const \
-{ return HMath::name(m_t); }
-
-    DECLARE_IMPL(frac)
-    DECLARE_IMPL(integer)
-    DECLARE_IMPL(round)
-
-    DECLARE_IMPL(abs)
-
-    DECLARE_IMPL(sqrt)
-
-    DECLARE_IMPL(ln)
-    DECLARE_IMPL(log)
-    DECLARE_IMPL(exp)
-
-    DECLARE_IMPL(sinh)
-    DECLARE_IMPL(cosh)
-    DECLARE_IMPL(tanh)
-
-    DECLARE_IMPL(asinh)
-    DECLARE_IMPL(acosh)
-    DECLARE_IMPL(atanh)
-
-    HNumber value() const { return m_t; }
-
-    double asDouble() const { return toString().toDouble(); }
-
-    number<HNumber> operator-() const { return HMath::negate(m_t); }
-
-    // TODO: I believe this doesn't work for negative numbers with even
-    // exponents.  Which breaks simple stuff like (-2)^2. :(
-    number<HNumber> pow(const number<HNumber> &exponent)
-    {
-        return HMath::raise(m_t, exponent.m_t);
-    }
-
-    QString toString() const
-    {
-        return convertToString(m_t);
-    }
-
-    static number<HNumber> nan()
-    {
-        return HNumber::nan();
-    }
-
-    static const HNumber PI;
-    static const HNumber E;
-
-private:
-    HNumber m_t;
-};
-
-    // Abakus namespace continues.
-    typedef number<HNumber> number_t;
-
-#endif /* HAVE_MPFR */
 
 }; // namespace Abakus
 
