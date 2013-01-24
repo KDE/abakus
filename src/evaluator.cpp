@@ -22,7 +22,7 @@
 #include "evaluator.h"
 #include "functionmodel.h"
 #include "node.h" // For parser_yacc.hpp below
-#include "parser_yacc.hpp"
+#include "parser.yy.hpp"
 
 //#include <QtCore/QCoreApplication>
 #include <QtCore/QMap>

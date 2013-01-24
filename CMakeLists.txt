@@ -1,31 +1,36 @@
-PROJECT(abakus)
+project(abakus)
 
-set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
-FIND_PACKAGE(KDE4 REQUIRED)
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" ${CMAKE_SOURCE_DIR}/cmake/modules)
+
+find_package(KDE4 REQUIRED)
 find_package(KDeclarative REQUIRED)
 
 include(KDE4Defaults)
-include(CheckCXXSourceCompiles)
+include(MacroLibrary)
 
-# Check for libmpfr and libgmp, and verify existence of _mpfr_struct
-set(CMAKE_REQUIRED_LIBRARIES gmp mpfr)
-check_cxx_source_compiles(
-    "#include <mpfr.h>
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
 
-    int main() {
-    mpfr_t a;
-    mpfr_ptr ptr;
-    __mpfr_struct debug;
+find_package(MPFR REQUIRED)
+set_package_properties(MPFR PROPERTIES DESCRIPTION "MPFR provides a library for multiple-precision floating-point computations with correct rounding"
+                       URL "http://www.mpfr.org"
+                       TYPE REQUIRED
+                      )
 
-    mpfr_init(a);
-    return 0;
-    }
-    "
-    HAVE_MPFR
-    )
+find_package(FLEX REQUIRED)
+set_package_properties(FLEX PROPERTIES DESCRIPTION "Flex is a tool for generating scanners, which recognizes lexical patterns"
+                       URL "http://flex.sourceforge.net"
+                       TYPE REQUIRED
+                      )
 
-INCLUDE_DIRECTORIES(${KDE4_INCLUDES} ${QT4_INCLUDES} ${KDECLARATIVE_INCLUDE_DIR})
-ADD_DEFINITIONS(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+find_package(BISON REQUIRED)
+set_package_properties(BISON PROPERTIES DESCRIPTION "Bison is a general-purpose parser generator"
+                       URL "http://www.gnu.org/software/bison"
+                       TYPE REQUIRED
+                      )
 
-ADD_SUBDIRECTORY(src)
-ADD_SUBDIRECTORY(doc)
+
+include_directories(${MPFR_INCLUDE_DIR} ${QT4_INCLUDES} ${KDE4_INCLUDES} ${KDECLARATIVE_INCLUDE_DIR})
+
+add_subdirectory(src)
+add_subdirectory(doc)
