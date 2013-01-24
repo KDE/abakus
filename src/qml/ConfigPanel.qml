@@ -174,7 +174,7 @@ Item {
                         onClicked: mainWindowObject.setPrecision(-1)
                     }
                     PlasmaComponents.MenuItem {
-                        text: i18n("Custom (1-75)")
+                        text: i18n("Custom (1...75)")
                         onClicked: {
                             precission.oldPrecision = precission.text
                             precission.text = ""
