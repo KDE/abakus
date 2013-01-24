@@ -37,12 +37,12 @@ class NumeralModel : public QAbstractListModel
 
     static NumeralModel *instance();
 
-    Abakus::number_t value(const QString &name) const;
+    Abakus::Number value(const QString &name) const;
 
     bool isValueSet(const QString &name) const;
     bool isValueReadOnly(const QString &name) const;
 
-    void setValue(const QString &name, const Abakus::number_t value);
+    void setValue(const QString &name, const Abakus::Number value);
     void removeValue(const QString &name);
 
     QStringList valueNames() const;

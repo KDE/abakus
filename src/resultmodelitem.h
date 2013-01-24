@@ -28,7 +28,7 @@ class ResultModelItem
 public:
     enum ResultItemType { Result, Message };
     
-    ResultModelItem(const QString &expression, const Abakus::number_t &result);
+    ResultModelItem(const QString &expression, const Abakus::Number &result);
     ResultModelItem(const QString &expression, const QString &result);
 
     QString expression() const;
@@ -38,12 +38,12 @@ public:
 
     void incrementTag();
     void updateResult();
-    Abakus::number_t resultValue();
+    Abakus::Number resultValue();
     ResultItemType type();
 
 private:
     QString m_expression;
-    const Abakus::number_t m_resultValue;
+    const Abakus::Number m_resultValue;
     QString m_result;
     int m_tag;
     const int m_index;

@@ -30,7 +30,7 @@ struct UserFunction
 };
 
 // Ugly pointer-to-member typedef ahead
-typedef Abakus::number_t (Abakus::number_t::*function_t)() const;
+typedef Abakus::Number (Abakus::Number::*function_t)() const;
 
 struct Function {
     QString name;
@@ -52,10 +52,10 @@ struct Function {
 void setTrigMode(Abakus::TrigMode mode);
 Abakus::TrigMode trigMode();
 
-Abakus::number_t evaluateFunction(const Function *func, const Abakus::number_t value);
+Abakus::Number evaluateFunction(const Function *func, const Abakus::Number value);
 
 // Implemented in lexer.l due to prototype issues.
-Abakus::number_t parseString(const char *str);
+Abakus::Number parseString(const char *str);
 
 // Implemented in lexer.l due to prototype issues.
 class Lexer

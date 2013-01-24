@@ -228,7 +228,7 @@ S: SET IDENT '=' EXP {
     NumeralModel *vm = NumeralModel::instance();
 
     if(vm->isValueReadOnly($2->name())) {
-        if($2->name() == "pi" && $4->value() == Abakus::number_t("3.0"))
+        if($2->name() == "pi" && $4->value() == Abakus::Number("3.0"))
             Result::setLastResult(i18n("This isn't Indiana, you can't just change pi"));
         else
             Result::setLastResult(i18n("%1 is a constant", QString($2->name())));
@@ -247,7 +247,7 @@ S: IDENT '=' EXP {
     NumeralModel *vm = NumeralModel::instance();
 
     if(vm->isValueReadOnly($1->name())) {
-        if($1->name() == "pi" && $3->value() == Abakus::number_t("3.0"))
+        if($1->name() == "pi" && $3->value() == Abakus::Number("3.0"))
             Result::setLastResult(i18n("This isn't Indiana, you can't just change pi"));
         else
             Result::setLastResult(i18n("%1 is a constant", QString($1->name())));
@@ -330,7 +330,7 @@ NUMBER: NUM {
         if(yytext[i] == decimal)
             yytext[i] = '.';
 
-    Abakus::number_t value(yytext);
+    Abakus::Number value(yytext);
 
     $$ = new NumericValue(value);
 }
@@ -346,7 +346,7 @@ NUMBER: NUMBIN {
         if(yytext[i] == decimal)
             yytext[i] = '.';
 
-    Abakus::number_t value(yytext, 2);
+    Abakus::Number value(yytext, 2);
 
     $$ = new NumericValue(value);
 }
@@ -365,7 +365,7 @@ NUMBER: NUMOCT {
     yytext[0] = ' ';
     yytext[1] = '0';
 
-    Abakus::number_t value(yytext, 8);
+    Abakus::Number value(yytext, 8);
 
     $$ = new NumericValue(value);
 }
@@ -381,7 +381,7 @@ NUMBER: NUMHEX {
         if(yytext[i] == decimal)
             yytext[i] = '.';
 
-    Abakus::number_t value(yytext, 16);
+    Abakus::Number value(yytext, 16);
 
     $$ = new NumericValue(value);
 }

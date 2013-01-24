@@ -189,14 +189,14 @@ Token& Token::operator=( const Token& token )
   return *this;
 }
 
-Abakus::number_t Token::asNumber() const
+Abakus::Number Token::asNumber() const
 {
   if( isNumber() ) {
     QByteArray numString(m_text.toLatin1());
-    return Abakus::number_t( numString.data() );
+    return Abakus::Number( numString.data() );
   }
   else
-    return Abakus::number_t();
+    return Abakus::Number();
 }
 
 Token::Op Token::asOperator() const

@@ -129,7 +129,7 @@ void MainWindow::slotEvaluate(const QString &expression)
 
     if(inRPNMode()) {
         // We're in RPN mode.
-        Abakus::number_t result = RPNParser::rpnParseString(str);
+        Abakus::Number result = RPNParser::rpnParseString(str);
 
         if(!RPNParser::wasError()) {
             resultVal = result.toString();
@@ -155,7 +155,7 @@ void MainWindow::slotEvaluate(const QString &expression)
             str += ')';
 
         QByteArray cStr = str.toLatin1();
-        Abakus::number_t result = parseString(cStr.data());
+        Abakus::Number result = parseString(cStr.data());
 
         switch(Result::lastResult()->type()) {
             case Result::Value:
@@ -372,7 +372,7 @@ void MainWindow::loadConfig()
         }
         
         QByteArray valueStr = values[1].toLatin1();
-        NumeralModel::instance()->setValue(values[0], Abakus::number_t(valueStr.data()));
+        NumeralModel::instance()->setValue(values[0], Abakus::Number(valueStr.data()));
     }
     
     
@@ -396,7 +396,7 @@ void MainWindow::loadConfig()
         historyValues = config.readEntry(historyKeys[i], QStringList());
         if(historyValues[2].toInt() == ResultModelItem::Result)
         {
-            resultModelItem = new ResultModelItem(historyValues[0], Abakus::number_t(historyValues[1].toLatin1()));
+            resultModelItem = new ResultModelItem(historyValues[0], Abakus::Number(historyValues[1].toLatin1()));
         }
         else
         {
@@ -604,7 +604,7 @@ QString MainWindow::interpolateExpression(const QString &text)
 
     while((pos = stackRE.indexIn(str)) != -1) {
         QString stackStr = stackRE.cap();
-        Abakus::number_t value;
+        Abakus::Number value;
         unsigned numPos = stackStr.mid(1).toUInt();
 
         if(!m_resultItemModel->stackValue(numPos, value)) {

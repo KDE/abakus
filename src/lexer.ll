@@ -222,7 +222,7 @@ int Lexer::tokenPos() const
 /* Declared in function.h, implemented here in lexer.l since this is where
  * all the yy_*() functions and types are defined.
  */
-Abakus::number_t parseString(const char *str)
+Abakus::Number parseString(const char *str)
 {
     YY_BUFFER_STATE buffer = yy_scan_string(str);
 
@@ -233,7 +233,7 @@ Abakus::number_t parseString(const char *str)
     yy_delete_buffer(buffer);
 
     if(Result::lastResult()->type() != Result::Value)
-        return Abakus::number_t();
+        return Abakus::Number();
 
     return Result::lastResult()->result()->value();
 }

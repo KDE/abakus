@@ -35,9 +35,9 @@ class Operand
     public:
     Operand() : m_isValue(true), m_value(0) { }
     Operand(const QString &ident) : m_isValue(false), m_text(ident) { }
-    Operand(Abakus::number_t value) : m_isValue(true), m_value(value) { }
+    Operand(Abakus::Number value) : m_isValue(true), m_value(value) { }
 
-    Abakus::number_t value() const
+    Abakus::Number value() const
     {
         if(m_isValue)
             return m_value;
@@ -45,7 +45,7 @@ class Operand
         return NumeralModel::instance()->value(m_text);
     }
 
-    operator Abakus::number_t() const
+    operator Abakus::Number() const
     {
         return value();
     }
@@ -55,7 +55,7 @@ class Operand
     private:
     bool m_isValue;
     QString m_text;
-    Abakus::number_t m_value;
+    Abakus::Number m_value;
 };
 
 typedef enum { Number = 256, Func, Ident, Power, Set, Remove, Pop, Clear, Unknown } Token;
@@ -69,12 +69,12 @@ OperandStack RPNParser::m_stack;
 struct Counter
 {
     ~Counter() {
-        Abakus::number_t count( static_cast<int>(RPNParser::stack().count()) );
+        Abakus::Number count( static_cast<int>(RPNParser::stack().count()) );
         NumeralModel::instance()->setValue("stackCount", count);
     }
 };
 
-Abakus::number_t RPNParser::rpnParseString(const QString &text)
+Abakus::Number RPNParser::rpnParseString(const QString &text)
 {
     QStringList tokens = text.split(QRegExp("\\s"));
     Counter counter; // Will update stack count when we leave proc.
@@ -92,14 +92,14 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         switch(tokenize(*it))
         {
         case Number:
-            m_stack.push(Abakus::number_t((*it).toLatin1()));
+            m_stack.push(Abakus::Number((*it).toLatin1()));
         break;
 
         case Pop:
             if(m_stack.isEmpty()) {
                 m_error = true;
                 m_errorStr = i18n("Cannot pop from an empty stack.");
-                return Abakus::number_t::nan();
+                return Abakus::Number::nan();
             }
 
             m_stack.pop();
@@ -113,7 +113,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
             if(m_stack.count() < 1) {
                 m_error = true;
                 m_errorStr = i18n("Insufficient operands for function %1", *it);
-                return Abakus::number_t::nan();
+                return Abakus::Number::nan();
             }
 
             fn = manager->function(*it);
@@ -130,14 +130,14 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         case Remove:
             m_error = true;
             m_errorStr = i18n("The set and remove commands can only be used in normal mode.");
-            return Abakus::number_t::nan();
+            return Abakus::Number::nan();
         break;
 
         case Power:
             if(m_stack.count() < 2) {
                 m_error = true;
                 m_errorStr = i18n("Insufficient operands for exponentiation operator.");
-                return Abakus::number_t::nan();
+                return Abakus::Number::nan();
             }
 
             r = m_stack.pop();
@@ -148,7 +148,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
         case Unknown:
             m_error = true;
             m_errorStr = i18n("Unknown token %1", *it);
-            return Abakus::number_t::nan();
+            return Abakus::Number::nan();
         break;
 
         case '=':
@@ -163,7 +163,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
             if(m_stack.count() < 2) {
                 m_error = true;
                 m_errorStr = i18n("Insufficient operands for addition operator.");
-                return Abakus::number_t::nan();
+                return Abakus::Number::nan();
             }
 
             r = m_stack.pop();
@@ -175,7 +175,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
             if(m_stack.count() < 2) {
                 m_error = true;
                 m_errorStr = i18n("Insufficient operands for subtraction operator.");
-                return Abakus::number_t::nan();
+                return Abakus::Number::nan();
             }
 
             r = m_stack.pop();
@@ -187,7 +187,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
             if(m_stack.count() < 2) {
                 m_error = true;
                 m_errorStr = i18n("Insufficient operands for multiplication operator.");
-                return Abakus::number_t::nan();
+                return Abakus::Number::nan();
             }
 
             r = m_stack.pop();
@@ -199,7 +199,7 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
             if(m_stack.count() < 2) {
                 m_error = true;
                 m_errorStr = i18n("Insufficient operands for division operator.");
-                return Abakus::number_t::nan();
+                return Abakus::Number::nan();
             }
 
             r = m_stack.pop();
@@ -212,13 +212,13 @@ Abakus::number_t RPNParser::rpnParseString(const QString &text)
             kError() << "Impossible case happened in " << endl;
             m_error = true;
             m_errorStr = "Bug found in program, please report.";
-            return Abakus::number_t::nan();
+            return Abakus::Number::nan();
         }
     }
 
     // TODO: Should this be an error?
     if(m_stack.isEmpty())
-        return Abakus::number_t::nan();
+        return Abakus::Number::nan();
 
     return m_stack.top();
 }

@@ -176,33 +176,33 @@ bool FunctionModel::addFunction(const QString &name, function_t fn, const QStrin
 
 void FunctionModel::addBuitInFunctions()
 {
-    addFunction("sin", &Abakus::number_t::sin, i18n("Trigonometric sine"));
-    addFunction("cos", &Abakus::number_t::cos, i18n("Trigonometric cosine"));
-    addFunction("tan", &Abakus::number_t::tan, i18n("Trigonometric tangent"));
+    addFunction("sin", &Abakus::Number::sin, i18n("Trigonometric sine"));
+    addFunction("cos", &Abakus::Number::cos, i18n("Trigonometric cosine"));
+    addFunction("tan", &Abakus::Number::tan, i18n("Trigonometric tangent"));
     
-    addFunction("sinh", &Abakus::number_t::sinh, i18n("Hyperbolic sine"));
-    addFunction("cosh", &Abakus::number_t::cosh, i18n("Hyperbolic cosine"));
-    addFunction("tanh", &Abakus::number_t::tanh, i18n("Hyperbolic tangent"));
+    addFunction("sinh", &Abakus::Number::sinh, i18n("Hyperbolic sine"));
+    addFunction("cosh", &Abakus::Number::cosh, i18n("Hyperbolic cosine"));
+    addFunction("tanh", &Abakus::Number::tanh, i18n("Hyperbolic tangent"));
     
-    addFunction("atan", &Abakus::number_t::atan, i18n("Inverse tangent"));
-    addFunction("acos", &Abakus::number_t::acos, i18n("Inverse cosine"));
-    addFunction("asin", &Abakus::number_t::asin, i18n("Inverse sine"));
+    addFunction("atan", &Abakus::Number::atan, i18n("Inverse tangent"));
+    addFunction("acos", &Abakus::Number::acos, i18n("Inverse cosine"));
+    addFunction("asin", &Abakus::Number::asin, i18n("Inverse sine"));
     
-    addFunction("asinh", &Abakus::number_t::asinh, i18n("Inverse hyperbolic sine"));
-    addFunction("acosh", &Abakus::number_t::acosh, i18n("Inverse hyperbolic cosine"));
-    addFunction("atanh", &Abakus::number_t::atanh, i18n("Inverse hyperbolic tangent"));
+    addFunction("asinh", &Abakus::Number::asinh, i18n("Inverse hyperbolic sine"));
+    addFunction("acosh", &Abakus::Number::acosh, i18n("Inverse hyperbolic cosine"));
+    addFunction("atanh", &Abakus::Number::atanh, i18n("Inverse hyperbolic tangent"));
     
-    addFunction("abs",  &Abakus::number_t::abs,  i18n("Absolute value of number"));
-    addFunction("sqrt", &Abakus::number_t::sqrt, i18n("Square root"));
-    addFunction("ln",   &Abakus::number_t::ln,   i18n("Natural logarithm (base e)"));
-    addFunction("log",  &Abakus::number_t::log,  i18n("Logarithm (base 10)"));
-    addFunction("exp",  &Abakus::number_t::exp,  i18n("Natural exponential function"));
+    addFunction("abs",  &Abakus::Number::abs,  i18n("Absolute value of number"));
+    addFunction("sqrt", &Abakus::Number::sqrt, i18n("Square root"));
+    addFunction("ln",   &Abakus::Number::ln,   i18n("Natural logarithm (base e)"));
+    addFunction("log",  &Abakus::Number::log,  i18n("Logarithm (base 10)"));
+    addFunction("exp",  &Abakus::Number::exp,  i18n("Natural exponential function"));
     
-    addFunction("round", &Abakus::number_t::round,   i18n("Round to nearest number"));
-    addFunction("ceil",  &Abakus::number_t::ceil,    i18n("Nearest greatest integer"));
-    addFunction("floor", &Abakus::number_t::floor,   i18n("Nearest lesser integer"));
-    addFunction("int",   &Abakus::number_t::integer, i18n("Integral part of number"));
-    addFunction("frac",  &Abakus::number_t::frac,    i18n("Fractional part of number"));
+    addFunction("round", &Abakus::Number::round,   i18n("Round to nearest number"));
+    addFunction("ceil",  &Abakus::Number::ceil,    i18n("Nearest greatest integer"));
+    addFunction("floor", &Abakus::Number::floor,   i18n("Nearest lesser integer"));
+    addFunction("int",   &Abakus::Number::integer, i18n("Integral part of number"));
+    addFunction("frac",  &Abakus::Number::frac,    i18n("Fractional part of number"));
 }
 
 Function *FunctionModel::function(const QString &name) const

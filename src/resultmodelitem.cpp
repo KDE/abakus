@@ -26,7 +26,7 @@ void resetResultModelItemIndex()
     globalIndex = 0;
 }
 
-ResultModelItem::ResultModelItem(const QString &expression, const Abakus::number_t &result)
+ResultModelItem::ResultModelItem(const QString &expression, const Abakus::Number &result)
     : m_expression(expression), m_resultValue(result), m_result(result.toString()), m_tag(0), m_index(globalIndex++), m_type(Result)
 {
 }
@@ -69,7 +69,7 @@ void ResultModelItem::updateResult()
     m_result = resultValue().toString();
 }
 
-Abakus::number_t ResultModelItem::resultValue()
+Abakus::Number ResultModelItem::resultValue()
 {
     return m_resultValue;
 }

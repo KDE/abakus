@@ -137,7 +137,7 @@ QString convertToString(const mpfr_ptr &number)
 
 } // namespace Abakus
 
-Abakus::number_t::value_type setupPi()
+Abakus::Number::value_type setupPi()
 {
     static mpfr_t pi;
 
@@ -147,7 +147,7 @@ Abakus::number_t::value_type setupPi()
     return pi;
 }
 
-Abakus::number_t::value_type setupExponential()
+Abakus::Number::value_type setupExponential()
 {
     static mpfr_t exponential;
     mpfr_t one;
@@ -160,7 +160,7 @@ Abakus::number_t::value_type setupExponential()
     return exponential;
 }
 
-const Abakus::number_t::value_type Abakus::number_t::PI = setupPi();
-const Abakus::number_t::value_type Abakus::number_t::E = setupExponential();
+const Abakus::Number::value_type Abakus::Number::PI = setupPi();
+const Abakus::Number::value_type Abakus::Number::E = setupExponential();
 
 // vim: set et ts=8 sw=4:

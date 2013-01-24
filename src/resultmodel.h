@@ -43,14 +43,14 @@ class ResultModel : public QAbstractListModel
     
     void addResultModelItem(ResultModelItem* item);
     
-    void addResult(const QString &expr, const Abakus::number_t &result);
+    void addResult(const QString &expr, const Abakus::Number &result);
     void addMessage(const QString &expr, const QString &result);
     
     QString previousExpression();
     QString nextExpression();
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
-    bool stackValue(unsigned position, Abakus::number_t &result);
+    bool stackValue(unsigned position, Abakus::Number &result);
     
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     

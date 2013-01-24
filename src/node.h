@@ -42,7 +42,7 @@ class Node
 {
     public:
     virtual ~Node() { }
-    virtual Abakus::number_t value() const = 0;
+    virtual Abakus::Number value() const = 0;
 
     // Deletes a node only if it isn't a function, since those are
     // typically read-only.
@@ -55,7 +55,7 @@ class Node
     virtual QString infixString() const = 0;
 
     // Returns the derivative of the node.
-    virtual Abakus::number_t derivative() const = 0;
+    virtual Abakus::Number derivative() const = 0;
 };
 
 class BaseFunction : public Node
@@ -95,14 +95,14 @@ class DerivativeFunction : public Node
         m_operand(operand), m_where(where) { }
     ~DerivativeFunction();
 
-    virtual Abakus::number_t value() const;
+    virtual Abakus::Number value() const;
 
     virtual void applyMap(NodeFunctor &fn) const;
 
     // Returns an infix representation of the expression.
     virtual QString infixString() const;
 
-    virtual Abakus::number_t derivative() const;
+    virtual Abakus::Number derivative() const;
 
     private:
     Node *m_operand;
@@ -114,8 +114,8 @@ class UserDefinedFunction : public UnaryFunction
     public:
     UserDefinedFunction(const char *name, Node *operand) : UnaryFunction(name, operand) { };
 
-    virtual Abakus::number_t value() const { return operand()->value(); }
-    virtual Abakus::number_t derivative() const { return operand()->derivative(); }
+    virtual Abakus::Number value() const { return operand()->value(); }
+    virtual Abakus::Number derivative() const { return operand()->derivative(); }
 };
 
 class BuiltinFunction : public UnaryFunction
@@ -123,8 +123,8 @@ class BuiltinFunction : public UnaryFunction
     public:
     BuiltinFunction(const char *name, Node *operand);
 
-    virtual Abakus::number_t value() const;
-    virtual Abakus::number_t derivative() const;
+    virtual Abakus::Number value() const;
+    virtual Abakus::Number derivative() const;
 };
 
 class UnaryOperator : public Node
@@ -138,8 +138,8 @@ class UnaryOperator : public Node
     virtual void applyMap(NodeFunctor &fn) const;
     virtual QString infixString() const;
 
-    virtual Abakus::number_t value() const;
-    virtual Abakus::number_t derivative() const;
+    virtual Abakus::Number value() const;
+    virtual Abakus::Number derivative() const;
 
     virtual Type type() const { return m_type; }
     virtual Node *operand() const { return m_node; }
@@ -160,8 +160,8 @@ class BinaryOperator : public Node
     virtual void applyMap(NodeFunctor &fn) const;
     virtual QString infixString() const;
 
-    virtual Abakus::number_t value() const;
-    virtual Abakus::number_t derivative() const;
+    virtual Abakus::Number value() const;
+    virtual Abakus::Number derivative() const;
 
     virtual Type type() const       { return m_type; }
     virtual Node *leftNode() const  { return m_left; }
@@ -182,8 +182,8 @@ class Identifier : public Node
     virtual void applyMap(NodeFunctor &fn) const;
     virtual QString infixString() const { return name(); }
 
-    virtual Abakus::number_t value() const;
-    virtual Abakus::number_t derivative() const
+    virtual Abakus::Number value() const;
+    virtual Abakus::Number derivative() const
     {
         if(name() == "x")
             return "1";
@@ -200,16 +200,16 @@ class Identifier : public Node
 class NumericValue : public Node
 {
     public:
-    NumericValue(const Abakus::number_t value) : m_value(value) { }
+    NumericValue(const Abakus::Number value) : m_value(value) { }
 
     virtual void applyMap(NodeFunctor &fn) const { fn(this); }
     virtual QString infixString() const;
 
-    virtual Abakus::number_t value() const { return m_value; }
-    virtual Abakus::number_t derivative() const { return "0"; }
+    virtual Abakus::Number value() const { return m_value; }
+    virtual Abakus::Number derivative() const { return "0"; }
 
     private:
-    Abakus::number_t m_value;
+    Abakus::Number m_value;
 };
 
 #endif

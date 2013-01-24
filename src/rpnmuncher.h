@@ -29,7 +29,7 @@ typedef QStack<Operand> OperandStack;
 class RPNParser
 {
     public:
-    static Abakus::number_t rpnParseString(const QString &text);
+    static Abakus::Number rpnParseString(const QString &text);
     static bool wasError() { return m_error; }
     static QString errorString() { return m_errorStr; }
     static OperandStack &stack() { return m_stack; }

@@ -36,159 +36,6 @@ extern TrigMode m_trigMode;
 extern int m_prec;
 
 /**
- * Representation of a number type.  Includes the basic operators, along with
- * built-in functions such as abs() and mod().
- *
- * You need to actually define it using template specializations though.  You
- * can add functions in a specialization, it may be worth it to have the
- * functions declared here as well so that you get a compiler error if you
- * forget to implement it.
- *
- * Note that since we're using a specialization, and then typedef'ing the
- * new specialized class to number_t, that means we only support one type of
- * number at a time, and the choice is made at compile-time.
- */
-template <typename T>
-class number
-{
-public:
-    /// Default ctor and set-and-assign ctor wrapped in one.
-    number(const T& t = T());
-
-    /// Copy constructor.
-    number(const number &other);
-
-    /// Create number from textual representation, useful for ginormously
-    /// precise numbers.
-    number(const char *str);
-    number(const char *str, const int base);
-
-    /// Likewise
-    explicit number(const QByteArray &str);
-    explicit number(const QByteArray &str, const int base);
-
-    /// Convienience constructor to create a number from an integer.
-    explicit number(int i);
-
-    /// Assignment operator.  Be sure to check for &other == this if necessary!
-    number<T> &operator =(const number<T> &other);
-
-    // You need to implement the suite of comparison operators as well, along
-    // with the negation operator.  Sorry.
-
-    bool operator!=(const number<T> &other) const;
-    bool operator==(const number<T> &other) const;
-    bool operator<(const number<T> &other) const;
-    bool operator>(const number<T> &other) const;
-    bool operator<=(const number<T> &other) const;
-    bool operator>=(const number<T> &other) const;
-
-    number<T> operator -() const;
-
-    // These functions must be implemented by all specializations to be used.
-    // Note that when implementing these functions, the implicit value is the
-    // value that this object is wrapping.  E.g. you'd call the function on
-    // a number object, kind of like 3.sin() if you were using Ruby.
-
-    // Trigonometric, must accept values in degrees.
-    number<T> sin() const;
-    number<T> cos() const;
-    number<T> tan() const;
-
-    // Inverse trigonometric, must return result in Degrees if necessary.
-    number<T> asin() const;
-    number<T> acos() const;
-    number<T> atan() const;
-
-    // Hyperbolic trigonometric (doesn't use Degrees).
-    number<T> sinh() const;
-    number<T> cosh() const;
-    number<T> tanh() const;
-
-    // Inverse hyperbolic trigonometric (doesn't use degrees).
-    number<T> asinh() const;
-    number<T> acosh() const;
-    number<T> atanh() const;
-
-    /// @return Number rounded to closest integer less than or equal to value.
-    number<T> floor() const;
-
-    /// @return Number rounded to closest integer greater than or equal to value.
-    number<T> ceil() const;
-
-    /// @return Number with only integer component of result.
-    number<T> integer() const;
-
-    /// @return Number with only fractional component of result.
-    number<T> frac() const;
-
-    /**
-     * @return Number rounded to nearest integer.  What to do in 'strange'
-     * situations is specialization-dependant, I don't really care enough to
-     * mandate one or the other.
-     */
-    number<T> round() const;
-
-    /// @return Absolute value of number.
-    number<T> abs() const;
-
-    /// @return Square root of number.
-    number<T> sqrt() const;
-
-    /// @return Natural-base logarithm of value.
-    number<T> ln() const;
-
-    /// @return base-10 logarithm of value.
-    number<T> log() const;
-
-    /// @return Natural base raised to the power given by our value.
-    number<T> exp() const;
-
-    /// @return Our value raised to the \p exponent power.  Would be nice if
-    /// it supported even exponents on negative numbers correctly.
-    number<T> pow(const number<T> &exponent);
-
-    /// @return value rounded to double precision.
-    double asDouble() const;
-
-    /// @return Textual representation of the number, adjusted to the user's
-    /// current precision.
-    QString toString() const;
-
-    /// @return Our value.
-    T value() const;
-};
-
-// You should also remember to overload the math operators for your
-// specialization.  These generic ones should work for templates wrapping a
-// type that C++ already has operators for.
-
-template<typename T>
-inline number<T> operator+(const number<T> &l, const number<T> &r)
-{
-    return number<T>(l.value() + r.value());
-}
-
-template<typename T>
-inline number<T> operator-(const number<T> &l, const number<T> &r)
-{
-    return number<T>(l.value() - r.value());
-}
-
-template<typename T>
-inline number<T> operator*(const number<T> &l, const number<T> &r)
-{
-    return number<T>(l.value() * r.value());
-}
-
-template<typename T>
-inline number<T> operator/(const number<T> &l, const number<T> &r)
-{
-    return number<T>(l.value() / r.value());
-}
-
-
-/**
  * Utility function to convert a MPFR number to a string.  This is declared
  * this way so that when it changes we don't have to recompile all of Abakus.
  *
@@ -197,11 +44,11 @@ inline number<T> operator/(const number<T> &l, const number<T> &r)
  * results, even on the same number!
  *
  * But, don't use this directly, you should be using
- * number<mpfr_ptr>::toString() instead!
+ * Number::toString() instead!
  *
  * @param number MPFR number to convert to string.
  * @return The number converted to a string, in US Decimal format at this time.
- * @see number<>::toString()
+ * @see Number::toString()
  */
 QString convertToString(const mpfr_ptr &number);
 
@@ -222,71 +69,77 @@ QString convertToString(const mpfr_ptr &number);
  *
  * @author Michael Pyne <michael.pyne@kdemail.net>
  */
-template<>
-class number<mpfr_ptr>
+
+class Number
 {
 public:
     typedef mpfr_ptr value_type;
 
     static const mp_rnd_t RoundDirection = GMP_RNDN;
 
-    number(const value_type& t)
+    /// Default ctor and set-and-assign ctor wrapped in one.
+    Number(const value_type& t)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set(m_t, t, RoundDirection);
     }
 
-    number(const number<value_type> &other)
+    /// Copy constructor.
+    Number(const Number &other)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set(m_t, other.m_t, RoundDirection);
     }
-    
-    number(const char *str)
+
+    /// Create Number from textual representation, useful for ginormously
+    /// precise numbers.
+    Number(const char *str)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str, 10, RoundDirection);
     }
 
-    number(const char *str, const int base)
+    Number(const char *str, const int base)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str, base, RoundDirection);
     }
 
-    //explicit number(const QByteArray &str, const int base)
-    explicit number(const QByteArray &str)
+    /// Likewise
+    explicit Number(const QByteArray &str)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str.constData(), 10, RoundDirection);
     }
     
-    explicit number(const QByteArray &str, const int base)
+    explicit Number(const QByteArray &str, const int base)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str.constData(), base, RoundDirection);
     }
 
-    explicit number(int i)
+    /// Convienience constructor to create a Number from an integer.
+    explicit Number(int i)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_si(m_t, (signed long int) i, RoundDirection);
     }
 
-    /// Construct a number with a value of NaN.
-    number()
+    /// Construct a Number with a value of NaN.
+    Number()
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init(m_t);
     }
 
-    ~number()
+    ~Number()
     {
         mpfr_clear(m_t);
         delete (__mpfr_struct *) m_t;
     }
 
-    number<value_type> &operator=(const number<value_type> &other)
+    /// Assignment operator
+    Number &operator=(const Number &other)
     {
         if(&other == this)
             return *this;
@@ -297,50 +150,52 @@ public:
         return *this;
     }
 
-    bool operator!=(const number<value_type> &other) const
+    // Comparion operators
+    bool operator!=(const Number &other) const
     {
         return mpfr_equal_p(m_t, other.m_t) == 0;
     }
 
-    bool operator==(const number<value_type> &other) const
+    bool operator==(const Number &other) const
     {
         return mpfr_equal_p(m_t, other.m_t) != 0;
     }
 
-    bool operator<(const number<value_type> &other) const
+    bool operator<(const Number &other) const
     {
         return mpfr_less_p(m_t, other.m_t) != 0;
     }
 
-    bool operator>(const number<value_type> &other) const
+    bool operator>(const Number &other) const
     {
         return mpfr_greater_p(m_t, other.m_t) != 0;
     }
 
-    bool operator<=(const number<value_type> &other) const
+    bool operator<=(const Number &other) const
     {
         return mpfr_lessequal_p(m_t, other.m_t) != 0;
     }
 
-    bool operator>=(const number<value_type> &other) const
+    bool operator>=(const Number &other) const
     {
         return mpfr_greaterequal_p(m_t, other.m_t) != 0;
     }
 
-    number<value_type> operator -() const
+    /// Negation operator
+    Number operator -() const
     {
-        number<value_type> result(m_t);
+        Number result(m_t);
         mpfr_neg(result.m_t, result.m_t, RoundDirection);
 
         return result;
     }
 
     // internal
-    number<value_type> asRadians() const
+    Number asRadians() const
     {
         if(m_trigMode == Degrees)
         {
-            number<value_type> result(m_t);
+            Number result(m_t);
             mpfr_t pi;
 
             mpfr_init (pi);
@@ -357,12 +212,12 @@ public:
     }
 
     // internal
-    number<value_type> toTrig() const
+    Number toTrig() const
     {
         // Assumes num is in radians.
         if(m_trigMode == Degrees)
         {
-            number<value_type> result(m_t);
+            Number result(m_t);
             mpfr_t pi;
 
             mpfr_init (pi);
@@ -381,18 +236,18 @@ public:
 /* There is a lot of boilerplate ahead, so define a macro to declare and
  * define some functions for us to forward the call to MPFR.
  */
-#define DECLARE_IMPL_BASE(name, func, in, out) number<value_type> name() const \
+#define DECLARE_IMPL_BASE(name, func, in, out) Number name() const \
 { \
-    number<value_type> result = in; \
+    Number result = in; \
     mpfr_##func (result.m_t, result.m_t, RoundDirection); \
     \
     return out; \
 }
 
 // Normal function, uses 2 rather than 3 params
-#define DECLARE_NAMED_IMPL2(name, func) number<value_type> name() const \
+#define DECLARE_NAMED_IMPL2(name, func) Number name() const \
 { \
-    number<value_type> result = m_t; \
+    Number result = m_t; \
     mpfr_##func (result.m_t, result.m_t); \
     \
     return result; \
@@ -411,62 +266,86 @@ public:
 #define DECLARE_TRIG_OUT_IMPL(name) DECLARE_IMPL_BASE(name, name, m_t, result.toTrig())
 
 // Now declare our functions.
+    // Trigonometric, must accept values in degrees.
     DECLARE_TRIG_IN_IMPL(sin)
     DECLARE_TRIG_IN_IMPL(cos)
     DECLARE_TRIG_IN_IMPL(tan)
 
+    // Inverse trigonometric, must return result in Degrees if necessary.
     DECLARE_IMPL(sinh)
     DECLARE_IMPL(cosh)
     DECLARE_IMPL(tanh)
 
+    // Hyperbolic trigonometric (doesn't use Degrees).
     DECLARE_TRIG_OUT_IMPL(asin)
     DECLARE_TRIG_OUT_IMPL(acos)
     DECLARE_TRIG_OUT_IMPL(atan)
 
+    // Inverse hyperbolic trigonometric (doesn't use degrees).
     DECLARE_IMPL(asinh)
     DECLARE_IMPL(acosh)
     DECLARE_IMPL(atanh)
 
+    /// @return Number rounded to closest integer less than or equal to value.
     DECLARE_NAMED_IMPL2(floor, floor)
+    /// @return Number rounded to closest integer greater than or equal to value.
     DECLARE_NAMED_IMPL2(ceil, ceil)
+    /// @return Number with only integer component of result.
     DECLARE_NAMED_IMPL(integer, rint)
+    /// @return Number with only fractional component of result.
     DECLARE_IMPL(frac)
+    /**
+     * @return Number rounded to nearest integer.  What to do in 'strange'
+     * situations is specialization-dependant, I don't really care enough to
+     * mandate one or the other.
+     */
     DECLARE_NAMED_IMPL2(round, round)
 
+    /// @return Absolute value of Number.
     DECLARE_IMPL(abs)
+    /// @return Square root of Number.
     DECLARE_IMPL(sqrt)
+    /// @return Natural-base logarithm of value.
     DECLARE_NAMED_IMPL(ln, log)
+    /// @return base-10 logarithm of value.
     DECLARE_NAMED_IMPL(log, log10)
+    /// @return Natural base raised to the power given by our value.
     DECLARE_IMPL(exp)
 
+    /// @return Our value raised to the \p exponent power.  Would be nice if
+    /// it supported even exponents on negative numbers correctly.
     // Can't use macro for this one, it's sorta weird.
-    number<value_type> pow(const number<value_type> &exponent)
+    Number pow(const Number &exponent)
     {
-        number<value_type> result = m_t;
+        Number result = m_t;
 
         mpfr_pow(result.m_t, result.m_t, exponent.m_t, RoundDirection);
         return result;
     }
 
+    /// @return value rounded to double precision.
     double asDouble() const
     {
         return mpfr_get_d(m_t, RoundDirection);
     }
 
-    // Note that this can be used dangerously, be careful.
+    /// Note that this can be used dangerously, be careful.
+    /// @return Our value.
     value_type value() const { return m_t; }
 
+    /// @return Textual representation of the Number, adjusted to the user's
+    /// current precision.
     QString toString() const
     {
         // Move this to .cpp to avoid recompiling as I fix it.
         return convertToString(m_t);
     }
 
-    static number<value_type> nan()
+    static Number nan()
     {
         // Doesn't apply, but the default value when initialized happens
         // to be nan.
-        return number<value_type>();
+        return Number();
     }
 
     static const value_type PI;
@@ -478,44 +357,37 @@ private:
 
 // Specializations of math operators for mpfr.
 
-template<>
-inline number<mpfr_ptr> operator+(const number<mpfr_ptr> &l, const number<mpfr_ptr> &r)
+inline Number operator+(const Number &l, const Number &r)
 {
-    number<mpfr_ptr> result;
+    Number result;
     mpfr_add(result.value(), l.value(), r.value(), GMP_RNDN);
 
     return result;
 }
 
-template<>
-inline number<mpfr_ptr> operator-(const number<mpfr_ptr> &l, const number<mpfr_ptr> &r)
+inline Number operator-(const Number &l, const Number &r)
 {
-    number<mpfr_ptr> result;
+    Number result;
     mpfr_sub(result.value(), l.value(), r.value(), GMP_RNDN);
 
     return result;
 }
 
-template<>
-inline number<mpfr_ptr> operator*(const number<mpfr_ptr> &l, const number<mpfr_ptr> &r)
+inline Number operator*(const Number &l, const Number &r)
 {
-    number<mpfr_ptr> result;
+    Number result;
     mpfr_mul(result.value(), l.value(), r.value(), GMP_RNDN);
 
     return result;
 }
 
-template<>
-inline number<mpfr_ptr> operator/(const number<mpfr_ptr> &l, const number<mpfr_ptr> &r)
+inline Number operator/(const Number &l, const Number &r)
 {
-    number<mpfr_ptr> result;
+    Number result;
     mpfr_div(result.value(), l.value(), r.value(), GMP_RNDN);
 
     return result;
 }
-
-    // Abakus namespace continues.
-    typedef number<mpfr_ptr> number_t;
 
 }; // namespace Abakus
 

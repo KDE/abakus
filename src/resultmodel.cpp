@@ -50,7 +50,7 @@ void ResultModel::addResultModelItem(ResultModelItem* item)
     m_historyIndex = m_resultModelItems.count() - 1;
 }
 
-void ResultModel::addResult(const QString &expr, const Abakus::number_t &result)
+void ResultModel::addResult(const QString &expr, const Abakus::Number &result)
 {
     ResultModelItem* resultModelItem = new ResultModelItem(expr, result);
     
@@ -103,7 +103,7 @@ int ResultModel::rowCount(const QModelIndex & parent) const
     return m_resultModelItems.count();
 }
 
-bool ResultModel::stackValue(unsigned position, Abakus::number_t &result)
+bool ResultModel::stackValue(unsigned position, Abakus::Number &result)
 {
     if(position > 1000) // Don't search forever
     {

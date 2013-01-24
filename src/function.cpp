@@ -21,19 +21,19 @@
 #include "numeralmodel.h"
 
 // Applies the function identified by func, using value as a parameter.
-Abakus::number_t evaluateFunction(const Function *func, const Abakus::number_t value)
+Abakus::Number evaluateFunction(const Function *func, const Abakus::Number value)
 {
     if(func->userDefined) {
         // Pull real entry from userFunctionTable
         UserFunction *realFunction = func->userFn;
 
         bool wasSet = NumeralModel::instance()->isValueSet(realFunction->varName);
-        Abakus::number_t oldValue;
+        Abakus::Number oldValue;
         if(wasSet)
             oldValue = NumeralModel::instance()->value(realFunction->varName);
 
         NumeralModel::instance()->setValue(realFunction->varName, value);
-        Abakus::number_t result = realFunction->fn->value();
+        Abakus::Number result = realFunction->fn->value();
 
         if(wasSet)
             NumeralModel::instance()->setValue(realFunction->varName, oldValue);

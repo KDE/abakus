@@ -66,7 +66,7 @@ public:
     bool isOperator() const { return m_type == Operator; }
     bool isIdentifier() const { return m_type == Identifier; }
 
-    Abakus::number_t asNumber() const;
+    Abakus::Number asNumber() const;
     Op asOperator() const;
 
     QString description() const;
@@ -96,7 +96,7 @@ class Variable
 {
 public:
     QString name;
-    Abakus::number_t value;
+    Abakus::Number value;
 };
 
 class Evaluator
@@ -116,7 +116,7 @@ public:
 
     QString error() const;
 
-    // Abakus::number_t eval();
+    // Abakus::number eval();
 
     static QString autoFix( const QString& expr );
 

@@ -21,7 +21,7 @@
 
 #include <KLocale>
 
-NumeralModelItem::NumeralModelItem(const QString &name, const Abakus::number_t &value, NumeralItemType type, const QString &description)
+NumeralModelItem::NumeralModelItem(const QString &name, const Abakus::Number &value, NumeralItemType type, const QString &description)
     : m_name(name), m_value(value), m_valueString(value.toString()), m_description(description), m_type(type)
 {
 }
@@ -56,12 +56,12 @@ void NumeralModelItem::updateNumeral()
     m_valueString = m_value.toString();
 }
 
-Abakus::number_t NumeralModelItem::value()
+Abakus::Number NumeralModelItem::value()
 {
     return m_value;
 }
 
-void NumeralModelItem::setValue(Abakus::number_t value)
+void NumeralModelItem::setValue(Abakus::Number value)
 {
     m_value = value;
     updateNumeral();

@@ -41,9 +41,9 @@ NumeralModel::NumeralModel(QObject *parent) : QAbstractListModel(parent)
     setRoleNames(roles);
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_numeralModelItems << new NumeralModelItem("ans", Abakus::number_t(42), NumeralModelItem::BuiltIn);
-    m_numeralModelItems << new NumeralModelItem("pi", Abakus::number_t::PI, NumeralModelItem::BuiltIn, i18n("pi (π): 3.1415926"));
-    m_numeralModelItems << new NumeralModelItem("e", Abakus::number_t::E, NumeralModelItem::BuiltIn, i18n("Natural exponential base: 2.7182818"));
+    m_numeralModelItems << new NumeralModelItem("ans", Abakus::Number(42), NumeralModelItem::BuiltIn);
+    m_numeralModelItems << new NumeralModelItem("pi", Abakus::Number::PI, NumeralModelItem::BuiltIn, i18n("pi (π): 3.1415926"));
+    m_numeralModelItems << new NumeralModelItem("e", Abakus::Number::E, NumeralModelItem::BuiltIn, i18n("Natural exponential base: 2.7182818"));
     endInsertRows();
 
     setObjectName ("ValueManager");
@@ -117,7 +117,7 @@ QVariant NumeralModel::data(const QModelIndex & index, int role) const
     return QVariant();
 }
 
-Abakus::number_t NumeralModel::value(const QString &name) const
+Abakus::Number NumeralModel::value(const QString &name) const
 {
     int numeralIndex = numeralModelItemIndex(name);
     if(numeralIndex != -1)
@@ -125,7 +125,7 @@ Abakus::number_t NumeralModel::value(const QString &name) const
         return m_numeralModelItems[numeralIndex]->value();
     }
 
-    return Abakus::number_t();
+    return Abakus::Number();
 }
 
 bool NumeralModel::isValueSet(const QString &name) const
@@ -144,7 +144,7 @@ bool NumeralModel::isValueReadOnly(const QString &name) const
     return false;
 }
 
-void NumeralModel::setValue(const QString &name, const Abakus::number_t value)
+void NumeralModel::setValue(const QString &name, const Abakus::Number value)
 {
     int numeralIndex = numeralModelItemIndex(name);
     if(numeralIndex != -1 && m_numeralModelItems[numeralIndex]->value() != value)

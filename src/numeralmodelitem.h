@@ -26,7 +26,7 @@ class NumeralModelItem
 public:
     enum NumeralItemType { BuiltIn, UserDefined};
     
-    NumeralModelItem(const QString &name, const Abakus::number_t &value, NumeralItemType type, const QString &description = "");
+    NumeralModelItem(const QString &name, const Abakus::Number &value, NumeralItemType type, const QString &description = "");
 
     QString name() const;
     QString valueString() const;
@@ -34,13 +34,13 @@ public:
     QString typeString() const;
 
     void updateNumeral();
-    Abakus::number_t value();
-    void setValue(Abakus::number_t value);
+    Abakus::Number value();
+    void setValue(Abakus::Number value);
     NumeralItemType type() const;
 
 private:
     QString m_name;
-    Abakus::number_t m_value;
+    Abakus::Number m_value;
     QString m_valueString;
     QString m_description;
     NumeralItemType m_type;
