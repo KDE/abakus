@@ -386,7 +386,7 @@ NUMBER: NUMHEX {
     $$ = new NumericValue(value);
 }
 
-TERM: DERIV { --gCheckIdents; } '(' EXP ',' { ++gCheckIdents; } EXP ')' {
+TERM: DERIV { --gCheckIdents; } '(' EXP ';' { ++gCheckIdents; } EXP ')' {
     $$ = new DerivativeFunction($4, $7);
 }
 
