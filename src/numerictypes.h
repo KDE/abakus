@@ -75,7 +75,7 @@ class Number
 public:
     typedef mpfr_ptr value_type;
 
-    static const mp_rnd_t RoundDirection = GMP_RNDN;
+    static const mp_rnd_t RoundDirection = MPFR_RNDN;
 
     /// Default ctor and set-and-assign ctor wrapped in one.
     Number(const value_type& t)
