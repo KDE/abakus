@@ -201,7 +201,7 @@ void FunctionModel::addBuitInFunctions()
     addFunction("round", &Abakus::Number::round,   i18n("Round to nearest number"));
     addFunction("ceil",  &Abakus::Number::ceil,    i18n("Nearest greatest integer"));
     addFunction("floor", &Abakus::Number::floor,   i18n("Nearest lesser integer"));
-    addFunction("int",   &Abakus::Number::integer, i18n("Integral part of number"));
+    addFunction("int",   &Abakus::Number::trunc,   i18n("Integral part of number"));
     addFunction("frac",  &Abakus::Number::frac,    i18n("Fractional part of number"));
 }
 

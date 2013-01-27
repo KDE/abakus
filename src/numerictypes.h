@@ -291,7 +291,7 @@ public:
     /// @return Number rounded to closest integer greater than or equal to value.
     DECLARE_NAMED_IMPL2(ceil, ceil)
     /// @return Number with only integer component of result.
-    DECLARE_NAMED_IMPL(integer, rint)
+    DECLARE_NAMED_IMPL2(trunc, trunc)
     /// @return Number with only fractional component of result.
     DECLARE_IMPL(frac)
     /**
