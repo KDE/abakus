@@ -55,6 +55,19 @@ HEX [0-9A-Fa-f]+
     return POWER;
 }
 
+ /* Shift operators */
+ "<<" { 
+     yyCurTokenPos += yyThisTokenLength;
+     yyThisTokenLength = 2;
+     return LSHIFT;
+ }
+ 
+ ">>" { 
+     yyCurTokenPos += yyThisTokenLength;
+     yyThisTokenLength = 2;
+     return RSHIFT;
+ }
+ 
 [sS][eE][tT] {
     yyCurTokenPos += yyThisTokenLength;
     yyThisTokenLength = 3;

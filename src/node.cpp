@@ -376,6 +376,12 @@ Abakus::Number BinaryOperator::value() const
 
         case Exponentiation:
             return lValue.pow(rValue);
+            
+        case LogicalShiftLeft:
+            return lValue * Abakus::Number(2).pow(rValue);
+            
+        case LogicalShiftRight:
+            return Abakus::Number(lValue / Abakus::Number(2).pow(rValue)).trunc();
 
         default:
             kError() << "Impossible case encountered evaluating binary operator!\n";

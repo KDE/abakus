@@ -152,7 +152,7 @@ class UnaryOperator : public Node
 class BinaryOperator : public Node
 {
     public:
-    typedef enum { Addition, Subtraction, Multiplication, Division, Exponentiation } Type;
+    typedef enum { Addition, Subtraction, Multiplication, Division, Exponentiation, LogicalShiftLeft, LogicalShiftRight } Type;
 
     BinaryOperator(Type type, Node *left, Node *right);
     virtual ~BinaryOperator();

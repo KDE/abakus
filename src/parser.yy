@@ -52,6 +52,8 @@ int yyerror(const char *);
 %token <fn> FN
 %token <ident> ID
 %type <ident> IDENT ASSIGN
+%token LSHIFT "<<"
+%token RSHIFT ">>"
 %token POWER "**"
 %token SET "set"
 %token REMOVE "remove"
@@ -297,6 +299,8 @@ S: error {
  * Here be the standard calculator-parsing part.  Nothing here should be too
  * fancy.
  */
+EXP: EXP LSHIFT EXP { $$ = new BinaryOperator(BinaryOperator::LogicalShiftLeft, $1, $3); }
+EXP: EXP RSHIFT EXP { $$ = new BinaryOperator(BinaryOperator::LogicalShiftRight, $1, $3); }
 EXP: EXP '+' FACTOR { $$ = new BinaryOperator(BinaryOperator::Addition, $1, $3); }
 EXP: EXP '-' FACTOR { $$ = new BinaryOperator(BinaryOperator::Subtraction, $1, $3); }
 EXP: FACTOR { $$ = $1; }
