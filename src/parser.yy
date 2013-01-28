@@ -58,6 +58,7 @@ int yyerror(const char *);
 %token SET "set"
 %token REMOVE "remove"
 %token DERIV "deriv"
+%token UNKNOWN
 
 %%
 
@@ -86,6 +87,11 @@ int yyerror(const char *);
 FINAL: { gCheckIdents = 1; } S {
     Result::setLastResult(NodePtr($2));
     $$ = 0;
+}
+
+FINAL: error {
+    Result::setLastResult(i18n("Sorry, I can't figure it out."));
+    YYABORT;
 }
 
 S: EXP { $$ = $1; }
@@ -287,11 +293,6 @@ TERM: IDENT NUMBER {
 
 TERM: NUMBER NUMBER {
     Result::setLastResult(i18n("Missing operator"));
-    YYABORT;
-}
-
-S: error {
-    Result::setLastResult(i18n("Sorry, I can't figure it out."));
     YYABORT;
 }
 

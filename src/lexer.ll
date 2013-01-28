@@ -152,13 +152,17 @@ HEX [0-9A-Fa-f]+
     }
 }
 
- /* All other characters are returned as-is to the parser, who can accept or
- * reject it as needed.
- */
-. {
+[-+*/()] {
     yyCurTokenPos += yyThisTokenLength;
     yyThisTokenLength = 1;
     return *yytext;
+}
+
+ /* All other characters will create an error */
+. {
+    yyCurTokenPos += yyThisTokenLength;
+    yyThisTokenLength = 1;
+    return UNKNOWN;
 }
 
 %%
