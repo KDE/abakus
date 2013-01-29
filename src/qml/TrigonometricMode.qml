@@ -37,7 +37,7 @@ Item {
         Text {
             id: trigMode
             anchors.fill: parent
-            anchors.leftMargin: 5
+            anchors.leftMargin: 6
             verticalAlignment: Text.AlignVCenter
             text: degrees.text
         }

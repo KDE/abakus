@@ -33,6 +33,8 @@ Item {
                 toolbar.state = settingsVisible ? "settingsVisible" : ""
                 editor.focus = !settingsVisible
             }
+            
+            onRejectFocus: editor.forceActiveFocus()
         }
         
         TrigonometricMode {

@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
 Item {
@@ -10,6 +11,8 @@ Item {
     property QtObject mainWindowObject
     
     signal settingsPanelVisibleChanged(bool settingsVisible)
+    
+    signal rejectFocus()
     
     PlasmaComponents.ButtonRow {
         id: toolbarButtons
@@ -86,26 +89,46 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     text: i18n("Decimal Precision:")
                 }
-                    
-                PlasmaComponents.TextField {
-                    id: precission
+                
+                Item {
+                    id: precissionComboBox
                     width: parent.width - precissionLabel.width
                     height: buttonHeight
-                    readOnly: true
-                    validator: IntValidator{bottom: 1; top: 75;}
                     
-                    property string oldPrecision
+                    property bool editCustom: false
                     
-                    onAccepted: {
-                        precission.readOnly = true
-                        mainWindowObject.setPrecision(parseInt(precission.text))
+                    PlasmaCore.FrameSvgItem {
+                        anchors.fill: parent
+                        imagePath: "widgets/lineedit"
+                        prefix: "base"
+                        visible: !precissionComboBox.editCustom
+                        
+                        Text {
+                            id: precission
+                            anchors.fill: parent
+                            anchors.leftMargin: 6
+                            verticalAlignment: Text.AlignVCenter
+                        }
                     }
                     
-                    onActiveFocusChanged: {
-                        if(!activeFocus && !readOnly)
-                        {
-                            readOnly = true
-                            text = oldPrecision
+                    PlasmaComponents.TextField {
+                        id: precissionCustom
+                        anchors.fill: parent
+                        validator: IntValidator{bottom: 1; top: 75;}
+                        visible: precissionComboBox.editCustom
+                        
+                        onAccepted: {
+                            precissionComboBox.editCustom = false
+                            precissionComboBox.focus = false
+                            mainWindowObject.setPrecision(parseInt(precissionCustom.text))
+                            root.rejectFocus()
+                        }
+                        
+                        onActiveFocusChanged: {
+                            if(!activeFocus && precissionComboBox.editCustom)
+                            {
+                                precissionComboBox.editCustom = false
+                            }
                         }
                     }
                     
@@ -116,21 +139,21 @@ Item {
                         anchors.bottom: parent.bottom
                         anchors.margins: 1
                         flat: true
-                        iconSource: precission.readOnly ? "arrow-down" : "key-enter"
+                        iconSource: precissionComboBox.editCustom ? "key-enter" : "arrow-down"
                         
                         property ContextMenu contextMenu
                         onClicked: {
-                            if (precission.readOnly)
+                            if (!precissionComboBox.editCustom)
                             {
                                 if (!contextMenu) {
-                                    contextMenu = contextMenuComponent.createObject(precission)
+                                    contextMenu = contextMenuComponent.createObject(precissionComboBox)
                                 }
                                 contextMenu.open()
                             }
-                            else if(precission.acceptableInput)
+                            else if(precissionCustom.acceptableInput)
                             {
-                                precission.readOnly = true
-                                mainWindowObject.setPrecision(parseInt(precission.text))
+                                precissionComboBox.editCustom = false
+                                mainWindowObject.setPrecision(parseInt(precissionCustom.text))
                             }
                         }
                     }
@@ -168,7 +191,7 @@ Item {
             Component {
                 id: contextMenuComponent
                 PlasmaComponents.ContextMenu {
-                    visualParent: precission
+                    visualParent: precissionComboBox
                     PlasmaComponents.MenuItem {
                         text: i18n("Automatic")
                         onClicked: mainWindowObject.setPrecision(-1)
@@ -176,10 +199,9 @@ Item {
                     PlasmaComponents.MenuItem {
                         text: i18n("Custom (1...75)")
                         onClicked: {
-                            precission.oldPrecision = precission.text
-                            precission.text = ""
-                            precission.focus = true
-                            precission.readOnly = false
+                            precissionComboBox.editCustom = true
+                            precissionCustom.text = ""
+                            precissionCustom.forceActiveFocus()
                         }
                     }
                 }
