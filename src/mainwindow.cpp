@@ -490,7 +490,7 @@ void MainWindow::saveConfig()
     {
         saveList.clear();
         saveList << historyList[i]->expression();
-        saveList << historyList[i]->result();
+        saveList << historyList[i]->resultValue().toString();
         saveList << QString("%1").arg(historyList[i]->type());
         config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveList);
     }
