@@ -109,6 +109,16 @@ Item {
                             anchors.leftMargin: 6
                             verticalAlignment: Text.AlignVCenter
                         }
+                        
+                        MouseArea {
+                            anchors.fill: parent
+                            
+                            onDoubleClicked: {
+                                precissionComboBox.editCustom = true
+                                precissionCustom.text = (precission.text == i18n("Auto")) ? "" : precission.text
+                                precissionCustom.forceActiveFocus()
+                            }
+                        }
                     }
                     
                     PlasmaComponents.TextField {
@@ -153,7 +163,9 @@ Item {
                             else if(precissionCustom.acceptableInput)
                             {
                                 precissionComboBox.editCustom = false
+                                precissionComboBox.focus = false
                                 mainWindowObject.setPrecision(parseInt(precissionCustom.text))
+                                root.rejectFocus()
                             }
                         }
                     }
