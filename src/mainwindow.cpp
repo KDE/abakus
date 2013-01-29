@@ -448,6 +448,9 @@ void MainWindow::saveConfig()
     // Set precision to max for most accuracy
     Abakus::m_prec = 75;
     
+    // this is needed to save the history and variables with the biggest possible precision
+    redrawResults();
+    
     for(; it != values.end(); ++it) {
         if(NumeralModel::instance()->isValueReadOnly(*it))
             continue;
@@ -490,7 +493,7 @@ void MainWindow::saveConfig()
     {
         saveList.clear();
         saveList << historyList[i]->expression();
-        saveList << historyList[i]->resultValue().toString();
+        saveList << historyList[i]->result();
         saveList << QString("%1").arg(historyList[i]->type());
         config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveList);
     }
