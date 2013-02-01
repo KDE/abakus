@@ -362,17 +362,15 @@ void MainWindow::loadConfig()
 
 
     config = KGlobal::config()->group("Variables");
+    QStringList variableKeys = config.keyList();
+    QStringList variableValues;
     
-    QStringList list = config.readEntry("Saved Variables", QStringList());
-    foreach(QString str, list) {
-        QStringList values = str.split('=');
-        if(values.count() != 2) {
-            kWarning() << "Your configuration file has somehow been corrupted!\n";
-            continue;
-        }
+    for(int i = 0; i < variableKeys.count(); ++i)
+    {
+        variableValues = config.readEntry(variableKeys[i], QStringList());
+        if(variableValues.count() < 2) continue;
         
-        QByteArray valueStr = values[1].toLatin1();
-        NumeralModel::instance()->setValue(values[0], Abakus::Number(valueStr.data()));
+        NumeralModel::instance()->setValue(variableValues[0], Abakus::Number(variableValues[1].toLatin1()));
     }
     
     
@@ -443,24 +441,36 @@ void MainWindow::saveConfig()
     
     
     config = KGlobal::config()->group("Variables");
+    config.deleteGroup();
     
     QStringList saveList;
-    QStringList values = NumeralModel::instance()->valueNames();
-    QStringList::ConstIterator it = values.begin();
+    QStringList::ConstIterator it;
+    int fieldWidth;
+    int numberOfEntries;
     
     // Set precision to max for most accuracy
     Abakus::m_prec = 75;
     
-    for(; it != values.end(); ++it) {
+    
+    QStringList values = NumeralModel::instance()->valueNames();
+    for(it = values.begin(), numberOfEntries = 0; it != values.end(); ++it) {
         if(NumeralModel::instance()->isValueReadOnly(*it))
             continue;
         
-        saveList += QString("%1=%2")
-        .arg(*it)
-        .arg(NumeralModel::instance()->value(*it).toString());
+        ++numberOfEntries;
     }
-    
-    config.writeEntry("Saved Variables", saveList);
+    fieldWidth = QString("%1").arg(numberOfEntries).length();
+    int j = 0;
+    for(it = values.begin(); it != values.end(); ++it) {
+        if(NumeralModel::instance()->isValueReadOnly(*it))
+            continue;
+        
+        saveList.clear();
+        saveList << *it;
+        saveList << NumeralModel::instance()->value(*it).toString();
+        config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveList);
+        ++j;
+    }
 
 
     config = KGlobal::config()->group("Functions");
@@ -487,7 +497,7 @@ void MainWindow::saveConfig()
     
     QList<ResultModelItem*> historyList = m_resultItemModel->resultList();
     int historyListLastIndex = historyList.count() - 1;
-    int fieldWidth = QString("%1").arg(m_historyLimit).length();
+    fieldWidth = QString("%1").arg(m_historyLimit).length();
     ResultModelItem::ResultItemType resultType;
     
     for(int i = historyList.count() - 1, j = 0; i >= 0 && j < m_historyLimit; --i, ++j)
