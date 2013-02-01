@@ -364,13 +364,17 @@ void MainWindow::loadConfig()
     config = KGlobal::config()->group("Variables");
     QStringList variableKeys = config.keyList();
     QStringList variableValues;
+    Abakus::Number number;
     
     for(int i = 0; i < variableKeys.count(); ++i)
     {
         variableValues = config.readEntry(variableKeys[i], QStringList());
-        if(variableValues.count() < 2) continue;
+        if(variableValues.count() < 3) continue;
         
-        NumeralModel::instance()->setValue(variableValues[0], Abakus::Number(variableValues[1].toLatin1()));
+        number = Abakus::Number(variableValues[1].toLatin1());
+        number.setNumeralSystem((Abakus::NumeralSystem) variableValues[2].toInt());
+        
+        NumeralModel::instance()->setValue(variableValues[0], number);
     }
     
     
@@ -392,7 +396,6 @@ void MainWindow::loadConfig()
     QStringList historyKeys = config.keyList();
     QStringList historyValues;
     ResultModelItem* resultModelItem;
-    Abakus::Number number;
     
     for(int i = historyKeys.count() - 1; i >= 0; --i)
     {
@@ -475,7 +478,8 @@ void MainWindow::saveConfig()
         
         saveList.clear();
         saveList << *it;
-        saveList << NumeralModel::instance()->value(*it).toString();
+        saveList << NumeralModel::instance()->value(*it).toString(Abakus::DEC);
+        saveList << QString("%1").arg(NumeralModel::instance()->value(*it).numeralSystem());
         config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveList);
         ++j;
     }
