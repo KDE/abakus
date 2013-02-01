@@ -375,11 +375,15 @@ void MainWindow::loadConfig()
     
     
     config = KGlobal::config()->group("Functions");
+    QStringList functionKeys = config.keyList();
+    QString functionValue;
 
-    QStringList fnList = config.readEntry("FunctionList", QStringList());
-    foreach(QString str, fnList)
+    for(int i = 0; i < functionKeys.count(); ++i)
     {
-        QByteArray strValue = str.toLatin1();
+        functionValue = config.readEntry(functionKeys[i], QString());
+        if(functionValue.isEmpty()) continue;
+        
+        QByteArray strValue = "set " + functionValue.toLatin1();
         parseString(strValue.data()); // Run the function definitions through the parser
     }
     
@@ -478,22 +482,26 @@ void MainWindow::saveConfig()
 
 
     config = KGlobal::config()->group("Functions");
+    config.deleteGroup();
 
     FunctionModel *manager = FunctionModel::instance();
-
-    saveList.clear();
+    UnaryFunction *fn;
+    QString variable;
+    QString expression;
+    QString saveString;
     QStringList userFunctions = manager->functionList(FunctionModel::UserDefined);
-
+    fieldWidth = QString("%1").arg(userFunctions.count()).length();
+    j = 0;
     foreach(QString functionName, userFunctions)
     {
-        UnaryFunction *fn = dynamic_cast<UnaryFunction *>(manager->function(functionName)->userFn->fn);
-        QString var = manager->function(functionName)->userFn->varName;
-        QString expr = fn->operand()->infixString();
-
-        saveList += QString("set %1(%2) = %3").arg(functionName).arg(var).arg(expr);
+        fn = dynamic_cast<UnaryFunction *>(manager->function(functionName)->userFn->fn);
+        variable = manager->function(functionName)->userFn->varName;
+        expression = fn->operand()->infixString();
+        
+        saveString = QString("%1(%2) = %3").arg(functionName).arg(variable).arg(expression);
+        config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveString);
+        ++j;
     }
-
-    config.writeEntry("FunctionList", saveList);
     
     
     config = KGlobal::config()->group("History");
