@@ -203,6 +203,11 @@ void FunctionModel::addBuitInFunctions()
     addFunction("floor", &Abakus::Number::floor,   i18n("Nearest lesser integer"));
     addFunction("int",   &Abakus::Number::trunc,   i18n("Integral part of number"));
     addFunction("frac",  &Abakus::Number::frac,    i18n("Fractional part of number"));
+    
+    addFunction("bin", &Abakus::Number::bin,    i18n("Binary representation"));
+    addFunction("oct", &Abakus::Number::oct,    i18n("Octal representation"));
+    addFunction("dec", &Abakus::Number::dec,    i18n("Decimal representation"));
+    addFunction("hex", &Abakus::Number::hex,    i18n("Hexadecimal representation"));
 }
 
 Function *FunctionModel::function(const QString &name) const

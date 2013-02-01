@@ -26,11 +26,12 @@
 
 Abakus::TrigMode Abakus::m_trigMode = Abakus::Degrees;
 int Abakus::m_prec = -1;
+Abakus::NumeralSystem Abakus::m_globalNumeralSystem = Abakus::DEC;
 
 namespace Abakus
 {
 
-QString convertToString(const mpfr_ptr &number)
+QString convertToString(const mpfr_ptr& number, const Abakus::NumeralSystem base)
 {
     char *str = 0;
     QRegExp zeroKiller ("0*$");
@@ -40,6 +41,35 @@ QString convertToString(const mpfr_ptr &number)
 
     if(desiredPrecision < 0)
         desiredPrecision = 8;
+    
+    // if not base 10, convert just the integer part
+    if(base != Abakus::DEC)
+    {
+        mpfr_ptr integer = (mpfr_ptr) new __mpfr_struct;
+        mpfr_init_set(integer, number, MPFR_RNDN);
+        mpfr_trunc(integer, number);
+        str = mpfr_get_str (0, &exp, (int) base, 75, integer, MPFR_RNDN);
+        QString result(str);
+        mpfr_clear(integer);
+        delete (__mpfr_struct *) integer;
+        mpfr_free_str(str);
+        switch(base)
+        {
+            case Abakus::BIN:
+                result = "0b" + result.left(exp);
+                break;
+            case Abakus::OCT:
+                result = "0o" + result.left(exp);
+                break;
+            case Abakus::HEX:
+                result = "0x" + result.left(exp);
+                break;
+            case Abakus::DEC:
+            default:
+                result = result.left(exp);
+        }
+        return result;
+    }
 
     // This first call is to see approximately how many digits of precision
     // the fractional part has.

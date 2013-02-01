@@ -390,17 +390,20 @@ void MainWindow::loadConfig()
     QStringList historyKeys = config.keyList();
     QStringList historyValues;
     ResultModelItem* resultModelItem;
+    Abakus::Number number;
     
     for(int i = historyKeys.count() - 1; i >= 0; --i)
     {
         historyValues = config.readEntry(historyKeys[i], QStringList());
-        if(historyValues[2].toInt() == ResultModelItem::Result)
+        if(historyValues[0].toInt() == ResultModelItem::Result)
         {
-            resultModelItem = new ResultModelItem(historyValues[0], Abakus::Number(historyValues[1].toLatin1()));
+            number = Abakus::Number(historyValues[2].toLatin1());
+            number.setNumeralSystem((Abakus::NumeralSystem) historyValues[3].toInt());
+            resultModelItem = new ResultModelItem(historyValues[1], number);
         }
         else
         {
-            resultModelItem = new ResultModelItem(historyValues[0], historyValues[1]);
+            resultModelItem = new ResultModelItem(historyValues[1], historyValues[2]);
         }
         m_resultItemModel->addResultModelItem(resultModelItem);
     }
@@ -448,9 +451,6 @@ void MainWindow::saveConfig()
     // Set precision to max for most accuracy
     Abakus::m_prec = 75;
     
-    // this is needed to save the history and variables with the biggest possible precision
-    redrawResults();
-    
     for(; it != values.end(); ++it) {
         if(NumeralModel::instance()->isValueReadOnly(*it))
             continue;
@@ -488,13 +488,25 @@ void MainWindow::saveConfig()
     QList<ResultModelItem*> historyList = m_resultItemModel->resultList();
     int historyListLastIndex = historyList.count() - 1;
     int fieldWidth = QString("%1").arg(m_historyLimit).length();
+    ResultModelItem::ResultItemType resultType;
     
     for(int i = historyList.count() - 1, j = 0; i >= 0 && j < m_historyLimit; --i, ++j)
     {
         saveList.clear();
-        saveList << historyList[i]->expression();
-        saveList << historyList[i]->result();
-        saveList << QString("%1").arg(historyList[i]->type());
+        resultType = historyList[i]->type();
+        saveList << QString("%1").arg(resultType);
+        switch(resultType)
+        {
+            case ResultModelItem::Result:
+                saveList << historyList[i]->expression();
+                saveList << historyList[i]->resultValue().toString(Abakus::DEC);
+                saveList << QString("%1").arg(historyList[i]->resultValue().numeralSystem());
+                break;
+            case ResultModelItem::Message:
+            default:
+                saveList << historyList[i]->expression();
+                saveList << historyList[i]->result();
+        }
         config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveList);
     }
     

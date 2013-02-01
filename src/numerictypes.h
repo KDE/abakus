@@ -29,11 +29,17 @@ namespace Abakus
 /* What trigonometric mode we're in. */
 typedef enum { Degrees, Radians } TrigMode;
 
+/* What numeral system to use */
+typedef enum { GLOBAL = 0, BIN = 2, OCT = 8, DEC = 10, HEX = 16} NumeralSystem;
+
 /* Shared application-wide */
 extern TrigMode m_trigMode;
 
 /* Precision to display at. */
 extern int m_prec;
+
+/* Global numeral system */
+extern NumeralSystem m_globalNumeralSystem;
 
 /**
  * Utility function to convert a MPFR number to a string.  This is declared
@@ -50,7 +56,7 @@ extern int m_prec;
  * @return The number converted to a string, in US Decimal format at this time.
  * @see Number::toString()
  */
-QString convertToString(const mpfr_ptr &number);
+QString convertToString(const mpfr_ptr& number, const Abakus::NumeralSystem base = Abakus::DEC);
 
 /**
  * This is a specialization of the number<> template for the MPFR numeric type.
@@ -78,7 +84,7 @@ public:
     static const mp_rnd_t RoundDirection = MPFR_RNDN;
 
     /// Default ctor and set-and-assign ctor wrapped in one.
-    Number(const value_type& t)
+    Number(const value_type& t) : m_numeralSystem(Abakus::GLOBAL)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set(m_t, t, RoundDirection);
@@ -89,44 +95,31 @@ public:
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set(m_t, other.m_t, RoundDirection);
+        m_numeralSystem = other.m_numeralSystem;
     }
 
-    /// Create Number from textual representation, useful for ginormously
-    /// precise numbers.
-    Number(const char *str)
-    {
-        m_t = (mpfr_ptr) new __mpfr_struct;
-        mpfr_init_set_str (m_t, str, 10, RoundDirection);
-    }
-
-    Number(const char *str, const int base)
+    Number(const char *str, const int base = 10) : m_numeralSystem(Abakus::GLOBAL)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str, base, RoundDirection);
     }
 
     /// Likewise
-    explicit Number(const QByteArray &str)
-    {
-        m_t = (mpfr_ptr) new __mpfr_struct;
-        mpfr_init_set_str (m_t, str.constData(), 10, RoundDirection);
-    }
-    
-    explicit Number(const QByteArray &str, const int base)
+    explicit Number(const QByteArray &str, const int base = 10) : m_numeralSystem(Abakus::GLOBAL)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_str (m_t, str.constData(), base, RoundDirection);
     }
 
     /// Convienience constructor to create a Number from an integer.
-    explicit Number(int i)
+    explicit Number(int i) : m_numeralSystem(Abakus::GLOBAL)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init_set_si(m_t, (signed long int) i, RoundDirection);
     }
 
     /// Construct a Number with a value of NaN.
-    Number()
+    Number() : m_numeralSystem(GLOBAL)
     {
         m_t = (mpfr_ptr) new __mpfr_struct;
         mpfr_init(m_t);
@@ -232,6 +225,16 @@ public:
         else
             return m_t;
     }
+    
+    Abakus::NumeralSystem numeralSystem()
+    {
+        return m_numeralSystem;
+    }
+    
+    void setNumeralSystem(Abakus::NumeralSystem numeralSystem)
+    {
+        m_numeralSystem = numeralSystem;
+    }
 
 /* There is a lot of boilerplate ahead, so define a macro to declare and
  * define some functions for us to forward the call to MPFR.
@@ -328,6 +331,38 @@ public:
     {
         return mpfr_get_d(m_t, RoundDirection);
     }
+    
+    /// @return number with binary representation
+    Number bin() const
+    {
+        Number result = m_t;
+        result.m_numeralSystem = Abakus::BIN;
+        return result;
+    }
+    
+    /// @return number with octal representation
+    Number oct() const
+    {
+        Number result = m_t;
+        result.m_numeralSystem = Abakus::OCT;
+        return result;
+    }
+    
+    /// @return number with decimal representation
+    Number dec() const
+    {
+        Number result = m_t;
+        result.m_numeralSystem = Abakus::DEC;
+        return result;
+    }
+    
+    /// @return number with hexadecimal representation
+    Number hex() const
+    {
+        Number result = m_t;
+        result.m_numeralSystem = Abakus::HEX;
+        return result;
+    }
 
     /// Note that this can be used dangerously, be careful.
     /// @return Our value.
@@ -337,8 +372,22 @@ public:
     /// current precision.
     QString toString() const
     {
+        QString number;
         // Move this to .cpp to avoid recompiling as I fix it.
-        return convertToString(m_t);
+        switch(m_numeralSystem)
+        {
+            case GLOBAL:
+                number = convertToString(m_t, m_globalNumeralSystem);
+                break;
+            default:
+                number = convertToString(m_t, m_numeralSystem);
+        }
+        return number;
+    }
+    
+    QString toString(Abakus::NumeralSystem numeralSystem) const
+    {
+        return convertToString(m_t, numeralSystem);
     }
 
     static Number nan()
@@ -353,6 +402,7 @@ public:
 
 private:
     mpfr_ptr m_t;
+    NumeralSystem m_numeralSystem;
 };
 
 // Specializations of math operators for mpfr.
