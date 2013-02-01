@@ -393,14 +393,18 @@ void MainWindow::loadConfig()
     for(int i = historyKeys.count() - 1; i >= 0; --i)
     {
         historyValues = config.readEntry(historyKeys[i], QStringList());
+        if(historyValues.count() < 4) continue;
+        
         if(historyValues[0].toInt() == ResultModelItem::Result)
         {
+            if(historyValues.count() < 1) continue;
             number = Abakus::Number(historyValues[2].toLatin1());
             number.setNumeralSystem((Abakus::NumeralSystem) historyValues[3].toInt());
             resultModelItem = new ResultModelItem(historyValues[1], number);
         }
         else
         {
+            if(historyValues.count() < 3) continue;
             resultModelItem = new ResultModelItem(historyValues[1], historyValues[2]);
         }
         m_resultItemModel->addResultModelItem(resultModelItem);
