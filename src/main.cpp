@@ -1,5 +1,6 @@
 /*
- * abakus.cpp - part of abakus
+ * main.cpp - part of abakus
+ * Copyright (C) 2013 Mathias Kraus <k.hias@gmx.de>
  * Copyright (C) 2004, 2005 Michael Pyne <michael.pyne@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -37,14 +38,15 @@ int main(int argc, char **argv)
         version,
         ki18n("A simple keyboard-driven calculator"),
         KAboutData::License_GPL_V2,
-        ki18n("Copyright 2004, 2005, 2007 Michael Pyne"),
-        KLocalizedString(), // text
-        "http://purinchu.net/abakus/",
-        "michael.pyne@kdemail.net"); // Bugs email address
+        ki18n("Copyright (c) 2013 Mathias Kraus\nCopyright (c) 2004, 2005, 2007 Michael Pyne"));
 
+    about->addAuthor(ki18n("Mathias Kraus"),
+                     ki18n("Developer"),
+                     "k.hias@gmx.de",
+                     0);
     about->addAuthor(ki18n("Michael Pyne"),
                      ki18n("Developer"),
-                     "michael.pyne@kdemail.net",
+                     "mpyne@kde.org",
                      "http://purinchu.net/");
     about->addCredit(ki18n("Ariya Hidayat"),
                      ki18n("High precision math routines, and inspiration for the new design came from his C++ implementation (SpeedCrunch)"),
