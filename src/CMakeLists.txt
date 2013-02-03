@@ -39,7 +39,7 @@ FLEX_FILE(lexer.ll)
 # Continuing with normally schedule CMake action...
 add_subdirectory(qml)
 set(abakus_SRCS
-    abakus.cpp
+    main.cpp
     evaluator.cpp
     function.cpp
     functionmodel.cpp
