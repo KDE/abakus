@@ -68,7 +68,6 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void slotToggleMathematicalSidebar();
     Q_INVOKABLE void mathematicalSidebarActiveTabChanged(const QString &activeTab);
     Q_INVOKABLE void mathematicalSidebarWidthChanged(const int newWidth);
-    Q_INVOKABLE void slotToggleExpressionMode();
     
     Q_INVOKABLE void removeNumeral(const QString &name);
     Q_INVOKABLE void removeFunction(const QString &name);

@@ -23,7 +23,6 @@
 #include "numeralmodel.h"
 #include "result.h"
 #include "resultmodel.h"
-#include "rpnmuncher.h"
 
 #include <QDeclarativeContext>
 #include <QDeclarativeView>
@@ -534,11 +533,6 @@ void MainWindow::setupLayout()
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_C);
     a->setChecked(false);
 
-    a = m_actionCollection->addAction("toggleExpressionMode", this, SLOT(slotToggleExpressionMode()));
-    a->setText(i18n("Use R&PN Mode"));
-    a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_P);
-    a->setChecked(false);
-
     a = m_actionCollection->addAction("clearHistory", this, SLOT(clearHistory()));
     a->setText(i18n("Clear &History"));
     a->setIcon(KIcon("edit-clear-list"));
@@ -598,11 +592,6 @@ void MainWindow::slotToggleCompactMode(bool toggle)
     
     slotUpdateSize();
     emit compactModeChanged(m_compactMode);
-}
-
-void MainWindow::slotToggleExpressionMode()
-{
-    //TODO
 }
 
 QString MainWindow::interpolateExpression(const QString &text)

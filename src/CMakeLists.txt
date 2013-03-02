@@ -54,7 +54,6 @@ set(abakus_SRCS
     result.cpp
     resultmodel.cpp
     resultmodelitem.cpp
-    rpnmuncher.cpp
 )
 
 kde4_add_executable(abakus ${abakus_SRCS})
