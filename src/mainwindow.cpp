@@ -50,7 +50,6 @@ MainWindow::MainWindow() :
     m_mathematicalSidebarVisible(true),
     m_wasMathematicalSidebarShown(true),
     m_compactMode(false),
-    m_rpnMode(false),
     m_historyLimit(500),
     m_insert(false)
 {
@@ -94,11 +93,6 @@ MainWindow::MainWindow() :
 //    m_dcopInterface = new AbakusIface();
 }
 
-bool MainWindow::inRPNMode() const
-{
-    return m_rpnMode;
-}
-
 bool MainWindow::queryExit()
 {
     saveConfig();
@@ -127,55 +121,36 @@ void MainWindow::slotEvaluate(const QString &expression)
 
     m_insert = false; // Assume we failed
 
-    if(inRPNMode()) {
-        // We're in RPN mode.
-        Abakus::Number result = RPNParser::rpnParseString(str);
+    // Check to see if it's just a function name, if so, add (ans).
+    if(FunctionModel::instance()->isFunction(str))
+        str += " ans";
 
-        if(!RPNParser::wasError()) {
+    // Add right parentheses as needed to balance out the expression.
+    int parenLevel = getParenthesesLevel(str);
+    for(int i = 0; i < parenLevel; ++i)
+        str += ')';
+
+    QByteArray cStr = str.toLatin1();
+    Abakus::Number result = parseString(cStr.data());
+
+    switch(Result::lastResult()->type()) {
+        case Result::Value:
             resultVal = result.toString();
+
             NumeralModel::instance()->setValue("ans", result);
+
+            m_resultItemModel->addResult(str, result);
             m_insert = true;
-        }
-        else {
-            m_insert = false;
-            resultVal = i18n("Error: %1", RPNParser::errorString());
-        }
+        break;
 
-        m_resultItemModel->addResult(str, result);
-    }
-    else {
+        case Result::Null: // OK, no result to speak of
+            resultVal = i18n("OK");
+            m_resultItemModel->addMessage(str, resultVal);
+        break;
 
-        // Check to see if it's just a function name, if so, add (ans).
-        if(FunctionModel::instance()->isFunction(str))
-            str += " ans";
-
-        // Add right parentheses as needed to balance out the expression.
-        int parenLevel = getParenthesesLevel(str);
-        for(int i = 0; i < parenLevel; ++i)
-            str += ')';
-
-        QByteArray cStr = str.toLatin1();
-        Abakus::Number result = parseString(cStr.data());
-
-        switch(Result::lastResult()->type()) {
-            case Result::Value:
-                resultVal = result.toString();
-
-                NumeralModel::instance()->setValue("ans", result);
-
-                m_resultItemModel->addResult(str, result);
-                m_insert = true;
-            break;
-
-            case Result::Null: // OK, no result to speak of
-                resultVal = i18n("OK");
-                m_resultItemModel->addMessage(str, resultVal);
-            break;
-
-            default:
-                resultVal = Result::lastResult()->message();
-                m_resultItemModel->addMessage(str, resultVal);
-        }
+        default:
+            resultVal = Result::lastResult()->message();
+            m_resultItemModel->addMessage(str, resultVal);
     }
     
     // set result in expression text edit if in compact mode
@@ -188,10 +163,6 @@ void MainWindow::slotTextChanged(const QString &str)
 {
     if(str.length() == 1 && m_insert) {
         m_insert = false;
-
-        // Don't do anything if in RPN Mode.
-        if(inRPNMode())
-            return;
 
         if(QRegExp("^[-+*/^]").indexIn(str) != -1) {
             emit setEditorText("ans " + str + " ");
@@ -336,8 +307,6 @@ void MainWindow::loadConfig()
         setTrigMode(Abakus::Radians);
     }
 
-    m_rpnMode = config.readEntry("Use RPN Mode", false);
-
     int precision = config.readEntry("Decimal Precision", -1);
     if(precision < -1 || precision > 75)
     {
@@ -427,7 +396,6 @@ void MainWindow::saveConfig()
             ? "Degrees"
             : "Radians");
 
-    config.writeEntry("Use RPN Mode", inRPNMode());
     config.writeEntry("Decimal Precision", Abakus::m_prec);
     config.writeEntry("History Limit", m_historyLimit);
 

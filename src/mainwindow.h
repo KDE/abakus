@@ -39,8 +39,6 @@ class MainWindow : public KMainWindow
     public:
     MainWindow();
 
-    bool inRPNMode() const;
-
     protected:
     virtual bool queryExit();
     
@@ -120,7 +118,6 @@ class MainWindow : public KMainWindow
     bool m_mathematicalSidebarVisible;
     bool m_wasMathematicalSidebarShown;
     bool m_compactMode;
-    bool m_rpnMode;
     int m_historyLimit;
 
     bool m_insert;
