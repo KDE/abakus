@@ -38,8 +38,7 @@ class ResultModel : public QAbstractListModel
         IndexRole
     };
 
-    ResultModel(QObject *parent);
-    ~ResultModel();
+    static ResultModel* instance();
     
     void addResultModelItem(ResultModelItem* item);
     
@@ -64,6 +63,11 @@ class ResultModel : public QAbstractListModel
     void updateStackMarkers(); ///< Called to update stack positions.
 
     private:
+    ResultModel(QObject *parent = 0);
+    ~ResultModel();
+    
+    static ResultModel* m_instance;
+    
     QList<ResultModelItem*> m_resultModelItems;
     int m_historyIndex;
 };

@@ -20,6 +20,18 @@
 
 #include "resultmodel.h"
 
+ResultModel* ResultModel::m_instance = 0;
+
+ResultModel* ResultModel::instance()
+{
+    if(!m_instance)
+    {
+        m_instance = new ResultModel();
+    }
+    
+    return m_instance;
+}
+
 ResultModel::ResultModel(QObject *parent)
     : QAbstractListModel(parent), m_historyIndex(-1)
 {

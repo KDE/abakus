@@ -43,7 +43,7 @@
 MainWindow::MainWindow() :
     m_helpMenu(0),
     m_actionCollection(new KActionCollection(this)),
-    m_resultItemModel (new ResultModel(this)),
+    m_resultItemModel (ResultModel::instance()),
     m_size(QSize(600, 220)),
     m_mathematicalSidebarActiveTab("numerals"),
     m_mathematicalSidebarWidth(200),
