@@ -29,17 +29,32 @@ class Settings : public QObject
 {
 
     Q_OBJECT
+    Q_PROPERTY(bool compactMode READ compactMode WRITE setCompactMode NOTIFY compactModeChanged)
+    Q_PROPERTY(QString mathematicalSidebarActiveView READ mathematicalSidebarActiveView WRITE setMathematicalSidebarActiveView NOTIFY mathematicalSidebarActiveViewChanged)
     Q_PROPERTY(int mathematicalSidebarWidth READ mathematicalSidebarWidth WRITE setMathematicalSidebarWidth NOTIFY mathematicalSidebarWidthChanged)
+    Q_PROPERTY(bool mathematicalSidebarVisible READ mathematicalSidebarVisible WRITE setMathematicalSidebarVisible NOTIFY mathematicalSidebarVisibleChanged)
     
 public:
     Settings(QObject* parent = 0);
     virtual ~Settings();
     
+    bool compactMode();
+    void setCompactMode(bool compactMode);
+    
+    QString mathematicalSidebarActiveView();
+    void setMathematicalSidebarActiveView(const QString& activeView);
+    
     int mathematicalSidebarWidth();
     void setMathematicalSidebarWidth(int width);
     
+    bool mathematicalSidebarVisible();
+    void setMathematicalSidebarVisible(bool visible);
+    
 signals:
+    void compactModeChanged();
+    void mathematicalSidebarActiveViewChanged();
     void mathematicalSidebarWidthChanged();
+    void mathematicalSidebarVisibleChanged();
     
 private:
     SettingsCore* m_settingscore;

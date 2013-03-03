@@ -50,16 +50,12 @@ public:
     bool mathematicalSidebarVisible();
     void setMathematicalSidebarVisible(bool visible);
     
-    bool wasMathematicalSidebarShown();
-    void setWasMathematicalSidebarShown(bool wasShown);
-    
 signals:
     void compactModeChanged();
     void windowSizeChanged();
     void mathematicalSidebarActiveViewChanged();
     void mathematicalSidebarWidthChanged();
     void mathematicalSidebarVisibleChanged();
-    void wasMathematicalSidebarShownChanged();
     
 private:
     SettingsCore();
@@ -71,7 +67,6 @@ private:
     QString m_mathematicalSidebarActiveView;
     int m_mathematicalSidebarWidth;
     bool m_mathematicalSidebarVisible;
-    bool m_wasMathematicalSidebarShown;
     bool m_compactMode;
     int m_historyLimit;
 };

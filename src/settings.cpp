@@ -20,15 +20,36 @@
 
 #include "settings.h"
 
-#include <QDebug>
-
 Settings::Settings(QObject* parent) : QObject(parent), m_settingscore(SettingsCore::instance())
 {
+    connect(m_settingscore, SIGNAL(compactModeChanged()), this, SIGNAL(compactModeChanged()));
+    connect(m_settingscore, SIGNAL(mathematicalSidebarActiveViewChanged()), this, SIGNAL(mathematicalSidebarActiveViewChanged()));
     connect(m_settingscore, SIGNAL(mathematicalSidebarWidthChanged()), this, SIGNAL(mathematicalSidebarWidthChanged()));
+    connect(m_settingscore, SIGNAL(mathematicalSidebarVisibleChanged()), this, SIGNAL(mathematicalSidebarVisibleChanged()));
 }
 
 Settings::~Settings()
 {
+}
+
+bool Settings::compactMode()
+{
+    return m_settingscore->compactMode();
+}
+
+void Settings::setCompactMode(bool compactMode)
+{
+    m_settingscore->setCompactMode(compactMode);
+}
+
+QString Settings::mathematicalSidebarActiveView()
+{
+    return m_settingscore->mathematicalSidebarActiveView();
+}
+
+void Settings::setMathematicalSidebarActiveView(const QString& activeView)
+{
+    m_settingscore->setMathematicalSidebarActiveView(activeView);
 }
 
 int Settings::mathematicalSidebarWidth()
@@ -39,4 +60,14 @@ int Settings::mathematicalSidebarWidth()
 void Settings::setMathematicalSidebarWidth(int width)
 {
     m_settingscore->setMathematicalSidebarWidth(width);
+}
+
+bool Settings::mathematicalSidebarVisible()
+{
+    return m_settingscore->mathematicalSidebarVisible();
+}
+
+void Settings::setMathematicalSidebarVisible(bool visible)
+{
+    m_settingscore->setMathematicalSidebarVisible(visible);
 }

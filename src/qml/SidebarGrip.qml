@@ -5,10 +5,7 @@ import abakus 1.0 as Abakus
 Item {
     id: root
     
-    property bool sidebarShown
     property bool itemHovered
-    
-    signal toggleSidebar()
     
     signal showToolTip(int xPosition, int yPosition, string toolTipText)
     signal hideToolTip()
@@ -16,6 +13,7 @@ Item {
     QtObject {
         id: internal
         
+        property bool sidebarShown: settings.mathematicalSidebarVisible && !settings.compactMode
         property int latestSidebarWidth
         property int xPositionOnChangeStart
         property bool sidebarWidthChanged: false
@@ -42,7 +40,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         svg: PlasmaCore.Svg { imagePath: "widgets/arrows" }
-        elementId: root.sidebarShown ? "right-arrow" : "left-arrow"
+        elementId: (settings.mathematicalSidebarVisible && !settings.compactMode) ? "right-arrow" : "left-arrow"
     }
     
     MouseArea {
@@ -54,11 +52,11 @@ Item {
             interval: 1000
             running: mouseArea.containsMouse && !mouseArea.pressed && tooltip.length
             
-            property string tooltip: root.sidebarShown ? i18n("Click to hide sidebar\nClick and drag to change sidebar width") : i18n("Click to show sidebar")
+            property string tooltip: internal.sidebarShown ? i18n("Click to hide sidebar\nClick and drag to change sidebar width") : i18n("Click to show sidebar")
             
             onTriggered: {
                 var position = mapToItem(null, 0, height)
-                if(root.sidebarShown)
+                if(internal.sidebarShown)
                 {
                     root.showToolTip(position.x, position.y, tooltip)
                 }
@@ -75,7 +73,18 @@ Item {
             root.hideToolTip()
         }
         
-        onClicked: if(!internal.sidebarWidthChanged) toggleSidebar()
+        onClicked: if(!internal.sidebarWidthChanged) {
+            if(settings.compactMode)
+            {
+                settings.compactMode = false
+                settings.mathematicalSidebarVisible = true
+            }
+            else
+            {
+                settings.mathematicalSidebarVisible = !settings.mathematicalSidebarVisible
+            }
+            
+        }
         
         onPressed: {
             if(mouse.button == Qt.LeftButton) {
@@ -85,7 +94,7 @@ Item {
         }
         
         onPositionChanged: {
-            if(root.sidebarShown && (mouse.buttons & Qt.LeftButton)) {
+            if(internal.sidebarShown && (mouse.buttons & Qt.LeftButton)) {
                 var currentX = mapToItem(null, mouse.x, 0).x
                 if(internal.sidebarWidthChanged) {
                     settings.mathematicalSidebarWidth = internal.latestSidebarWidth + (internal.xPositionOnChangeStart - currentX)

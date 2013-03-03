@@ -2,6 +2,7 @@ import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.extras 0.1 as PlasmaExtras
+import abakus 1.0 as Abakus
 
 Item {
     id: baseItem
@@ -12,6 +13,10 @@ Item {
     property int editorHeight: 25
     
     Keys.onPressed: if(event.key == Qt.Key_Escape) editor.focus = true
+    
+    Abakus.Settings {
+        id: settings
+    }
     
     Item {
         id: toolbar
@@ -53,8 +58,6 @@ Item {
             anchors.right: parent.right
             anchors.top: parent.top
             
-            onToggleSidebar: mainWindow.slotToggleMathematicalSidebar()
-            
             onShowToolTip: mainWindow.showToolTip(xPosition, yPosition, toolTipText)
             onHideToolTip: mainWindow.hideToolTip()
         }
@@ -75,7 +78,7 @@ Item {
         anchors.left: parent.left
         anchors.right: sidebar.left
         anchors.bottom: editor.top
-        visible: !configPanel.copactModeActive
+        visible: !settings.compactMode
         
         imagePath: "widgets/frame"
         prefix: "sunken"
@@ -147,12 +150,11 @@ Item {
     
     MathSidebar {
         id: sidebar
+        width: 200
         tabBarHeight: sidebarTabBarHeight
         anchors.top: parent.top
         anchors.left: parent.right
         anchors.bottom: parent.bottom
-        
-        onCurrentMathSidebarTabChanged: mainWindow.mathematicalSidebarActiveTabChanged(tabString)
         
         onNumeralSelected: editor.text += numeralName
         onNumeralRemoved: mainWindow.removeNumeral(numeralName)
@@ -161,32 +163,6 @@ Item {
         onFunctionRemoved: mainWindow.removeFunction(functionName)
         
         onRejectFocus: editor.focus = true
-        
-        Connections {
-            target: mainWindow
-            
-            onMathematicalSidebarVisibleChanged: {
-                if(visible) {
-                    sidebar.state = "shown"
-                    sidebarGrip.sidebarShown = true
-                }
-                else {
-                    sidebar.state = ""
-                    sidebarGrip.sidebarShown = false
-                }
-            }
-            
-            onSetMathematicalActiveTab: sidebar.activeTab = activeTab
-        }
-        
-        states: State {
-            name: "shown"
-            AnchorChanges { target: sidebar; anchors.left: undefined; anchors.right: baseItem.right }
-        }
-        
-        transitions: Transition {
-            AnchorAnimation { duration: 100; easing.type: Easing.InOutQuad }
-        }
     }
     
     Editor {

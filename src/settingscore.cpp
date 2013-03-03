@@ -47,7 +47,6 @@ SettingsCore::SettingsCore() :
     m_mathematicalSidebarActiveView("numerals"),
     m_mathematicalSidebarWidth(200),
     m_mathematicalSidebarVisible(true),
-    m_wasMathematicalSidebarShown(true),
     m_compactMode(false),
     m_historyLimit(500)
 {
@@ -166,13 +165,7 @@ void SettingsCore::saveSettings()
     
     config.writeEntry("InCompactMode", m_compactMode);
     
-    if(!m_compactMode)
-    {
-        config.writeEntry("ShowMathematicalSidebar", m_mathematicalSidebarVisible);
-    }
-    else {
-        config.writeEntry("ShowMathematicalSidebar", m_wasMathematicalSidebarShown);
-    }
+    config.writeEntry("ShowMathematicalSidebar", m_mathematicalSidebarVisible);
     
     config.writeEntry("MathematicalSidebarActiveTab", m_mathematicalSidebarActiveView);
     config.writeEntry("MathematicalSidebarWidth", m_mathematicalSidebarWidth);
@@ -332,19 +325,5 @@ void SettingsCore::setMathematicalSidebarVisible(bool visible)
     {
         m_mathematicalSidebarVisible = visible;
         emit mathematicalSidebarVisibleChanged();
-    }
-}
-
-bool SettingsCore::wasMathematicalSidebarShown()
-{
-    return m_wasMathematicalSidebarShown;
-}
-
-void SettingsCore::setWasMathematicalSidebarShown(bool wasShown)
-{
-    if(wasShown != m_wasMathematicalSidebarShown)
-    {
-        m_wasMathematicalSidebarShown = wasShown;
-        emit wasMathematicalSidebarShownChanged();
     }
 }

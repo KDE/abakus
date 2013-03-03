@@ -64,11 +64,6 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void historyPrevious();
     Q_INVOKABLE void historyNext();
     
-    Q_INVOKABLE void setCompactMode(bool newMode);
-    Q_INVOKABLE void slotToggleCompactMode(bool toggle = true);
-    Q_INVOKABLE void slotToggleMathematicalSidebar();
-    Q_INVOKABLE void mathematicalSidebarActiveTabChanged(const QString &activeTab);
-    
     Q_INVOKABLE void removeNumeral(const QString &name);
     Q_INVOKABLE void removeFunction(const QString &name);
 
@@ -80,13 +75,12 @@ class MainWindow : public KMainWindow
     void setFocusToEditor();
     void setEditorText(const QString &editorText);
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
-    void mathematicalSidebarVisibleChanged(const bool &visible);
-    void setMathematicalActiveTab(const QString &activeTab);
-    void compactModeChanged(const bool &active);
     void precisionChanged(int newPrecision);
     
     private slots:
     void slotUpdateSize();
+    void slotToggleCompactMode();
+    void slotToggleMathematicalSidebar();
 
     private:
     int getParenthesesLevel(const QString &str);
@@ -102,7 +96,6 @@ class MainWindow : public KMainWindow
     QMenu* m_helpMenu;
     KActionCollection* m_actionCollection;
     ResultModel *m_resultItemModel;
-    QSize m_size;
 
 //    AbakusIface *m_dcopInterface;
     
@@ -110,10 +103,6 @@ class MainWindow : public KMainWindow
     QDeclarativeContext *m_declarativeContext;
 
     SettingsCore* m_settingscore;
-    QString m_mathematicalSidebarActiveTab;
-    bool m_mathematicalSidebarVisible;
-    bool m_wasMathematicalSidebarShown;
-    bool m_compactMode;
 
     bool m_insert;
 

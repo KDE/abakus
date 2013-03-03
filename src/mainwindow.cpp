@@ -51,15 +51,12 @@ MainWindow::MainWindow() :
     setObjectName("abakusMainWindow");
     
     m_settingscore->loadSettings();
-    m_compactMode = m_settingscore->compactMode();
-    m_size = m_settingscore->windowSize();
-    m_mathematicalSidebarActiveTab = m_settingscore->mathematicalSidebarActiveView();
-    m_mathematicalSidebarVisible = m_settingscore->mathematicalSidebarVisible();
-    m_wasMathematicalSidebarShown = m_settingscore->wasMathematicalSidebarShown();
     slotUpdateSize();
     setAutoSaveSettings();
 
     m_visibleHistoryItemIndices.clear();
+    
+    connect(m_settingscore->instance(), SIGNAL(compactModeChanged()), this, SLOT(slotUpdateSize()));
     
     qmlRegisterType<Settings>("abakus", 1, 0, "Settings");
 
@@ -98,15 +95,12 @@ MainWindow::MainWindow() :
 
 bool MainWindow::queryExit()
 {
-    if(!m_compactMode)
+    QSize windowSize = size();
+    if(m_settingscore->compactMode())
     {
-        m_size = size();
+        windowSize.setHeight(m_settingscore->windowSize().height());
     }
-    m_settingscore->setCompactMode(m_compactMode);
-    m_settingscore->setWindowSize(m_size);
-    m_settingscore->setMathematicalSidebarActiveView(m_mathematicalSidebarActiveTab);
-    m_settingscore->setMathematicalSidebarVisible(m_mathematicalSidebarVisible);
-    m_settingscore->setWasMathematicalSidebarShown(m_wasMathematicalSidebarShown);
+    m_settingscore->setWindowSize(windowSize);
     m_settingscore->saveSettings();
     m_resultItemModel->clear();
     return KMainWindow::queryExit();
@@ -166,7 +160,7 @@ void MainWindow::slotEvaluate(const QString &expression)
     }
     
     // set result in expression text edit if in compact mode
-    if(m_compactMode) {
+    if(m_settingscore->compactMode()) {
         emit setEditorText(resultVal);
     }
 }
@@ -234,12 +228,6 @@ void MainWindow::historyNext()
     emit setEditorText(m_resultItemModel->nextExpression());
 }
 
-void MainWindow::setMathematicalSidebarVisible(const bool& visible)
-{
-    m_mathematicalSidebarVisible = visible;
-    emit mathematicalSidebarVisibleChanged(visible);
-}
-
 void MainWindow::removeNumeral(const QString& name)
 {
     NumeralModel::instance()->removeValue(name);
@@ -269,27 +257,17 @@ void MainWindow::applySettings()
 {
     emit trigModeChanged((int)Abakus::m_trigMode);
     emit precisionChanged(Abakus::m_prec);
-    emit setMathematicalActiveTab(m_mathematicalSidebarActiveTab);
-    
-    if(m_compactMode)
-    {
-        slotToggleCompactMode(false);
-    }
-    else
-    {
-        emit mathematicalSidebarVisibleChanged(m_mathematicalSidebarVisible);
-    }
 }
 
 void MainWindow::slotUpdateSize()
 {
-    if(m_compactMode)
+    if(m_settingscore->compactMode())
     {
         resize(width(), minimumSize().height());
     }
     else
     {
-        resize(m_size);
+        resize(m_settingscore->windowSize());
     }
 }
 
@@ -346,47 +324,14 @@ void MainWindow::setupLayout()
     m_helpMenu = helpMenu->menu();
 }
 
-void MainWindow::mathematicalSidebarActiveTabChanged(const QString& activeTab)
-{
-    m_mathematicalSidebarActiveTab = activeTab;
-}
-
 void MainWindow::slotToggleMathematicalSidebar()
 {
-    bool show = !m_mathematicalSidebarVisible;
-    setMathematicalSidebarVisible(show);
-
-    if(m_compactMode) {
-        m_wasMathematicalSidebarShown = m_mathematicalSidebarVisible;
-        slotToggleCompactMode();
-    }
+    m_settingscore->setMathematicalSidebarVisible(!m_settingscore->mathematicalSidebarVisible());
 }
 
-void MainWindow::setCompactMode(bool newMode)
+void MainWindow::slotToggleCompactMode()
 {
-    if(m_compactMode != newMode)
-    {
-        slotToggleCompactMode();
-    }
-}
-
-void MainWindow::slotToggleCompactMode(bool toggle)
-{
-    if(toggle) m_compactMode = !m_compactMode;
-
-    if(m_compactMode)
-    {
-        m_wasMathematicalSidebarShown = m_mathematicalSidebarVisible;
-        setMathematicalSidebarVisible(false);
-        
-        if(toggle) m_size = size();
-    }
-    else {
-        setMathematicalSidebarVisible(m_wasMathematicalSidebarShown);
-    }
-    
-    slotUpdateSize();
-    emit compactModeChanged(m_compactMode);
+    m_settingscore->setCompactMode(!m_settingscore->compactMode());
 }
 
 QString MainWindow::interpolateExpression(const QString &text)

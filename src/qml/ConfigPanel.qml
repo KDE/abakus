@@ -1,11 +1,11 @@
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import abakus 1.0 as Abakus
 
 Item {
     id: root
     
-    property alias copactModeActive: compactMode.checked
     property int settingsPanelHeigth: 80
     property int buttonHeight
     property QtObject mainWindowObject
@@ -13,6 +13,14 @@ Item {
     signal settingsPanelVisibleChanged(bool settingsVisible)
     
     signal rejectFocus()
+    
+    Abakus.Settings {
+        id: settings
+        
+        onCompactModeChanged: compactModeButton.checked = compactMode
+        
+        Component.onCompleted: compactModeButton.checked = compactMode
+    }
     
     PlasmaComponents.ButtonRow {
         id: toolbarButtons
@@ -22,34 +30,28 @@ Item {
         exclusive: false
         
         PlasmaComponents.ToolButton {
-            id: settings
+            id: settingsButton
             height: parent.height
             flat: true
             checkable: true
             iconSource: "configure"
             
             onCheckedChanged: {
-                if(checked) compactMode.checked = false
+                if(checked) settings.compactMode = false
                 settingsPanelVisibleChanged(checked)
             }
         }
         
         PlasmaComponents.ToolButton {
-            id: compactMode
+            id: compactModeButton
             height: parent.height
             flat: true
             checkable:true
             iconSource: "merge"
             
             onCheckedChanged: {
-                if(checked) settings.checked = false
-                mainWindowObject.setCompactMode(checked)
-            }
-            
-            Connections {
-                target: mainWindowObject
-                
-                onCompactModeChanged: compactMode.checked = active
+                if(checked) settingsButton.checked = false
+                settings.compactMode = checked
             }
         }
         

@@ -8,9 +8,6 @@ Item {
     id: root
     
     property alias tabBarHeight: sidebarTabBar.height
-    property string activeTab
-    
-    signal currentMathSidebarTabChanged(string tabString)
     
     signal numeralSelected(string numeralName)
     signal numeralRemoved(string numeralName)
@@ -20,26 +17,27 @@ Item {
     
     signal rejectFocus()
     
-    onActiveTabChanged: {
-        if(activeTab == "numerals")
-        {
-            sidebarTabBar.currentTab = numeralsTabButton
-            sidebarTabGroup.currentTab = numeralsTab 
-        }
-        else
-        {
-            sidebarTabBar.currentTab = functionsTabButton
-            sidebarTabGroup.currentTab = functionsTab 
-        }
+    states: State {
+        name: "shown"
+        AnchorChanges { target: root; anchors.left: undefined; anchors.right: parent.right }
+    }
+    
+    transitions: Transition {
+        AnchorAnimation { duration: 100; easing.type: Easing.InOutQuad }
     }
     
     Abakus.Settings {
         id: settings
         
+        onCompactModeChanged: root.state = (mathematicalSidebarVisible && !compactMode) ? "shown" : ""
+        
         onMathematicalSidebarWidthChanged: root.width = mathematicalSidebarWidth
+        
+        onMathematicalSidebarVisibleChanged: root.state = (mathematicalSidebarVisible && !compactMode) ? "shown" : ""
         
         Component.onCompleted: {
             root.width = mathematicalSidebarWidth
+            root.state = (mathematicalSidebarVisible && !compactMode) ? "shown" : ""
         }
     }
     
@@ -50,10 +48,26 @@ Item {
         anchors.top: parent.top
         anchors.leftMargin: 2
         
+        property bool tabBarLoaded: false
+        
         PlasmaComponents.TabButton { id: numeralsTabButton; tab: numeralsTab; text: i18n("Numerals"); property string tabString: "numerals" }
         PlasmaComponents.TabButton { id: functionsTabButton; tab: functionsTab; text: i18n("Functions"); property string tabString: "functions" }
         
-        onCurrentTabChanged: root.currentMathSidebarTabChanged(sidebarTabBar.currentTab.tabString)
+        onCurrentTabChanged: if(tabBarLoaded) settings.mathematicalSidebarActiveView = sidebarTabBar.currentTab.tabString
+        
+        Component.onCompleted: {
+            if(settings.mathematicalSidebarActiveView == "numerals")
+            {
+                sidebarTabBar.currentTab = numeralsTabButton
+                sidebarTabGroup.currentTab = numeralsTab 
+            }
+            else
+            {
+                sidebarTabBar.currentTab = functionsTabButton
+                sidebarTabGroup.currentTab = functionsTab 
+            }
+            tabBarLoaded = true
+        }
     }
     
     PlasmaComponents.TabGroup {
