@@ -68,7 +68,6 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void slotToggleCompactMode(bool toggle = true);
     Q_INVOKABLE void slotToggleMathematicalSidebar();
     Q_INVOKABLE void mathematicalSidebarActiveTabChanged(const QString &activeTab);
-    Q_INVOKABLE void mathematicalSidebarWidthChanged(const int newWidth);
     
     Q_INVOKABLE void removeNumeral(const QString &name);
     Q_INVOKABLE void removeFunction(const QString &name);
@@ -83,7 +82,6 @@ class MainWindow : public KMainWindow
     void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
     void mathematicalSidebarVisibleChanged(const bool &visible);
     void setMathematicalActiveTab(const QString &activeTab);
-    void setMathematicalSidebarWidth(const int &width);
     void compactModeChanged(const bool &active);
     void precisionChanged(int newPrecision);
     
@@ -113,7 +111,6 @@ class MainWindow : public KMainWindow
 
     SettingsCore* m_settingscore;
     QString m_mathematicalSidebarActiveTab;
-    int m_mathematicalSidebarWidth;
     bool m_mathematicalSidebarVisible;
     bool m_wasMathematicalSidebarShown;
     bool m_compactMode;

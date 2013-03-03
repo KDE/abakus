@@ -21,11 +21,13 @@
 #ifndef SETTINGSCORE_H
 #define SETTINGSCORE_H
 
+#include <QObject>
 #include <QSize>
 #include <QString>
 
-class SettingsCore
+class SettingsCore : public QObject
 {
+    Q_OBJECT
     
 public:
     static SettingsCore* instance();
@@ -37,10 +39,10 @@ public:
     void setCompactMode(bool compactMode);
     
     QSize windowSize();
-    void setWindowSize(QSize windowSize);
+    void setWindowSize(const QSize& windowSize);
     
     QString mathematicalSidebarActiveView();
-    void setMathematicalSidebarActiveView(QString activeView);
+    void setMathematicalSidebarActiveView(const QString& activeView);
     
     int mathematicalSidebarWidth();
     void setMathematicalSidebarWidth(int width);
@@ -50,6 +52,14 @@ public:
     
     bool wasMathematicalSidebarShown();
     void setWasMathematicalSidebarShown(bool wasShown);
+    
+signals:
+    void compactModeChanged();
+    void windowSizeChanged();
+    void mathematicalSidebarActiveViewChanged();
+    void mathematicalSidebarWidthChanged();
+    void mathematicalSidebarVisibleChanged();
+    void wasMathematicalSidebarShownChanged();
     
 private:
     SettingsCore();

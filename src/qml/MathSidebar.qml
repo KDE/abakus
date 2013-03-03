@@ -2,6 +2,7 @@ import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.extras 0.1 as PlasmaExtras
+import abakus 1.0 as Abakus
 
 Item {
     id: root
@@ -29,6 +30,16 @@ Item {
         {
             sidebarTabBar.currentTab = functionsTabButton
             sidebarTabGroup.currentTab = functionsTab 
+        }
+    }
+    
+    Abakus.Settings {
+        id: settings
+        
+        onMathematicalSidebarWidthChanged: root.width = mathematicalSidebarWidth
+        
+        Component.onCompleted: {
+            root.width = mathematicalSidebarWidth
         }
     }
     

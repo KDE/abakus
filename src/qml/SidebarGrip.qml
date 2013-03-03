@@ -1,15 +1,14 @@
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
+import abakus 1.0 as Abakus
 
 Item {
     id: root
     
     property bool sidebarShown
     property bool itemHovered
-    property Item sidebarItem
     
     signal toggleSidebar()
-    signal sidebarWidthChanged(int newWidth)
     
     signal showToolTip(int xPosition, int yPosition, string toolTipText)
     signal hideToolTip()
@@ -20,6 +19,10 @@ Item {
         property int latestSidebarWidth
         property int xPositionOnChangeStart
         property bool sidebarWidthChanged: false
+    }
+    
+    Abakus.Settings {
+        id: settings
     }
     
     PlasmaCore.FrameSvgItem {
@@ -81,20 +84,14 @@ Item {
             }
         }
         
-        onReleased: {
-            if(internal.sidebarWidthChanged && mouse.button == Qt.LeftButton) {
-                root.sidebarWidthChanged(root.sidebarItem.width)
-            }
-        }
-        
         onPositionChanged: {
             if(root.sidebarShown && (mouse.buttons & Qt.LeftButton)) {
                 var currentX = mapToItem(null, mouse.x, 0).x
                 if(internal.sidebarWidthChanged) {
-                    root.sidebarItem.width = internal.latestSidebarWidth + (internal.xPositionOnChangeStart - currentX)
+                    settings.mathematicalSidebarWidth = internal.latestSidebarWidth + (internal.xPositionOnChangeStart - currentX)
                 }
                 else if(Math.abs(internal.xPositionOnChangeStart - currentX) > 1) {
-                    internal.latestSidebarWidth = root.sidebarItem.width
+                    internal.latestSidebarWidth = settings.mathematicalSidebarWidth
                     internal.xPositionOnChangeStart = currentX
                     internal.sidebarWidthChanged = true
                 }

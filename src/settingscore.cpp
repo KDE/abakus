@@ -272,7 +272,11 @@ bool SettingsCore::compactMode()
 
 void SettingsCore::setCompactMode(bool compactMode)
 {
-    m_compactMode = compactMode;
+    if(compactMode != m_compactMode)
+    {
+        m_compactMode = compactMode;
+        emit compactModeChanged();
+    }
 }
 
 QSize SettingsCore::windowSize()
@@ -280,9 +284,13 @@ QSize SettingsCore::windowSize()
     return m_windowSize;
 }
 
-void SettingsCore::setWindowSize(QSize windowSize)
+void SettingsCore::setWindowSize(const QSize& windowSize)
 {
-    m_windowSize = windowSize;
+    if(windowSize != m_windowSize)
+    {
+        m_windowSize = windowSize;
+        emit windowSizeChanged();
+    }
 }
 
 QString SettingsCore::mathematicalSidebarActiveView()
@@ -290,9 +298,13 @@ QString SettingsCore::mathematicalSidebarActiveView()
     return m_mathematicalSidebarActiveView;
 }
 
-void SettingsCore::setMathematicalSidebarActiveView(QString activeView)
+void SettingsCore::setMathematicalSidebarActiveView(const QString& activeView)
 {
-    m_mathematicalSidebarActiveView = activeView;
+    if(activeView != m_mathematicalSidebarActiveView)
+    {
+        m_mathematicalSidebarActiveView = activeView;
+        emit mathematicalSidebarActiveViewChanged();
+    }
 }
 
 int SettingsCore::mathematicalSidebarWidth()
@@ -302,7 +314,11 @@ int SettingsCore::mathematicalSidebarWidth()
 
 void SettingsCore::setMathematicalSidebarWidth(int width)
 {
-    m_mathematicalSidebarWidth = width;
+    if(width != m_mathematicalSidebarWidth)
+    {
+        m_mathematicalSidebarWidth = width;
+        emit mathematicalSidebarWidthChanged();
+    }
 }
 
 bool SettingsCore::mathematicalSidebarVisible()
@@ -312,7 +328,11 @@ bool SettingsCore::mathematicalSidebarVisible()
 
 void SettingsCore::setMathematicalSidebarVisible(bool visible)
 {
-    m_mathematicalSidebarVisible = visible;
+    if(visible != m_mathematicalSidebarVisible)
+    {
+        m_mathematicalSidebarVisible = visible;
+        emit mathematicalSidebarVisibleChanged();
+    }
 }
 
 bool SettingsCore::wasMathematicalSidebarShown()
@@ -322,5 +342,9 @@ bool SettingsCore::wasMathematicalSidebarShown()
 
 void SettingsCore::setWasMathematicalSidebarShown(bool wasShown)
 {
-    m_wasMathematicalSidebarShown = wasShown;
+    if(wasShown != m_wasMathematicalSidebarShown)
+    {
+        m_wasMathematicalSidebarShown = wasShown;
+        emit wasMathematicalSidebarShownChanged();
+    }
 }

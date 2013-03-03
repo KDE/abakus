@@ -54,6 +54,7 @@ set(abakus_SRCS
     result.cpp
     resultmodel.cpp
     resultmodelitem.cpp
+    settings.cpp
     settingscore.cpp
 )
 

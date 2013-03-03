@@ -52,11 +52,8 @@ Item {
             height: toolbarHeight
             anchors.right: parent.right
             anchors.top: parent.top
-            sidebarItem: sidebar
             
             onToggleSidebar: mainWindow.slotToggleMathematicalSidebar()
-            
-            onSidebarWidthChanged: mainWindow.mathematicalSidebarWidthChanged(newWidth)
             
             onShowToolTip: mainWindow.showToolTip(xPosition, yPosition, toolTipText)
             onHideToolTip: mainWindow.hideToolTip()
@@ -150,7 +147,6 @@ Item {
     
     MathSidebar {
         id: sidebar
-        width: 200
         tabBarHeight: sidebarTabBarHeight
         anchors.top: parent.top
         anchors.left: parent.right
@@ -181,8 +177,6 @@ Item {
             }
             
             onSetMathematicalActiveTab: sidebar.activeTab = activeTab
-            
-            onSetMathematicalSidebarWidth: sidebar.width = width
         }
         
         states: State {

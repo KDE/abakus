@@ -23,7 +23,9 @@
 #include "numeralmodel.h"
 #include "result.h"
 #include "resultmodel.h"
+#include "settings.h"
 
+#include <qdeclarative.h>
 #include <QDeclarativeContext>
 #include <QDeclarativeView>
 #include <QToolTip>
@@ -52,13 +54,14 @@ MainWindow::MainWindow() :
     m_compactMode = m_settingscore->compactMode();
     m_size = m_settingscore->windowSize();
     m_mathematicalSidebarActiveTab = m_settingscore->mathematicalSidebarActiveView();
-    m_mathematicalSidebarWidth = m_settingscore->mathematicalSidebarWidth();
     m_mathematicalSidebarVisible = m_settingscore->mathematicalSidebarVisible();
     m_wasMathematicalSidebarShown = m_settingscore->wasMathematicalSidebarShown();
     slotUpdateSize();
     setAutoSaveSettings();
 
     m_visibleHistoryItemIndices.clear();
+    
+    qmlRegisterType<Settings>("abakus", 1, 0, "Settings");
 
     m_declarativeView = new QDeclarativeView(this);
     m_declarativeContext = m_declarativeView->rootContext();
@@ -102,7 +105,6 @@ bool MainWindow::queryExit()
     m_settingscore->setCompactMode(m_compactMode);
     m_settingscore->setWindowSize(m_size);
     m_settingscore->setMathematicalSidebarActiveView(m_mathematicalSidebarActiveTab);
-    m_settingscore->setMathematicalSidebarWidth(m_mathematicalSidebarWidth);
     m_settingscore->setMathematicalSidebarVisible(m_mathematicalSidebarVisible);
     m_settingscore->setWasMathematicalSidebarShown(m_wasMathematicalSidebarShown);
     m_settingscore->saveSettings();
@@ -268,7 +270,6 @@ void MainWindow::applySettings()
     emit trigModeChanged((int)Abakus::m_trigMode);
     emit precisionChanged(Abakus::m_prec);
     emit setMathematicalActiveTab(m_mathematicalSidebarActiveTab);
-    emit setMathematicalSidebarWidth(m_mathematicalSidebarWidth);
     
     if(m_compactMode)
     {
@@ -348,11 +349,6 @@ void MainWindow::setupLayout()
 void MainWindow::mathematicalSidebarActiveTabChanged(const QString& activeTab)
 {
     m_mathematicalSidebarActiveTab = activeTab;
-}
-
-void MainWindow::mathematicalSidebarWidthChanged(const int newWidth)
-{
-    m_mathematicalSidebarWidth = newWidth;
 }
 
 void MainWindow::slotToggleMathematicalSidebar()
