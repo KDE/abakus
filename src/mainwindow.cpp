@@ -43,18 +43,19 @@ MainWindow::MainWindow() :
     m_helpMenu(0),
     m_actionCollection(new KActionCollection(this)),
     m_resultItemModel (ResultModel::instance()),
-    m_size(QSize(600, 220)),
-    m_mathematicalSidebarActiveTab("numerals"),
-    m_mathematicalSidebarWidth(200),
-    m_mathematicalSidebarVisible(true),
-    m_wasMathematicalSidebarShown(true),
-    m_compactMode(false),
-    m_historyLimit(500),
+    m_settingscore(SettingsCore::instance()),
     m_insert(false)
 {
     setObjectName("abakusMainWindow");
     
-    loadConfig();
+    m_settingscore->loadSettings();
+    m_compactMode = m_settingscore->compactMode();
+    m_size = m_settingscore->windowSize();
+    m_mathematicalSidebarActiveTab = m_settingscore->mathematicalSidebarActiveView();
+    m_mathematicalSidebarWidth = m_settingscore->mathematicalSidebarWidth();
+    m_mathematicalSidebarVisible = m_settingscore->mathematicalSidebarVisible();
+    m_wasMathematicalSidebarShown = m_settingscore->wasMathematicalSidebarShown();
+    slotUpdateSize();
     setAutoSaveSettings();
 
     m_visibleHistoryItemIndices.clear();
@@ -94,7 +95,17 @@ MainWindow::MainWindow() :
 
 bool MainWindow::queryExit()
 {
-    saveConfig();
+    if(!m_compactMode)
+    {
+        m_size = size();
+    }
+    m_settingscore->setCompactMode(m_compactMode);
+    m_settingscore->setWindowSize(m_size);
+    m_settingscore->setMathematicalSidebarActiveView(m_mathematicalSidebarActiveTab);
+    m_settingscore->setMathematicalSidebarWidth(m_mathematicalSidebarWidth);
+    m_settingscore->setMathematicalSidebarVisible(m_mathematicalSidebarVisible);
+    m_settingscore->setWasMathematicalSidebarShown(m_wasMathematicalSidebarShown);
+    m_settingscore->saveSettings();
     m_resultItemModel->clear();
     return KMainWindow::queryExit();
 }
@@ -292,218 +303,6 @@ int MainWindow::getParenthesesLevel(const QString &str)
             --level;
 
     return level;
-}
-
-void MainWindow::loadConfig()
-{
-    KConfigGroup config = KGlobal::config()->group("Settings");
-
-    QString mode = config.readEntry("Trigonometric mode", "Degrees");
-    if(mode == "Degrees") {
-        setTrigMode(Abakus::Degrees);
-    }
-    else {
-        setTrigMode(Abakus::Radians);
-    }
-
-    int precision = config.readEntry("Decimal Precision", -1);
-    if(precision < -1 || precision > 75)
-    {
-        precision = -1;
-    }
-
-    Abakus::m_prec = precision;
-    
-    m_historyLimit = config.readEntry("History Limit", 500);
-    
-
-    config = KGlobal::config()->group("GUI");
-
-    m_mathematicalSidebarVisible = config.readEntry("ShowMathematicalSidebar", true);
-    m_mathematicalSidebarActiveTab = config.readEntry("MathematicalSidebarActiveTab", "numerals");
-    m_mathematicalSidebarWidth = config.readEntry("MathematicalSidebarWidth", 200);
-
-    m_compactMode = config.readEntry("InCompactMode", false);
-    
-    m_size = config.readEntry("Size", QSize(600, 220));
-    slotUpdateSize();
-
-
-    config = KGlobal::config()->group("Variables");
-    QStringList variableKeys = config.keyList();
-    QStringList variableValues;
-    Abakus::Number number;
-    
-    for(int i = 0; i < variableKeys.count(); ++i)
-    {
-        variableValues = config.readEntry(variableKeys[i], QStringList());
-        if(variableValues.count() < 3) continue;
-        
-        number = Abakus::Number(variableValues[1].toLatin1());
-        number.setNumeralSystem((Abakus::NumeralSystem) variableValues[2].toInt());
-        
-        NumeralModel::instance()->setValue(variableValues[0], number);
-    }
-    
-    
-    config = KGlobal::config()->group("Functions");
-    QStringList functionKeys = config.keyList();
-    QString functionValue;
-
-    for(int i = 0; i < functionKeys.count(); ++i)
-    {
-        functionValue = config.readEntry(functionKeys[i], QString());
-        if(functionValue.isEmpty()) continue;
-        
-        QByteArray strValue = "set " + functionValue.toLatin1();
-        parseString(strValue.data()); // Run the function definitions through the parser
-    }
-    
-    
-    config = KGlobal::config()->group("History");
-    QStringList historyKeys = config.keyList();
-    QStringList historyValues;
-    ResultModelItem* resultModelItem;
-    
-    for(int i = historyKeys.count() - 1; i >= 0; --i)
-    {
-        historyValues = config.readEntry(historyKeys[i], QStringList());
-        if(historyValues.count() < 1) continue;
-        
-        if(historyValues[0].toInt() == ResultModelItem::Result)
-        {
-            if(historyValues.count() < 4) continue;
-            number = Abakus::Number(historyValues[2].toLatin1());
-            number.setNumeralSystem((Abakus::NumeralSystem) historyValues[3].toInt());
-            resultModelItem = new ResultModelItem(historyValues[1], number);
-        }
-        else
-        {
-            if(historyValues.count() < 3) continue;
-            resultModelItem = new ResultModelItem(historyValues[1], historyValues[2]);
-        }
-        m_resultItemModel->addResultModelItem(resultModelItem);
-    }
-}
-
-void MainWindow::saveConfig()
-{
-    KConfigGroup config = KGlobal::config()->group("Settings");
-
-    config.writeEntry("Trigonometric mode",
-            trigMode() == Abakus::Degrees
-            ? "Degrees"
-            : "Radians");
-
-    config.writeEntry("Decimal Precision", Abakus::m_prec);
-    config.writeEntry("History Limit", m_historyLimit);
-
-    
-    config = KGlobal::config()->group("GUI");
-
-    config.writeEntry("InCompactMode", m_compactMode);
-
-    if(!m_compactMode)
-    {
-        config.writeEntry("ShowMathematicalSidebar", m_mathematicalSidebarVisible);
-        m_size = size();
-    }
-    else {
-        config.writeEntry("ShowMathematicalSidebar", m_wasMathematicalSidebarShown);
-    }
-    
-    config.writeEntry("MathematicalSidebarActiveTab", m_mathematicalSidebarActiveTab);
-    config.writeEntry("MathematicalSidebarWidth", m_mathematicalSidebarWidth);
-    
-    config.writeEntry("Size", m_size);
-    
-    
-    config = KGlobal::config()->group("Variables");
-    config.deleteGroup();
-    
-    QStringList saveList;
-    QStringList::ConstIterator it;
-    int fieldWidth;
-    int numberOfEntries;
-    
-    // Set precision to max for most accuracy
-    Abakus::m_prec = 75;
-    
-    
-    QStringList values = NumeralModel::instance()->valueNames();
-    for(it = values.begin(), numberOfEntries = 0; it != values.end(); ++it) {
-        if(NumeralModel::instance()->isValueReadOnly(*it))
-            continue;
-        
-        ++numberOfEntries;
-    }
-    fieldWidth = QString("%1").arg(numberOfEntries).length();
-    int j = 0;
-    for(it = values.begin(); it != values.end(); ++it) {
-        if(NumeralModel::instance()->isValueReadOnly(*it))
-            continue;
-        
-        saveList.clear();
-        saveList << *it;
-        saveList << NumeralModel::instance()->value(*it).toString(Abakus::DEC);
-        saveList << QString("%1").arg(NumeralModel::instance()->value(*it).numeralSystem());
-        config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveList);
-        ++j;
-    }
-
-
-    config = KGlobal::config()->group("Functions");
-    config.deleteGroup();
-
-    FunctionModel *manager = FunctionModel::instance();
-    UnaryFunction *fn;
-    QString variable;
-    QString expression;
-    QString saveString;
-    QStringList userFunctions = manager->functionList(FunctionModel::UserDefined);
-    fieldWidth = QString("%1").arg(userFunctions.count()).length();
-    j = 0;
-    foreach(QString functionName, userFunctions)
-    {
-        fn = dynamic_cast<UnaryFunction *>(manager->function(functionName)->userFn->fn);
-        variable = manager->function(functionName)->userFn->varName;
-        expression = fn->operand()->infixString();
-        
-        saveString = QString("%1(%2) = %3").arg(functionName).arg(variable).arg(expression);
-        config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveString);
-        ++j;
-    }
-    
-    
-    config = KGlobal::config()->group("History");
-    config.deleteGroup();
-    
-    QList<ResultModelItem*> historyList = m_resultItemModel->resultList();
-    int historyListLastIndex = historyList.count() - 1;
-    fieldWidth = QString("%1").arg(m_historyLimit).length();
-    ResultModelItem::ResultItemType resultType;
-    
-    for(int i = historyList.count() - 1, j = 0; i >= 0 && j < m_historyLimit; --i, ++j)
-    {
-        saveList.clear();
-        resultType = historyList[i]->type();
-        saveList << QString("%1").arg(resultType);
-        switch(resultType)
-        {
-            case ResultModelItem::Result:
-                saveList << historyList[i]->expression();
-                saveList << historyList[i]->resultValue().toString(Abakus::DEC);
-                saveList << QString("%1").arg(historyList[i]->resultValue().numeralSystem());
-                break;
-            case ResultModelItem::Message:
-            default:
-                saveList << historyList[i]->expression();
-                saveList << historyList[i]->result();
-        }
-        config.writeEntry(QString("%1").arg(j, fieldWidth, 10, QLatin1Char('0')), saveList);
-    }
-    
-    config.sync();
 }
 
 void MainWindow::setupLayout()

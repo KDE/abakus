@@ -21,6 +21,7 @@
  */
 
 #include "numerictypes.h"
+#include "settingscore.h"
 
 #include <KMainWindow>
 
@@ -94,8 +95,6 @@ class MainWindow : public KMainWindow
 
     void redrawResults();
 
-    void loadConfig();
-    void saveConfig();
     void setupLayout();
     QString interpolateExpression(const QString &text);
     
@@ -112,12 +111,12 @@ class MainWindow : public KMainWindow
     QDeclarativeView* m_declarativeView;
     QDeclarativeContext *m_declarativeContext;
 
+    SettingsCore* m_settingscore;
     QString m_mathematicalSidebarActiveTab;
     int m_mathematicalSidebarWidth;
     bool m_mathematicalSidebarVisible;
     bool m_wasMathematicalSidebarShown;
     bool m_compactMode;
-    int m_historyLimit;
 
     bool m_insert;
 

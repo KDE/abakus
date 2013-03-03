@@ -54,6 +54,7 @@ set(abakus_SRCS
     result.cpp
     resultmodel.cpp
     resultmodelitem.cpp
+    settingscore.cpp
 )
 
 kde4_add_executable(abakus ${abakus_SRCS})
