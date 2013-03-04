@@ -53,11 +53,6 @@ protected:
     
     Q_INVOKABLE void showToolTip(const int xPosition, const int yPosition, const QString& toolTipText);
     Q_INVOKABLE void hideToolTip();
-
-    Q_INVOKABLE void applySettings();
-    
-    Q_INVOKABLE void setDegrees();
-    Q_INVOKABLE void setRadians();
     
     Q_INVOKABLE void clearHistory();
     
@@ -74,9 +69,10 @@ protected:
 signals:
     void setFocusToEditor();
     void setEditorText(const QString &editorText);
-    void trigModeChanged(const int &mode);//Abakus::TrigMode &mode)
     
 private slots:
+    void slotSetDegrees();
+    void slotSetRadians();
     void slotRedrawResults();
     void slotUpdateSize();
     void slotToggleCompactMode();

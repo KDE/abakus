@@ -272,6 +272,20 @@ void SettingsCore::setPrecision(int precision)
     }
 }
 
+Abakus::TrigMode SettingsCore::trigMode()
+{
+    return Abakus::m_trigMode;
+}
+
+void SettingsCore::setTrigMode(Abakus::TrigMode trigMode)
+{
+    if(trigMode != Abakus::m_trigMode)
+    {
+        Abakus::m_trigMode = trigMode;
+        emit trigModeChanged();
+    }
+}
+
 bool SettingsCore::compactMode()
 {
     return m_compactMode;

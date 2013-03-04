@@ -202,16 +202,14 @@ void MainWindow::hideToolTip()
     QToolTip::hideText();
 }
 
-void MainWindow::setDegrees()
+void MainWindow::slotSetDegrees()
 {
-    setTrigMode(Abakus::Degrees);
-    emit trigModeChanged((int)Abakus::Degrees);
+    m_settingscore->setTrigMode(Abakus::Degrees);
 }
 
-void MainWindow::setRadians()
+void MainWindow::slotSetRadians()
 {
-    setTrigMode(Abakus::Radians);
-    emit trigModeChanged((int)Abakus::Radians);
+    m_settingscore->setTrigMode(Abakus::Radians);
 }
 
 void MainWindow::clearHistory()
@@ -254,11 +252,6 @@ void MainWindow::removeVisibleHistoryItemIndex(int itemIndex)
     m_visibleHistoryItemIndices.removeOne(itemIndex);
 }
 
-void MainWindow::applySettings()
-{
-    emit trigModeChanged((int)Abakus::m_trigMode);
-}
-
 void MainWindow::slotUpdateSize()
 {
     if(m_settingscore->compactMode())
@@ -291,25 +284,21 @@ void MainWindow::setupLayout()
     KStandardAction::quit(this, SLOT(close()), m_actionCollection);
     KStandardAction::keyBindings(this, SLOT(configureShortcuts()), m_actionCollection);
 
-    QAction *a = m_actionCollection->addAction("setDegreesMode", this, SLOT(setDegrees()));
+    QAction *a = m_actionCollection->addAction("setDegreesMode", this, SLOT(slotSetDegrees()));
     a->setText(i18n("&Degrees"));
     a->setShortcut(Qt::SHIFT | Qt::ALT | Qt::Key_D);
-    a->setChecked(trigMode() == Abakus::Degrees);
 
-    a = m_actionCollection->addAction("setRadiansMode", this, SLOT(setRadians()));
+    a = m_actionCollection->addAction("setRadiansMode", this, SLOT(slotSetRadians()));
     a->setText(i18n("&Radians"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_R);
-    a->setChecked(trigMode() == Abakus::Radians);
 
     a = m_actionCollection->addAction("toggleMathematicalSidebar", this, SLOT(slotToggleMathematicalSidebar()));
     a->setText(i18n("Show &Mathematical Sidebar"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_M);
-    a->setChecked(true);
 
     a = m_actionCollection->addAction("toggleCompactMode", this, SLOT(slotToggleCompactMode()));
     a->setText(i18n("Activate &Compact Mode"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_C);
-    a->setChecked(false);
 
     a = m_actionCollection->addAction("clearHistory", this, SLOT(clearHistory()));
     a->setText(i18n("Clear &History"));

@@ -21,6 +21,8 @@
 #ifndef SETTINGSCORE_H
 #define SETTINGSCORE_H
 
+#include "numerictypes.h"
+
 #include <QObject>
 #include <QSize>
 #include <QString>
@@ -37,6 +39,9 @@ public:
     
     int precision();
     void setPrecision(int precision);
+    
+    Abakus::TrigMode trigMode();
+    void setTrigMode(Abakus::TrigMode trigMode);
     
     bool compactMode();
     void setCompactMode(bool compactMode);
@@ -55,6 +60,7 @@ public:
     
 signals:
     void precisionChanged();
+    void trigModeChanged();
     void compactModeChanged();
     void windowSizeChanged();
     void mathematicalSidebarActiveViewChanged();

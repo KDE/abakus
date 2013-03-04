@@ -23,6 +23,7 @@
 Settings::Settings(QObject* parent) : QObject(parent), m_settingscore(SettingsCore::instance())
 {
     connect(m_settingscore, SIGNAL(precisionChanged()), this, SIGNAL(precisionChanged()));
+    connect(m_settingscore, SIGNAL(trigModeChanged()), this, SIGNAL(trigModeChanged()));
     connect(m_settingscore, SIGNAL(compactModeChanged()), this, SIGNAL(compactModeChanged()));
     connect(m_settingscore, SIGNAL(mathematicalSidebarActiveViewChanged()), this, SIGNAL(mathematicalSidebarActiveViewChanged()));
     connect(m_settingscore, SIGNAL(mathematicalSidebarWidthChanged()), this, SIGNAL(mathematicalSidebarWidthChanged()));
@@ -41,6 +42,16 @@ int Settings::precision()
 void Settings::setPrecision(int precision)
 {
     m_settingscore->setPrecision(precision);
+}
+
+Settings::TrigMode Settings::trigMode()
+{
+    return static_cast <Settings::TrigMode> (m_settingscore->trigMode());
+}
+
+void Settings::setTrigMode(Settings::TrigMode trigMode)
+{
+    m_settingscore->setTrigMode(static_cast <Abakus::TrigMode> (trigMode));
 }
 
 bool Settings::compactMode()

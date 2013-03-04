@@ -1,16 +1,19 @@
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import abakus 1.0 as Abakus
 
 Item {
     id: root
-    
-    property QtObject mainWindowObject
     
     QtObject {
         id: internal
         
         property ContextMenu contextMenu
+    }
+    
+    Abakus.Settings {
+        id: settings
     }
     
     Text {
@@ -35,11 +38,11 @@ Item {
         prefix: "base"
         
         Text {
-            id: trigMode
+            id: trigModeText
             anchors.fill: parent
             anchors.leftMargin: 6
             verticalAlignment: Text.AlignVCenter
-            text: degrees.text
+            text: settings.trigMode == Abakus.Settings.Degrees ? degrees.text: radians.text
         }
     
         PlasmaComponents.ToolButton {
@@ -60,31 +63,17 @@ Item {
         }
     }
     
-    
-    Connections {
-        target: mainWindowObject
-        
-        onTrigModeChanged: {
-            if(mode == 0) { //TODO: use the Abakus::TrigMode enum
-                trigMode.text = degrees.text
-            }
-            else if(mode == 1) {
-                trigMode.text = radians.text
-            }
-        }
-    }
-    
     Component {
         id: contextMenuComponent
         PlasmaComponents.ContextMenu {
             visualParent: trigModeFrame
             PlasmaComponents.MenuItem {
                 text: degrees.text
-                onClicked: mainWindowObject.setDegrees()
+                onClicked: settings.trigMode = Abakus.Settings.Degrees
             }
             PlasmaComponents.MenuItem {
                 text: radians.text
-                onClicked: mainWindowObject.setRadians()
+                onClicked: settings.trigMode = Abakus.Settings.Radians
             }
         }
     }

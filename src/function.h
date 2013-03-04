@@ -49,9 +49,6 @@ struct Function {
     bool userDefined;
 };
 
-void setTrigMode(Abakus::TrigMode mode);
-Abakus::TrigMode trigMode();
-
 Abakus::Number evaluateFunction(const Function *func, const Abakus::Number value);
 
 // Implemented in lexer.l due to prototype issues.

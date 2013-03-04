@@ -48,7 +48,6 @@ Item {
             anchors.right: sidebarGrip.left
             anchors.rightMargin: 5
             anchors.top: parent.top
-            mainWindowObject: mainWindow
         }
         
         SidebarGrip {
@@ -175,8 +174,5 @@ Item {
         mainWindowObject: mainWindow
     }
     
-    Component.onCompleted: {
-        mainWindow.applySettings()
-        editor.forceActiveFocus()
-    }
+    Component.onCompleted: editor.forceActiveFocus()
 }

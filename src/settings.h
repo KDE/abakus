@@ -29,7 +29,9 @@ class Settings : public QObject
 {
 
     Q_OBJECT
+    Q_ENUMS(TrigMode)
     Q_PROPERTY(int precision READ precision WRITE setPrecision NOTIFY precisionChanged)
+    Q_PROPERTY(TrigMode trigMode READ trigMode WRITE setTrigMode NOTIFY trigModeChanged)
     Q_PROPERTY(bool compactMode READ compactMode WRITE setCompactMode NOTIFY compactModeChanged)
     Q_PROPERTY(QString mathematicalSidebarActiveView READ mathematicalSidebarActiveView WRITE setMathematicalSidebarActiveView NOTIFY mathematicalSidebarActiveViewChanged)
     Q_PROPERTY(int mathematicalSidebarWidth READ mathematicalSidebarWidth WRITE setMathematicalSidebarWidth NOTIFY mathematicalSidebarWidthChanged)
@@ -39,8 +41,14 @@ public:
     Settings(QObject* parent = 0);
     virtual ~Settings();
     
+    // just a workaround, because enums in namespaces can't be used in qml
+    enum TrigMode{Degrees = Abakus::Degrees, Radians = Abakus::Radians};
+    
     int precision();
     void setPrecision(int precision);
+    
+    TrigMode trigMode();
+    void setTrigMode(TrigMode trigMode);
     
     bool compactMode();
     void setCompactMode(bool compactMode);
@@ -55,6 +63,7 @@ public:
     void setMathematicalSidebarVisible(bool visible);
     
 signals:
+    void trigModeChanged();
     void precisionChanged();
     void compactModeChanged();
     void mathematicalSidebarActiveViewChanged();

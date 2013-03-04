@@ -46,16 +46,6 @@ Abakus::Number evaluateFunction(const Function *func, const Abakus::Number value
     return (value.*(func->fn))();
 }
 
-void setTrigMode(Abakus::TrigMode mode)
-{
-    Abakus::m_trigMode = mode;
-}
-
-Abakus::TrigMode trigMode()
-{
-    return Abakus::m_trigMode;
-}
-
 #include "function.moc"
 
 // vim: set et sw=4 ts=8:
