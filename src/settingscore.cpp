@@ -230,6 +230,9 @@ void SettingsCore::saveSettings()
     }
     
     
+    config = KGlobal::config()->group("History");
+    config.deleteGroup();
+    
     QList<ResultModelItem*> historyList = ResultModel::instance()->resultList();
     int historyListLastIndex = historyList.count() - 1;
     fieldWidth = QString("%1").arg(m_historyLimit).length();
