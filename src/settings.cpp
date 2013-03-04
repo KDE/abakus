@@ -22,6 +22,7 @@
 
 Settings::Settings(QObject* parent) : QObject(parent), m_settingscore(SettingsCore::instance())
 {
+    connect(m_settingscore, SIGNAL(precisionChanged()), this, SIGNAL(precisionChanged()));
     connect(m_settingscore, SIGNAL(compactModeChanged()), this, SIGNAL(compactModeChanged()));
     connect(m_settingscore, SIGNAL(mathematicalSidebarActiveViewChanged()), this, SIGNAL(mathematicalSidebarActiveViewChanged()));
     connect(m_settingscore, SIGNAL(mathematicalSidebarWidthChanged()), this, SIGNAL(mathematicalSidebarWidthChanged()));
@@ -30,6 +31,16 @@ Settings::Settings(QObject* parent) : QObject(parent), m_settingscore(SettingsCo
 
 Settings::~Settings()
 {
+}
+
+int Settings::precision()
+{
+    return m_settingscore->precision();
+}
+
+void Settings::setPrecision(int precision)
+{
+    m_settingscore->setPrecision(precision);
 }
 
 bool Settings::compactMode()

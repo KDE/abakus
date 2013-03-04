@@ -35,6 +35,9 @@ public:
     void loadSettings();
     void saveSettings();
     
+    int precision();
+    void setPrecision(int precision);
+    
     bool compactMode();
     void setCompactMode(bool compactMode);
     
@@ -51,6 +54,7 @@ public:
     void setMathematicalSidebarVisible(bool visible);
     
 signals:
+    void precisionChanged();
     void compactModeChanged();
     void windowSizeChanged();
     void mathematicalSidebarActiveViewChanged();

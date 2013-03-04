@@ -29,6 +29,7 @@ class Settings : public QObject
 {
 
     Q_OBJECT
+    Q_PROPERTY(int precision READ precision WRITE setPrecision NOTIFY precisionChanged)
     Q_PROPERTY(bool compactMode READ compactMode WRITE setCompactMode NOTIFY compactModeChanged)
     Q_PROPERTY(QString mathematicalSidebarActiveView READ mathematicalSidebarActiveView WRITE setMathematicalSidebarActiveView NOTIFY mathematicalSidebarActiveViewChanged)
     Q_PROPERTY(int mathematicalSidebarWidth READ mathematicalSidebarWidth WRITE setMathematicalSidebarWidth NOTIFY mathematicalSidebarWidthChanged)
@@ -37,6 +38,9 @@ class Settings : public QObject
 public:
     Settings(QObject* parent = 0);
     virtual ~Settings();
+    
+    int precision();
+    void setPrecision(int precision);
     
     bool compactMode();
     void setCompactMode(bool compactMode);
@@ -51,6 +55,7 @@ public:
     void setMathematicalSidebarVisible(bool visible);
     
 signals:
+    void precisionChanged();
     void compactModeChanged();
     void mathematicalSidebarActiveViewChanged();
     void mathematicalSidebarWidthChanged();

@@ -56,6 +56,7 @@ MainWindow::MainWindow() :
 
     m_visibleHistoryItemIndices.clear();
     
+    connect(m_settingscore->instance(), SIGNAL(precisionChanged()), this, SLOT(slotRedrawResults()));
     connect(m_settingscore->instance(), SIGNAL(compactModeChanged()), this, SLOT(slotUpdateSize()));
     
     qmlRegisterType<Settings>("abakus", 1, 0, "Settings");
@@ -256,7 +257,6 @@ void MainWindow::removeVisibleHistoryItemIndex(int itemIndex)
 void MainWindow::applySettings()
 {
     emit trigModeChanged((int)Abakus::m_trigMode);
-    emit precisionChanged(Abakus::m_prec);
 }
 
 void MainWindow::slotUpdateSize()
@@ -356,15 +356,7 @@ QString MainWindow::interpolateExpression(const QString &text)
     return str;
 }
 
-void MainWindow::setPrecision(int precision)
-{
-    Abakus::m_prec = precision;
-    redrawResults();
-    
-    emit precisionChanged(Abakus::m_prec);
-}
-
-void MainWindow::redrawResults()
+void MainWindow::slotRedrawResults()
 {
     m_resultItemModel->slotRedrawItems();
     NumeralModel::instance()->slotRedrawItems();

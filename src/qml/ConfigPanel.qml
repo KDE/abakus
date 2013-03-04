@@ -17,9 +17,14 @@ Item {
     Abakus.Settings {
         id: settings
         
+        onPrecisionChanged: precisionText.text = precision < 0 ? i18n("Auto") : precision
+        
         onCompactModeChanged: compactModeButton.checked = compactMode
         
-        Component.onCompleted: compactModeButton.checked = compactMode
+        Component.onCompleted: {
+            precisionText.text = precision < 0 ? i18n("Auto") : precision
+            compactModeButton.checked = compactMode
+        }
     }
     
     PlasmaComponents.ButtonRow {
@@ -86,15 +91,15 @@ Item {
                 width: parent.width
                 
                 PlasmaComponents.Label {
-                    id: precissionLabel
+                    id: precisionLabel
                     height: buttonHeight
                     verticalAlignment: Text.AlignVCenter
                     text: i18n("Decimal Precision:")
                 }
                 
                 Item {
-                    id: precissionComboBox
-                    width: parent.width - precissionLabel.width
+                    id: precisionComboBox
+                    width: parent.width - precisionLabel.width
                     height: buttonHeight
                     
                     property bool editCustom: false
@@ -103,10 +108,10 @@ Item {
                         anchors.fill: parent
                         imagePath: "widgets/lineedit"
                         prefix: "base"
-                        visible: !precissionComboBox.editCustom
+                        visible: !precisionComboBox.editCustom
                         
                         Text {
-                            id: precission
+                            id: precisionText
                             anchors.fill: parent
                             anchors.leftMargin: 6
                             verticalAlignment: Text.AlignVCenter
@@ -116,30 +121,30 @@ Item {
                             anchors.fill: parent
                             
                             onDoubleClicked: {
-                                precissionComboBox.editCustom = true
-                                precissionCustom.text = (precission.text == i18n("Auto")) ? "" : precission.text
-                                precissionCustom.forceActiveFocus()
+                                precisionComboBox.editCustom = true
+                                precisionCustom.text = (precisionText.text == i18n("Auto")) ? "" : precisionText.text
+                                precisionCustom.forceActiveFocus()
                             }
                         }
                     }
                     
                     PlasmaComponents.TextField {
-                        id: precissionCustom
+                        id: precisionCustom
                         anchors.fill: parent
                         validator: IntValidator{bottom: 1; top: 75;}
-                        visible: precissionComboBox.editCustom
+                        visible: precisionComboBox.editCustom
                         
                         onAccepted: {
-                            precissionComboBox.editCustom = false
-                            precissionComboBox.focus = false
-                            mainWindowObject.setPrecision(parseInt(precissionCustom.text))
+                            precisionComboBox.editCustom = false
+                            precisionComboBox.focus = false
+                            settings.precision = parseInt(precisionCustom.text)
                             root.rejectFocus()
                         }
                         
                         onActiveFocusChanged: {
-                            if(!activeFocus && precissionComboBox.editCustom)
+                            if(!activeFocus && precisionComboBox.editCustom)
                             {
-                                precissionComboBox.editCustom = false
+                                precisionComboBox.editCustom = false
                             }
                         }
                     }
@@ -151,22 +156,22 @@ Item {
                         anchors.bottom: parent.bottom
                         anchors.margins: 1
                         flat: true
-                        iconSource: precissionComboBox.editCustom ? "key-enter" : "arrow-down"
+                        iconSource: precisionComboBox.editCustom ? "key-enter" : "arrow-down"
                         
                         property ContextMenu contextMenu
                         onClicked: {
-                            if (!precissionComboBox.editCustom)
+                            if (!precisionComboBox.editCustom)
                             {
                                 if (!contextMenu) {
-                                    contextMenu = contextMenuComponent.createObject(precissionComboBox)
+                                    contextMenu = contextMenuComponent.createObject(precisionComboBox)
                                 }
                                 contextMenu.open()
                             }
-                            else if(precissionCustom.acceptableInput)
+                            else if(precisionCustom.acceptableInput)
                             {
-                                precissionComboBox.editCustom = false
-                                precissionComboBox.focus = false
-                                mainWindowObject.setPrecision(parseInt(precissionCustom.text))
+                                precisionComboBox.editCustom = false
+                                precisionComboBox.focus = false
+                                settings.precision = parseInt(precisionCustom.text)
                                 root.rejectFocus()
                             }
                         }
@@ -196,26 +201,20 @@ Item {
                 onClicked: mainWindowObject.clearHistory()
             }
             
-            Connections {
-                target: mainWindowObject
-                
-                onPrecisionChanged: precission.text = newPrecision < 0 ? i18n("Auto") : newPrecision
-            }
-            
             Component {
                 id: contextMenuComponent
                 PlasmaComponents.ContextMenu {
-                    visualParent: precissionComboBox
+                    visualParent: precisionComboBox
                     PlasmaComponents.MenuItem {
                         text: i18n("Automatic")
-                        onClicked: mainWindowObject.setPrecision(-1)
+                        onClicked: settings.precision = -1
                     }
                     PlasmaComponents.MenuItem {
                         text: i18n("Custom (1...75)")
                         onClicked: {
-                            precissionComboBox.editCustom = true
-                            precissionCustom.text = ""
-                            precissionCustom.forceActiveFocus()
+                            precisionComboBox.editCustom = true
+                            precisionCustom.text = ""
+                            precisionCustom.forceActiveFocus()
                         }
                     }
                 }

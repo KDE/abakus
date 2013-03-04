@@ -37,10 +37,11 @@ class QMenu;
 class MainWindow : public KMainWindow
 {
     Q_OBJECT
-    public:
+    
+public:
     MainWindow();
 
-    protected:
+protected:
     virtual bool queryExit();
     
     Q_INVOKABLE void slotEvaluate(const QString &expression);
@@ -49,7 +50,6 @@ class MainWindow : public KMainWindow
     
     Q_INVOKABLE void showHelpMenu(int xPosition, int yPosition);
     Q_INVOKABLE void configureShortcuts();
-    Q_INVOKABLE void setPrecision(int precision);
     
     Q_INVOKABLE void showToolTip(const int xPosition, const int yPosition, const QString& toolTipText);
     Q_INVOKABLE void hideToolTip();
@@ -71,28 +71,25 @@ class MainWindow : public KMainWindow
     Q_INVOKABLE void addVisibleHistoryItemIndex(int itemIndex);
     Q_INVOKABLE void removeVisibleHistoryItemIndex(int itemIndex);
     
-    signals:
+signals:
     void setFocusToEditor();
     void setEditorText(const QString &editorText);
-    void trigModeChanged(const int &mode);//Abakus::TrigMode &mode);
-    void precisionChanged(int newPrecision);
+    void trigModeChanged(const int &mode);//Abakus::TrigMode &mode)
     
-    private slots:
+private slots:
+    void slotRedrawResults();
     void slotUpdateSize();
     void slotToggleCompactMode();
     void slotToggleMathematicalSidebar();
 
-    private:
+private:
     int getParenthesesLevel(const QString &str);
-
-    void redrawResults();
 
     void setupLayout();
     QString interpolateExpression(const QString &text);
     
     void setMathematicalSidebarVisible(const bool &visible);
 
-    private:
     QMenu* m_helpMenu;
     KActionCollection* m_actionCollection;
     ResultModel *m_resultItemModel;

@@ -258,6 +258,20 @@ void SettingsCore::saveSettings()
     config.sync();
 }
 
+int SettingsCore::precision()
+{
+    return Abakus::m_prec;
+}
+
+void SettingsCore::setPrecision(int precision)
+{
+    if(precision != Abakus::m_prec)
+    {
+        Abakus::m_prec = precision;
+        emit precisionChanged();
+    }
+}
+
 bool SettingsCore::compactMode()
 {
     return m_compactMode;
