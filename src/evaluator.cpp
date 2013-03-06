@@ -25,12 +25,11 @@
 #include "parser.yy.hpp"
 
 //#include <QtCore/QCoreApplication>
-#include <QtCore/QMap>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <QtCore/QVector>
-
-#include <kdebug.h>
+#include <QDebug>
+#include <QMap>
+#include <QString>
+#include <QStringList>
+#include <QVector>
 
 //
 // Reimplementation of goodies from Evaluator follows.
@@ -46,18 +45,18 @@ Evaluator::~Evaluator()
 
 void Evaluator::setExpression(const QString &expr)
 {
-    kError() << " not implemented.\n";
+    qWarning() << " not implemented.\n";
 }
 
 QString Evaluator::expression() const
 {
-    kError() << " not implemented.\n";
+    qWarning() << " not implemented.\n";
     return QString();
 }
 
 void Evaluator::clear()
 {
-    kError() << " not implemented.\n";
+    qWarning() << " not implemented.\n";
     // Yeah, whatever.
 }
 
@@ -68,7 +67,7 @@ bool Evaluator::isValid() const
 
 Tokens Evaluator::tokens() const
 {
-    kError() << " not implemented.\n";
+    qWarning() << " not implemented.\n";
     return Tokens();
 }
 
@@ -120,7 +119,7 @@ Tokens Evaluator::scan(const QString &expr)
 
 QString Evaluator::error() const
 {
-    kError() << " not implemented.\n";
+    qWarning() << " not implemented.\n";
     return "No Error Yet";
 }
 

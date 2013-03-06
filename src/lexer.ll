@@ -25,7 +25,7 @@
 #include "parser.yy.hpp"
 #include "result.h"
 
-#include <KDebug>
+#include <QDebug>
 
 int yyCurTokenPos;
 int yyThisTokenLength;
@@ -196,7 +196,7 @@ Lexer::Lexer(const QString &expr) :
 
     if(yyCurTokenPos != 0)
     {
-        kError() << "yyCurTokenPos should be 0!!\n";
+        qWarning() << "yyCurTokenPos should be 0!!\n";
     }
 
     m_private->thisPos = yyCurTokenPos;

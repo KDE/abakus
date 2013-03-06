@@ -21,7 +21,7 @@
 #include "node.h"
 #include "numeralmodel.h"
 
-#include <KDebug>
+#include <QDebug>
 
 void Node::deleteNode(Node *node)
 {
@@ -195,8 +195,8 @@ Abakus::Number DerivativeFunction::value() const
 
 Abakus::Number DerivativeFunction::derivative() const
 {
-    kError() << endl;
-    kError() << "This function is never supposed to be called!\n";
+    qWarning() << endl;
+    qWarning() << "This function is never supposed to be called!\n";
 
     return m_operand->derivative();
 }
@@ -244,7 +244,7 @@ Abakus::Number UnaryOperator::derivative() const
             return -(operand()->derivative());
 
         default:
-            kError() << "Impossible case encountered for UnaryOperator!\n";
+            qWarning() << "Impossible case encountered for UnaryOperator!\n";
             return Abakus::Number(0);
     }
 }
@@ -256,7 +256,7 @@ Abakus::Number UnaryOperator::value() const
             return -(operand()->value());
 
         default:
-            kError() << "Impossible case encountered for UnaryOperator!\n";
+            qWarning() << "Impossible case encountered for UnaryOperator!\n";
             return Abakus::Number(0);
     }
 }
@@ -320,7 +320,7 @@ QString BinaryOperator::infixString() const
 Abakus::Number BinaryOperator::derivative() const
 {
     if(!leftNode() || !rightNode()) {
-        kError() << "Can't evaluate binary operator!\n";
+        qWarning() << "Can't evaluate binary operator!\n";
         return Abakus::Number(0);
     }
 
@@ -346,7 +346,7 @@ Abakus::Number BinaryOperator::derivative() const
             return f.pow(g) * ((g / f) * fPrime + gPrime * f.ln());
 
         default:
-            kError() << "Impossible case encountered evaluating binary operator!\n";
+            qWarning() << "Impossible case encountered evaluating binary operator!\n";
             return Abakus::Number(0);
     }
 }
@@ -354,7 +354,7 @@ Abakus::Number BinaryOperator::derivative() const
 Abakus::Number BinaryOperator::value() const
 {
     if(!leftNode() || !rightNode()) {
-        kError() << "Can't evaluate binary operator!\n";
+        qWarning() << "Can't evaluate binary operator!\n";
         return Abakus::Number(0);
     }
 
@@ -384,7 +384,7 @@ Abakus::Number BinaryOperator::value() const
             return Abakus::Number(lValue / Abakus::Number(2).pow(rValue)).trunc();
 
         default:
-            kError() << "Impossible case encountered evaluating binary operator!\n";
+            qWarning() << "Impossible case encountered evaluating binary operator!\n";
             return Abakus::Number(0);
     }
 }
