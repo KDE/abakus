@@ -32,9 +32,7 @@
 
 #include <KAction>
 #include <KActionCollection>
-#include <KConfig>
 #include <KCmdLineArgs>
-#include <KDebug>
 #include <kdeclarative.h>
 #include <KHelpMenu>
 #include <KMenu>
@@ -89,7 +87,10 @@ MainWindow::MainWindow() :
     
     m_declarativeView->setFocus();
     
-    setupLayout();
+    setupShortcuts();
+    
+    KHelpMenu* helpMenu = new KHelpMenu(this, KCmdLineArgs::aboutData(), true, m_actionCollection);
+    m_helpMenu = helpMenu->menu();
 
 //    m_dcopInterface = new AbakusIface();
 }
@@ -277,7 +278,7 @@ int MainWindow::getParenthesesLevel(const QString &str)
     return level;
 }
 
-void MainWindow::setupLayout()
+void MainWindow::setupShortcuts()
 {
     m_actionCollection->addAssociatedWidget(this);
 
@@ -308,9 +309,6 @@ void MainWindow::setupLayout()
     a = m_actionCollection->addAction("select_edit", this, SIGNAL(setFocusToEditor()));
     a->setText(i18n("Select Editor"));
     a->setShortcut(Qt::Key_F6);
-    
-    KHelpMenu* helpMenu = new KHelpMenu(this, KCmdLineArgs::aboutData(), true, m_actionCollection);
-    m_helpMenu = helpMenu->menu();
 }
 
 void MainWindow::slotToggleMathematicalSidebar()

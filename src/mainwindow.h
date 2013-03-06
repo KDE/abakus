@@ -81,7 +81,7 @@ private slots:
 private:
     int getParenthesesLevel(const QString &str);
 
-    void setupLayout();
+    void setupShortcuts();
     QString interpolateExpression(const QString &text);
     
     void setMathematicalSidebarVisible(const bool &visible);
