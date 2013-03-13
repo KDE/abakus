@@ -26,6 +26,7 @@
 #include "node.h"
 #include "resultmodel.h"
 
+#include <KActionCollection>
 #include <KConfig>
 #include <KConfigGroup>
 #include <KGlobal>
@@ -48,7 +49,8 @@ SettingsCore::SettingsCore() :
     m_mathematicalSidebarWidth(200),
     m_mathematicalSidebarVisible(true),
     m_compactMode(false),
-    m_historyLimit(500)
+    m_historyLimit(500),
+    m_actionCollection(new KActionCollection(this))
 {
 }
 
@@ -146,6 +148,8 @@ void SettingsCore::loadSettings()
         }
         resultModel->addResultModelItem(resultModelItem);
     }
+    
+    m_actionCollection->readSettings();
 }
 
 void SettingsCore::saveSettings()
@@ -259,6 +263,8 @@ void SettingsCore::saveSettings()
     }
     
     config.sync();
+    
+    m_actionCollection->writeSettings();
 }
 
 int SettingsCore::precision()
@@ -357,4 +363,9 @@ void SettingsCore::setMathematicalSidebarVisible(bool visible)
         m_mathematicalSidebarVisible = visible;
         emit mathematicalSidebarVisibleChanged();
     }
+}
+
+KActionCollection* SettingsCore::actionCollection()
+{
+    return m_actionCollection;
 }

@@ -27,6 +27,8 @@
 #include <QSize>
 #include <QString>
 
+class KActionCollection;
+
 class SettingsCore : public QObject
 {
     Q_OBJECT
@@ -58,6 +60,8 @@ public:
     bool mathematicalSidebarVisible();
     void setMathematicalSidebarVisible(bool visible);
     
+    KActionCollection* actionCollection();
+    
 signals:
     void precisionChanged();
     void trigModeChanged();
@@ -79,6 +83,7 @@ private:
     bool m_mathematicalSidebarVisible;
     bool m_compactMode;
     int m_historyLimit;
+    KActionCollection* m_actionCollection;
 };
 
 #endif // SETTINGSCORE_H

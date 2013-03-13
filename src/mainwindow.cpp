@@ -41,12 +41,13 @@
 
 MainWindow::MainWindow() :
     m_helpMenu(0),
-    m_actionCollection(new KActionCollection(this)),
     m_resultItemModel (ResultModel::instance()),
     m_settingscore(SettingsCore::instance()),
     m_insert(false)
 {
     setObjectName("abakusMainWindow");
+    
+    setupShortcuts();
     
     m_settingscore->loadSettings();
     slotUpdateSize();
@@ -87,9 +88,7 @@ MainWindow::MainWindow() :
     
     m_declarativeView->setFocus();
     
-    setupShortcuts();
-    
-    KHelpMenu* helpMenu = new KHelpMenu(this, KCmdLineArgs::aboutData(), true, m_actionCollection);
+    KHelpMenu* helpMenu = new KHelpMenu(this, KCmdLineArgs::aboutData(), true);
     m_helpMenu = helpMenu->menu();
 
 //    m_dcopInterface = new AbakusIface();
@@ -190,7 +189,7 @@ void MainWindow::showHelpMenu(int xPosition, int yPosition)
 
 void MainWindow::configureShortcuts()
 {
-    KShortcutsDialog::configure(m_actionCollection, KShortcutsEditor::LetterShortcutsDisallowed, this);
+    KShortcutsDialog::configure(m_settingscore->actionCollection(), KShortcutsEditor::LetterShortcutsDisallowed);
 }
 
 void MainWindow::showToolTip(const int xPosition, const int yPosition, const QString& toolTipText)
@@ -280,33 +279,34 @@ int MainWindow::getParenthesesLevel(const QString &str)
 
 void MainWindow::setupShortcuts()
 {
-    m_actionCollection->addAssociatedWidget(this);
+    KActionCollection* actionCollection = m_settingscore->actionCollection();
+    actionCollection->addAssociatedWidget(this);
 
-    KStandardAction::quit(this, SLOT(close()), m_actionCollection);
-    KStandardAction::keyBindings(this, SLOT(configureShortcuts()), m_actionCollection);
+    KStandardAction::quit(this, SLOT(close()), actionCollection);
+    KStandardAction::keyBindings(this, SLOT(configureShortcuts()), actionCollection);
 
-    QAction *a = m_actionCollection->addAction("setDegreesMode", this, SLOT(slotSetDegrees()));
+    QAction *a = actionCollection->addAction("setDegreesMode", this, SLOT(slotSetDegrees()));
     a->setText(i18n("&Degrees"));
     a->setShortcut(Qt::SHIFT | Qt::ALT | Qt::Key_D);
 
-    a = m_actionCollection->addAction("setRadiansMode", this, SLOT(slotSetRadians()));
+    a = actionCollection->addAction("setRadiansMode", this, SLOT(slotSetRadians()));
     a->setText(i18n("&Radians"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_R);
 
-    a = m_actionCollection->addAction("toggleMathematicalSidebar", this, SLOT(slotToggleMathematicalSidebar()));
+    a = actionCollection->addAction("toggleMathematicalSidebar", this, SLOT(slotToggleMathematicalSidebar()));
     a->setText(i18n("Show &Mathematical Sidebar"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_M);
 
-    a = m_actionCollection->addAction("toggleCompactMode", this, SLOT(slotToggleCompactMode()));
+    a = actionCollection->addAction("toggleCompactMode", this, SLOT(slotToggleCompactMode()));
     a->setText(i18n("Activate &Compact Mode"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_C);
 
-    a = m_actionCollection->addAction("clearHistory", this, SLOT(clearHistory()));
+    a = actionCollection->addAction("clearHistory", this, SLOT(clearHistory()));
     a->setText(i18n("Clear &History"));
     a->setIcon(KIcon("edit-clear-list"));
     a->setShortcut(Qt::SHIFT + Qt::ALT + Qt::Key_L);
 
-    a = m_actionCollection->addAction("select_edit", this, SIGNAL(setFocusToEditor()));
+    a = actionCollection->addAction("select_edit", this, SIGNAL(setFocusToEditor()));
     a->setText(i18n("Select Editor"));
     a->setShortcut(Qt::Key_F6);
 }

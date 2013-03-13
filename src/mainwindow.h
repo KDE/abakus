@@ -27,8 +27,6 @@
 
 class ResultModel;
 
-class KActionCollection;
-
 class QDeclarativeContext;
 class QDeclarativeView;
 class QMenu;
@@ -87,7 +85,6 @@ private:
     void setMathematicalSidebarVisible(const bool &visible);
 
     QMenu* m_helpMenu;
-    KActionCollection* m_actionCollection;
     ResultModel *m_resultItemModel;
 
 //    AbakusIface *m_dcopInterface;
