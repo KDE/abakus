@@ -32,5 +32,6 @@ set_package_properties(BISON PROPERTIES DESCRIPTION "Bison is a general-purpose 
 
 include_directories(${MPFR_INCLUDE_DIR} ${QT4_INCLUDES} ${KDE4_INCLUDES} ${KDECLARATIVE_INCLUDE_DIR})
 
+add_subdirectory(qml-kde)
 add_subdirectory(src)
 add_subdirectory(doc)

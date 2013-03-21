@@ -37,7 +37,6 @@ FLEX_FILE(lexer.ll)
 
 
 # Continuing with normally schedule CMake action...
-add_subdirectory(qml)
 set(abakus_SRCS
     main.cpp
     evaluator.cpp
