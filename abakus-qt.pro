@@ -74,15 +74,6 @@ HEADERS += \
     src/function.h
 
 qml.path = $$DESTDIR/qml
-qml.files += qml-qt/main.qml
-qml.files += qml-qt/ConfigPanel.qml
-qml.files += qml-qt/ContextMenu.qml
-qml.files += qml-qt/Editor.qml
-qml.files += qml-qt/MainView.qml
-qml.files += qml-qt/MathExpressionItem.qml
-qml.files += qml-qt/MathSidebar.qml
-qml.files += qml-qt/ResultViewItem.qml
-qml.files += qml-qt/SidebarGrip.qml
-qml.files += qml-qt/TrigonometricMode.qml
+qml.files += qml-qt/*
 
 INSTALLS += qml
