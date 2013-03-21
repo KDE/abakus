@@ -23,7 +23,12 @@
 #include "numerictypes.h"
 #include "settingscore.h"
 
-#include <KMainWindow>
+#ifdef ABAKUS_QTONLY
+    #include <QMainWindow>
+    #define KMainWindow QMainWindow
+#else
+    #include <KMainWindow>
+#endif
 
 class ResultModel;
 
@@ -31,7 +36,7 @@ class QDeclarativeContext;
 class QDeclarativeView;
 class QMenu;
 
-// Main window class, handles events and layout and stuff
+// Main window class, handles events and stuff
 class MainWindow : public KMainWindow
 {
     Q_OBJECT

@@ -19,7 +19,13 @@
 
 #include "numeralmodel.h"
 
-#include <KLocale>
+#include <QStringList>
+
+#ifdef ABAKUS_QTONLY
+    #define i18n tr
+#else
+    #include <KLocale>
+#endif
 
 NumeralModel *NumeralModel::m_manager = 0;
 
@@ -227,7 +233,5 @@ QString NumeralModel::description(const QString &name)
 
     return QString();
 }
-
-#include "numeralmodel.moc"
 
 // vim: set et ts=8 sw=4 encoding=utf-8:

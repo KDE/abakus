@@ -212,6 +212,4 @@ QList< ResultModelItem* > ResultModel::resultList()
     return m_resultModelItems;
 }
 
-#include "resultmodel.moc"
-
 // vim: set et sw=4 ts=8:

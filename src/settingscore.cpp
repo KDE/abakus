@@ -26,10 +26,20 @@
 #include "node.h"
 #include "resultmodel.h"
 
-#include <KActionCollection>
-#include <KConfig>
-#include <KConfigGroup>
-#include <KGlobal>
+#ifdef ABAKUS_QTONLY
+    #include <QSettings>
+    class KActionCollection
+    {
+    public:
+        KActionCollection(QObject* parent = 0){};
+        ~KActionCollection(){};
+    };
+#else
+    #include <KActionCollection>
+    #include <KConfig>
+    #include <KConfigGroup>
+    #include <KGlobal>
+#endif
 
 SettingsCore* SettingsCore::m_instance = 0;
 
@@ -60,6 +70,9 @@ SettingsCore::~SettingsCore()
 
 void SettingsCore::loadSettings()
 {
+#ifdef ABAKUS_QTONLY
+    //TODO
+#else
     KConfigGroup config = KGlobal::config()->group("Settings");
     
     QString mode = config.readEntry("Trigonometric mode", "Degrees");
@@ -150,10 +163,14 @@ void SettingsCore::loadSettings()
     }
     
     m_actionCollection->readSettings();
+#endif
 }
 
 void SettingsCore::saveSettings()
 {
+#ifdef ABAKUS_QTONLY
+    //TODO
+#else
     KConfigGroup config = KGlobal::config()->group("Settings");
     
     config.writeEntry("Trigonometric mode",
@@ -265,6 +282,7 @@ void SettingsCore::saveSettings()
     config.sync();
     
     m_actionCollection->writeSettings();
+#endif
 }
 
 int SettingsCore::precision()

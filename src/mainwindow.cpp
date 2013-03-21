@@ -28,16 +28,21 @@
 #include <qdeclarative.h>
 #include <QDeclarativeContext>
 #include <QDeclarativeView>
+#include <QMenu>
 #include <QToolTip>
 
-#include <KAction>
-#include <KActionCollection>
-#include <KCmdLineArgs>
-#include <kdeclarative.h>
-#include <KHelpMenu>
-#include <KMenu>
-#include <KShortcutsDialog>
-#include <KStandardDirs>
+#ifdef ABAKUS_QTONLY
+    #define i18n tr
+#else
+    #include <KAction>
+    #include <KActionCollection>
+    #include <KCmdLineArgs>
+    #include <kdeclarative.h>
+    #include <KHelpMenu>
+    #include <KMenu>
+    #include <KShortcutsDialog>
+    #include <KStandardDirs>
+#endif
 
 MainWindow::MainWindow() :
     m_helpMenu(0),
@@ -51,8 +56,10 @@ MainWindow::MainWindow() :
     
     m_settingscore->loadSettings();
     slotUpdateSize();
+#ifndef ABAKUS_QTONLY
     setAutoSaveSettings();
-
+#endif
+    
     m_visibleHistoryItemIndices.clear();
     
     connect(m_settingscore->instance(), SIGNAL(precisionChanged()), this, SLOT(slotRedrawResults()));
@@ -75,6 +82,9 @@ MainWindow::MainWindow() :
     m_declarativeView->setAttribute(Qt::WA_TranslucentBackground);
     m_declarativeView->setWindowFlags(Qt::FramelessWindowHint);
 
+#ifdef ABAKUS_QTONLY
+    m_declarativeView->setSource(QUrl::fromLocalFile("qml/main.qml"));
+#else
     // initialize kdeclarative
     KDeclarative kDeclarative;
     kDeclarative.setDeclarativeEngine(m_declarativeView->engine());
@@ -83,15 +93,18 @@ MainWindow::MainWindow() :
     
     QString filePath = KStandardDirs::locate("appdata", "qml/main.qml");
     m_declarativeView->setSource(QUrl::fromLocalFile(filePath));
+#endif   
     
     setCentralWidget(m_declarativeView);
     
     m_declarativeView->setFocus();
     
+#ifdef ABAKUS_QTONLY
+    m_helpMenu = new QMenu();
+#else
     KHelpMenu* helpMenu = new KHelpMenu(this, KCmdLineArgs::aboutData(), true);
     m_helpMenu = helpMenu->menu();
-
-//    m_dcopInterface = new AbakusIface();
+#endif
 }
 
 bool MainWindow::queryExit()
@@ -104,7 +117,11 @@ bool MainWindow::queryExit()
     m_settingscore->setWindowSize(windowSize);
     m_settingscore->saveSettings();
     m_resultItemModel->clear();
-    return KMainWindow::queryExit();
+#ifdef ABAKUS_QTONLY
+    return QMainWindow::close();
+#else
+    return  KMainWindow::queryExit();
+#endif
 }
 
 void MainWindow::slotEvaluate(const QString &expression)
@@ -189,7 +206,9 @@ void MainWindow::showHelpMenu(int xPosition, int yPosition)
 
 void MainWindow::configureShortcuts()
 {
+#ifndef ABAKUS_QTONLY
     KShortcutsDialog::configure(m_settingscore->actionCollection(), KShortcutsEditor::LetterShortcutsDisallowed);
+#endif
 }
 
 void MainWindow::showToolTip(const int xPosition, const int yPosition, const QString& toolTipText)
@@ -279,6 +298,7 @@ int MainWindow::getParenthesesLevel(const QString &str)
 
 void MainWindow::setupShortcuts()
 {
+#ifndef ABAKUS_QTONLY
     KActionCollection* actionCollection = m_settingscore->actionCollection();
     actionCollection->addAssociatedWidget(this);
 
@@ -309,6 +329,7 @@ void MainWindow::setupShortcuts()
     a = actionCollection->addAction("select_edit", this, SIGNAL(setFocusToEditor()));
     a->setText(i18n("Select Editor"));
     a->setShortcut(Qt::Key_F6);
+#endif
 }
 
 void MainWindow::slotToggleMathematicalSidebar()
@@ -333,7 +354,7 @@ QString MainWindow::interpolateExpression(const QString &text)
         unsigned numPos = stackStr.mid(1).toUInt();
 
         if(!m_resultItemModel->stackValue(numPos, value)) {
-            m_resultItemModel->addMessage(str, i18n("Marker %1 is not set", stackStr));
+            m_resultItemModel->addMessage(str, i18n("Marker %1 is not set").arg(stackStr));
             return QString();
         }
 
@@ -348,7 +369,5 @@ void MainWindow::slotRedrawResults()
     m_resultItemModel->slotRedrawItems();
     NumeralModel::instance()->slotRedrawItems();
 }
-
-#include "mainwindow.moc"
 
 // vim: set et ts=8 sw=4:

@@ -19,8 +19,12 @@
 
 #include "numerictypes.h"
 
-#include <KLocale>
-#include <KGlobal>
+#ifdef ABAKUS_QTONLY
+    #include <QLocale>
+#else
+    #include <KLocale>
+    #include <KGlobal>
+#endif
 
 #include <QRegExp>
 
@@ -37,7 +41,12 @@ QString convertToString(const mpfr_ptr& number, const Abakus::NumeralSystem base
     QRegExp zeroKiller ("0*$");
     mp_exp_t exp;
     int desiredPrecision = Abakus::m_prec;
+#ifdef ABAKUS_QTONLY
+    QLocale locale;
+    QString decimalSymbol = locale.decimalPoint();
+#else
     QString decimalSymbol = KGlobal::locale()->decimalSymbol();
+#endif
 
     if(desiredPrecision < 0)
         desiredPrecision = 8;

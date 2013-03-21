@@ -46,6 +46,4 @@ Abakus::Number evaluateFunction(const Function *func, const Abakus::Number value
     return (value.*(func->fn))();
 }
 
-#include "function.moc"
-
 // vim: set et sw=4 ts=8:

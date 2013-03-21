@@ -21,7 +21,14 @@
 #include "node.h"
 #include "numerictypes.h"
 
-#include <KLocale>
+#include <QRegExp>
+#include <QStringList>
+
+#ifdef ABAKUS_QTONLY
+    #define i18n tr
+#else
+    #include <KLocale>
+#endif
 
 // Used to try and avoid recursive function definitions
 class DupFinder : public NodeFunctor
@@ -326,7 +333,5 @@ QStringList FunctionModel::functionList(FunctionModel::FunctionType type)
 
     return functions;
 }
-
-#include "functionmodel.moc"
 
 // vim: set et sw=4 ts=8:

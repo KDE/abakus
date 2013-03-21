@@ -20,10 +20,14 @@
 
 #include "mainwindow.h"
 
-#include <KAboutData>
-#include <KApplication>
-#include <KCmdLineArgs>
-#include <KLocale>
+#ifdef ABAKUS_QTONLY
+    #include <QApplication>
+#else
+    #include <KAboutData>
+    #include <KApplication>
+    #include <KCmdLineArgs>
+    #include <KLocale>
+#endif
 
 #include <mpfr.h>
 
@@ -31,6 +35,9 @@ const char *const version = "0.92";
 
 int main(int argc, char **argv)
 {
+#ifdef ABAKUS_QTONLY
+    QApplication app(argc, argv);
+#else
     KAboutData *about = new KAboutData(
         "abakus", // appName
         "abakus", // i18n catalog
@@ -64,6 +71,8 @@ int main(int argc, char **argv)
 
     KCmdLineArgs::init(argc, argv, about);
     KApplication app;
+#endif
+    
     MainWindow *win = new MainWindow;
 
     win->show();

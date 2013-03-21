@@ -19,7 +19,14 @@
 
 #include "numeralmodelitem.h"
 
-#include <KLocale>
+#include <QLocale>
+#include <QString>
+
+#ifdef ABAKUS_QTONLY
+    #define i18n /*TODO*/
+#else
+    #include <KLocale>
+#endif
 
 NumeralModelItem::NumeralModelItem(const QString &name, const Abakus::Number &value, NumeralItemType type, const QString &description)
     : m_name(name), m_value(value), m_valueString(value.toString()), m_description(description), m_type(type)

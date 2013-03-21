@@ -20,7 +20,14 @@
 #include "functionmodelitem.h"
 #include "node.h"
 
-#include <KLocale>
+#include <QLocale>
+#include <QString>
+
+#ifdef ABAKUS_QTONLY
+    #define i18n /*TODO*/
+#else
+    #include <KLocale>
+#endif
 
 FunctionModelItem::FunctionModelItem(Function* function, FunctionItemType type)
     : m_type(type)

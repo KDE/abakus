@@ -27,8 +27,13 @@
 #include "numeralmodel.h"
 #include "result.h"
 
-#include <KLocale>
-#include <KGlobal>
+#ifdef ABAKUS_QTONLY
+    #define i18n QObject::tr
+    #include <QLocale>
+#else
+    #include <KLocale>
+    #include <KGlobal>
+#endif
 
 extern char *yytext;
 
@@ -105,7 +110,7 @@ S: error '=' {
 
 // Can't assign to a function.
 S: FUNC '=' {
-    QString s(i18n("You can't assign to function %1", QString($1->name())));
+    QString s(i18n("You can't assign to function %1").arg(QString($1->name())));
     Result::setLastResult(s);
 
     YYABORT;
@@ -121,14 +126,14 @@ ASSIGN: '(' { --gCheckIdents; } IDENT ')' '=' {
 // since normally functions and variables with the same name can coexist, but
 // I don't want to duplicate code all over the place.
 S: SET DERIV {
-    QString s(i18n("Function %1 is built-in and cannot be overridden.", QLatin1String("deriv")));
+    QString s(i18n("Function %1 is built-in and cannot be overridden.").arg(QLatin1String("deriv")));
     Result::setLastResult(s);
 
     YYABORT;
 }
 
 S: DERIV '=' {
-    QString s(i18n("Function %1 is built-in and cannot be overridden.", QLatin1String("deriv")));
+    QString s(i18n("Function %1 is built-in and cannot be overridden.").arg(QLatin1String("deriv")));
     Result::setLastResult(s);
 
     YYABORT;
@@ -144,7 +149,7 @@ S: SET FUNC ASSIGN EXP {
     FunctionModel *manager = FunctionModel::instance();
 
     if(manager->isFunction(funcName) && !manager->isFunctionUserDefined(funcName)) {
-        QString s(i18n("Function %1 is built-in and cannot be overridden.", funcName));
+        QString s(i18n("Function %1 is built-in and cannot be overridden.").arg(funcName));
         Result::setLastResult(s);
 
         YYABORT;
@@ -153,7 +158,7 @@ S: SET FUNC ASSIGN EXP {
     QByteArray fnName = funcName.toLatin1();
     BaseFunction *newFn = new UserDefinedFunction(fnName.data(), $4);
     if(!manager->addFunction(newFn, ident)) {
-        QString s(i18n("Unable to define function %1 because it is recursive.", funcName));
+        QString s(i18n("Unable to define function %1 because it is recursive.").arg(funcName));
         Result::setLastResult(s);
 
         YYABORT;
@@ -169,7 +174,7 @@ S: SET IDENT ASSIGN EXP {
     ++gCheckIdents;
 
     if(NumeralModel::instance()->isValueSet($2->name())) {
-        QString s(i18n("You can't assign to variable %1", QString($2->name())));
+        QString s(i18n("You can't assign to variable %1").arg(QString($2->name())));
         Result::setLastResult(s);
 
         YYABORT;
@@ -199,14 +204,14 @@ S: REMOVE FUNC '(' ')' {
 // Can't remove an ident using remove-func syntax.
 S: REMOVE IDENT '(' ')' {
     // This is an error
-    Result::setLastResult(Result(i18n("Function %1 is not defined.", QString($2->name()))));
+    Result::setLastResult(Result(i18n("Function %1 is not defined.").arg(QString($2->name()))));
     YYABORT;
 }
 
 // This happens when the user tries to remove a function that's not defined.
 S: REMOVE IDENT '(' IDENT ')' {
     // This is an error
-    Result::setLastResult(Result(i18n("Function %1 is not defined.", QString($2->name()))));
+    Result::setLastResult(Result(i18n("Function %1 is not defined.").arg(QString($2->name()))));
     YYABORT;
 }
 
@@ -222,9 +227,9 @@ S: REMOVE IDENT {
     else {
         QString s;
         if(manager->isValueSet($2->name()))
-            s = i18n("Can't remove predefined variable %1.", QString($2->name()));
+            s = i18n("Can't remove predefined variable %1.").arg(QString($2->name()));
         else
-            s = i18n("Can't remove undefined variable %1.", QString($2->name()));
+            s = i18n("Can't remove undefined variable %1.").arg(QString($2->name()));
 
         Result::setLastResult(s);
 
@@ -239,7 +244,7 @@ S: SET IDENT '=' EXP {
         if($2->name() == "pi" && $4->value() == Abakus::Number("3.0"))
             Result::setLastResult(i18n("This isn't Indiana, you can't just change pi"));
         else
-            Result::setLastResult(i18n("%1 is a constant", QString($2->name())));
+            Result::setLastResult(i18n("%1 is a constant").arg(QString($2->name())));
 
         YYABORT;
     }
@@ -258,7 +263,7 @@ S: IDENT '=' EXP {
         if($1->name() == "pi" && $3->value() == Abakus::Number("3.0"))
             Result::setLastResult(i18n("This isn't Indiana, you can't just change pi"));
         else
-            Result::setLastResult(i18n("%1 is a constant", QString($1->name())));
+            Result::setLastResult(i18n("%1 is a constant").arg(QString($1->name())));
 
         YYABORT;
     }
@@ -270,13 +275,13 @@ S: IDENT '=' EXP {
 }
 
 S: NUMBER '=' {
-    Result::setLastResult(i18n("Can't assign to %1", $1->value().toString()));
+    Result::setLastResult(i18n("Can't assign to %1").arg($1->value().toString()));
     YYABORT;
 }
 
 // Can't call this as a function.
 TERM: IDENT '(' {
-    Result::setLastResult(i18n("%1 isn't a function (or operator expected)", QString($1->name())));
+    Result::setLastResult(i18n("%1 isn't a function (or operator expected)").arg(QString($1->name())));
     YYABORT;
 }
 
@@ -325,8 +330,12 @@ TERM: VALUE { $$ = $1; }
 VALUE: NUMBER { $$ = $1; }
 
 NUMBER: NUM {
-    KLocale *locale = KGlobal::locale();
-    QChar decimal = locale->decimalSymbol()[0];
+#ifdef ABAKUS_QTONLY
+    QLocale locale;
+    QChar decimal = locale.decimalPoint();
+#else
+    QChar decimal = KGlobal::locale()->decimalSymbol()[0];
+#endif
 
     // Replace current decimal separator with US Decimal separator to be
     // evil.
@@ -341,8 +350,12 @@ NUMBER: NUM {
 }
 
 NUMBER: NUMBIN {
-    KLocale *locale = KGlobal::locale();
-    QChar decimal = locale->decimalSymbol()[0];
+#ifdef ABAKUS_QTONLY
+    QLocale locale;
+    QChar decimal = locale.decimalPoint();
+#else
+    QChar decimal = KGlobal::locale()->decimalSymbol()[0];
+#endif
 
     // Replace current decimal separator with US Decimal separator to be
     // evil.
@@ -357,8 +370,12 @@ NUMBER: NUMBIN {
 }
 
 NUMBER: NUMOCT {
-    KLocale *locale = KGlobal::locale();
-    QChar decimal = locale->decimalSymbol()[0];
+#ifdef ABAKUS_QTONLY
+    QLocale locale;
+    QChar decimal = locale.decimalPoint();
+#else
+    QChar decimal = KGlobal::locale()->decimalSymbol()[0];
+#endif
 
     // Replace current decimal separator with US Decimal separator to be
     // evil.
@@ -376,8 +393,12 @@ NUMBER: NUMOCT {
 }
 
 NUMBER: NUMHEX {
-    KLocale *locale = KGlobal::locale();
-    QChar decimal = locale->decimalSymbol()[0];
+#ifdef ABAKUS_QTONLY
+    QLocale locale;
+    QChar decimal = locale.decimalPoint();
+#else
+    QChar decimal = KGlobal::locale()->decimalSymbol()[0];
+#endif
 
     // Replace current decimal separator with US Decimal separator to be
     // evil.
@@ -412,7 +433,7 @@ TERM: NUMBER '(' EXP ')' {
 
 TERM: NUMBER IDENT {
     if(gCheckIdents > 0 && !NumeralModel::instance()->isValueSet($2->name())) {
-        Result::setLastResult(i18n("Unknown variable %1", QString($2->name())));
+        Result::setLastResult(i18n("Unknown variable %1").arg(QString($2->name())));
         YYABORT;
     }
 
@@ -423,7 +444,7 @@ VALUE: IDENT {
     if(gCheckIdents <= 0 || NumeralModel::instance()->isValueSet($1->name()))
         $$ = $1;
     else {
-        Result::setLastResult(i18n("Unknown variable %1", QString($1->name())));
+        Result::setLastResult(i18n("Unknown variable %1").arg(QString($1->name())));
         YYABORT;
     }
 }

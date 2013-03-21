@@ -73,7 +73,7 @@ signals:
     
 private:
     SettingsCore();
-    ~SettingsCore();
+    virtual ~SettingsCore();
     
     static SettingsCore* m_instance;
     
