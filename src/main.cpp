@@ -35,6 +35,7 @@ const char *const version = "0.92";
 
 int main(int argc, char **argv)
 {
+    mpfr_set_default_prec(6 * 78); // 78 digits, figure about 6 bits needed.
 #ifdef ABAKUS_QTONLY
     QApplication app(argc, argv);
 #else
@@ -67,14 +68,10 @@ int main(int argc, char **argv)
                      ki18n("Inspiration/code for the initial design came from his Ruby implementation."),
                      "zack@kde.org");
 
-    mpfr_set_default_prec(6 * 78); // 78 digits, figure about 6 bits needed.
-
     KCmdLineArgs::init(argc, argv, about);
     KApplication app;
 #endif
-    
     MainWindow *win = new MainWindow;
-
     win->show();
 
     return app.exec();

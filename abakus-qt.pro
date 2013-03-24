@@ -28,7 +28,7 @@ QT += declarative
 # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
 # CONFIG += qdeclarative-boostable
 
-unix:LIBS+= -L/usr/lib -lmpfr
+LIBS += -L/usr/lib -lmpfr
 
 INCLUDEPATH += src
 
