@@ -16,7 +16,7 @@ CONFIG(release, debug|release) {
 DEFINES += ABAKUS_QTONLY
 
 # Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH += /usr/lib/kde4/imports
+#QML_IMPORT_PATH += /usr/lib/kde4/imports
 
 QT += declarative
 
@@ -30,50 +30,52 @@ QT += declarative
 
 LIBS += -L/usr/lib -lmpfr
 
-INCLUDEPATH += src
+INCLUDEPATH += src/common src/desktop
+
+!exists($$BUILD_DIR) system(mkdir $$BUILD_DIR)
 
 include(qmake/bison/bison.pri)
-BISONSOURCES = src/parser.yy
+BISONSOURCES = src/common/parser.yy
 include(qmake/flex/flex.pri)
-FLEXSOURCES = src/lexer.ll
+FLEXSOURCES = src/common/lexer.ll
 
 # The .cpp file which was generated for your project. Feel free to hack it.
-SOURCES += src/main.cpp \
-    src/settingscore.cpp \
-    src/settings.cpp \
-    src/resultmodelitem.cpp \
-    src/resultmodel.cpp \
-    src/result.cpp \
-    src/numerictypes.cpp \
-    src/numeralmodelitem.cpp \
-    src/numeralmodel.cpp \
-    src/node.cpp \
-    src/mainwindow.cpp \
-    src/functionmodelitem.cpp \
-    src/functionmodel.cpp \
-    src/function.cpp
+SOURCES += src/desktop/main.cpp \
+    src/desktop/mainwindow.cpp \
+    src/common/settingscore.cpp \
+    src/common/settings.cpp \
+    src/common/resultmodelitem.cpp \
+    src/common/resultmodel.cpp \
+    src/common/result.cpp \
+    src/common/numerictypes.cpp \
+    src/common/numeralmodelitem.cpp \
+    src/common/numeralmodel.cpp \
+    src/common/node.cpp \
+    src/common/functionmodelitem.cpp \
+    src/common/functionmodel.cpp \
+    src/common/function.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 #include(qt/qmlapplicationviewer/qmlapplicationviewer.pri)
 #qtcAddDeployment()
 
 HEADERS += \
-    src/sharedptr.h \
-    src/settingscore.h \
-    src/settings.h \
-    src/resultmodelitem.h \
-    src/resultmodel.h \
-    src/result.h \
-    src/numerictypes.h \
-    src/numeralmodelitem.h \
-    src/numeralmodel.h \
-    src/node.h \
-    src/mainwindow.h \
-    src/functionmodelitem.h \
-    src/functionmodel.h \
-    src/function.h
+    src/desktop/mainwindow.h \
+    src/common/sharedptr.h \
+    src/common/settingscore.h \
+    src/common/settings.h \
+    src/common/resultmodelitem.h \
+    src/common/resultmodel.h \
+    src/common/result.h \
+    src/common/numerictypes.h \
+    src/common/numeralmodelitem.h \
+    src/common/numeralmodel.h \
+    src/common/node.h \
+    src/common/functionmodelitem.h \
+    src/common/functionmodel.h \
+    src/common/function.h
 
 qml.path = $$DESTDIR/qml
-qml.files += qml-qt/*
+qml.files += src/qml-qt/*
 
 INSTALLS += qml

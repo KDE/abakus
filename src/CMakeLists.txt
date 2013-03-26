@@ -1,8 +1,9 @@
 # create parser file
 # this has to be done before the lexer file, because the lexer file includes the header from the parser
 macro(BISON_FILE parser_FILE)
-    set(OUTFILE "${CMAKE_CURRENT_BINARY_DIR}/${parser_FILE}.cpp")
-    set(HEADER "${CMAKE_CURRENT_BINARY_DIR}/${parser_FILE}.hpp")
+    GET_FILENAME_COMPONENT(output_FILE ${parser_FILE} NAME)
+    set(OUTFILE "${CMAKE_CURRENT_BINARY_DIR}/${output_FILE}.cpp")
+    set(HEADER "${CMAKE_CURRENT_BINARY_DIR}/${output_FILE}.hpp")
     add_custom_command(
         OUTPUT "${OUTFILE}" "${HEADER}"
         COMMAND "${BISON_EXECUTABLE}"
@@ -16,12 +17,13 @@ macro(BISON_FILE parser_FILE)
     set_source_files_properties("${HEADER}" PROPERTIES HEADER_FILE_ONLY TRUE)
 endmacro(BISON_FILE)
 
-BISON_FILE(parser.yy)
+BISON_FILE(common/parser.yy)
 
 
 # create lexer file
 macro(FLEX_FILE lexer_FILE)
-    set(OUTFILE "${CMAKE_CURRENT_BINARY_DIR}/${lexer_FILE}.cpp")
+    GET_FILENAME_COMPONENT(output_FILE ${lexer_FILE} NAME)
+    set(OUTFILE "${CMAKE_CURRENT_BINARY_DIR}/${output_FILE}.cpp")
     add_custom_command(
         OUTPUT "${OUTFILE}"
         COMMAND "${FLEX_EXECUTABLE}"
@@ -33,34 +35,36 @@ macro(FLEX_FILE lexer_FILE)
     set_source_files_properties("${OUTFILE}" PROPERTIES GENERATED TRUE)
 endmacro(FLEX_FILE)
 
-FLEX_FILE(lexer.ll)
+FLEX_FILE(common/lexer.ll)
 
+add_subdirectory(qml-kde)
+
+include_directories(common)
+include_directories(desktop)
 
 # Continuing with normally schedule CMake action...
 set(abakus_SRCS
-    main.cpp
-    evaluator.cpp
-    function.cpp
-    functionmodel.cpp
-    functionmodelitem.cpp
+    desktop/main.cpp
+    desktop/mainwindow.cpp
+    common/evaluator.cpp
+    common/function.cpp
+    common/functionmodel.cpp
+    common/functionmodelitem.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/lexer.ll.cpp
-    mainwindow.cpp
-    node.cpp
-    numeralmodel.cpp
-    numeralmodelitem.cpp
-    numerictypes.cpp
+    common/node.cpp
+    common/numeralmodel.cpp
+    common/numeralmodelitem.cpp
+    common/numerictypes.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/parser.yy.cpp
-    result.cpp
-    resultmodel.cpp
-    resultmodelitem.cpp
-    settings.cpp
-    settingscore.cpp
+    common/result.cpp
+    common/resultmodel.cpp
+    common/resultmodelitem.cpp
+    common/settings.cpp
+    common/settingscore.cpp
 )
 
 kde4_add_executable(abakus ${abakus_SRCS})
 target_link_libraries(abakus ${MPFR_LIBRARIES} ${QT_QTDECLARATIVE_LIBRARY} ${KDECLARATIVE_LIBRARIES} ${KDE4_PLASMA_LIBS})
 
 install(TARGETS abakus ${INSTALL_TARGETS_DEFAULT_ARGS})
-install(FILES abakus.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
-
-kde4_install_icons(${ICON_INSTALL_DIR})
+install(FILES desktop/abakus.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
