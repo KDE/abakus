@@ -37,7 +37,7 @@ Item {
             fontColorResult: internal.fontColorResult
             fontColorTag: internal.fontColorTag
 
-            onExpressionSelected: editor.setText(expression)
+            onExpressionSelected: editor.addText(expression)
             onResultSelected: editor.addText(result)
             onTagSelected: editor.addText(tag)
 
