@@ -55,9 +55,9 @@ QString convertToString(const mpfr_ptr& number, const Abakus::NumeralSystem base
     if(base != Abakus::DEC)
     {
         mpfr_ptr integer = (mpfr_ptr) new __mpfr_struct;
-        mpfr_init_set(integer, number, MPFR_RNDN);
+        mpfr_init_set(integer, number, GMP_RNDN);
         mpfr_trunc(integer, number);
-        str = mpfr_get_str (0, &exp, (int) base, 75, integer, MPFR_RNDN);
+        str = mpfr_get_str (0, &exp, (int) base, 75, integer, GMP_RNDN);
         QString result(str);
         mpfr_clear(integer);
         delete (__mpfr_struct *) integer;
