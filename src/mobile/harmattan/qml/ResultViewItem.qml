@@ -1,12 +1,15 @@
 import QtQuick 1.1
 
-Row {
+Rectangle {
     id: root
     width: parent.width
-    height: 40
+    height: expression.width + result.width + tag.width > parent.width ? 2 * rowHeight : rowHeight
+    color: model.index === currentHistoryIndex ? internal.highlightColor : internal.rowBackground
     
     property int currentHistoryIndex: 0
     property int currentMinTagSize: 0
+
+    property int rowHeight: 40
 
     property int fontPointSize: 24
     property string fontColorExpression: "lightgray"
@@ -24,73 +27,59 @@ Row {
         property string highlightColor: "transparent"
     }
     
-    Rectangle {
-        id: expressionItem
-        width: parent.width - resultItem.width - tagItem.width
-        height: parent.height
-        color: model.index === currentHistoryIndex ? internal.highlightColor : internal.rowBackground
-        
-        Text {
-            height: parent.height
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: fontColorExpression
-            clip: true
-            text: model.expression
-            font.pointSize: root.fontPointSize
-            
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.expressionSelected(model.expression)
-                onDoubleClicked: console.log("TODO")
-            }
+    Text {
+        id: expression
+        height: root.rowHeight
+        anchors.left: parent.left
+        anchors.top: parent.top
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
+        color: fontColorExpression
+        text: model.expression
+        font.pointSize: root.fontPointSize
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: root.expressionSelected(model.expression)
+            onDoubleClicked: console.log("TODO")
         }
     }
 
-    Rectangle {
-        id: resultItem
-        width: resultItemText.width
-        height: parent.height
-        color: model.index === currentHistoryIndex ? internal.highlightColor : internal.rowBackground
-        
-        Text {
-            id: resultItemText
-            height: parent.height
-            horizontalAlignment: Text.AlignRight
-            verticalAlignment: Text.AlignVCenter
-            color: fontColorResult
-            clip: true
-            text: model.result
-            font.pointSize: root.fontPointSize
-            
-            MouseArea  {
-                anchors.fill: parent
-                onClicked: root.resultSelected(model.result)
-                onDoubleClicked: console.log("TODO")
-            }
+    Text {
+        id: result
+        height: root.rowHeight
+        anchors.right: tag.left
+        anchors.bottom: parent.bottom
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignVCenter
+        color: fontColorResult
+        text: model.result
+        font.pointSize: root.fontPointSize
+
+        MouseArea  {
+            anchors.fill: parent
+            onClicked: root.resultSelected(model.result)
+            onDoubleClicked: console.log("TODO")
         }
     }
     
-    Rectangle {
-        id: tagItem
+    Text {
+        id: tag
         width: model.tag === "" ? 0 : currentMinTagSize
-        height: parent.height
-        color: model.index === currentHistoryIndex ? internal.highlightColor : internal.rowBackground
-        
-        Text {
-            height: parent.height
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            font.italic: true
-            color: fontColorTag
-            text: model.tag
-            font.pointSize: root.fontPointSize
-            
-            MouseArea  {
-                anchors.fill: parent
-                onClicked: root.tagSelected(model.tag)
-                onDoubleClicked: {}//do nothing
-            }
+        height: root.rowHeight
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
+        font.italic: true
+        color: fontColorTag
+        text: model.tag
+        font.pointSize: root.fontPointSize
+
+        MouseArea  {
+            anchors.fill: parent
+            onClicked: root.tagSelected(model.tag)
+            onDoubleClicked: {}//do nothing
         }
     }
 }
