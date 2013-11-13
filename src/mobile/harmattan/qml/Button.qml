@@ -4,6 +4,7 @@ Rectangle {
     id: root
     color: mouseArea.pressed ? buttonColorHighlight : buttonColor
     radius: height / 4
+    enabled: text.length != 0
 
     property alias text: label.text
 
@@ -36,6 +37,8 @@ Rectangle {
         anchors.bottomMargin: 15
         radius: parent.radius
         color: parent.color
+        border.color: buttonColor
+        border.width: 2
 
         Text {
             anchors.fill: parent
@@ -52,7 +55,7 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
 
-        onPressed: root.pressed()
+        onClicked: root.pressed()
         onPressAndHold: root.pressAndHold()
     }
 }

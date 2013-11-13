@@ -2,11 +2,23 @@ import QtQuick 1.1
 
 Rectangle {
     id: root
-    height: grid.height
+    height: flickable.height + 20
     color: "black"
 
     signal pressed(string value)
     signal evaluate()
+
+    Component.onCompleted: {
+        genericPad.pressed.connect(pressed)
+        genericPad.evaluate.connect(evaluate)
+        logicPad.pressed.connect(pressed)
+        logicPad.evaluate.connect(evaluate)
+        trigPad.pressed.connect(pressed)
+        trigPad.evaluate.connect(evaluate)
+
+        flickable.contentX = root.width
+        internal.animationDuration = 250
+    }
 
     QtObject {
         id: internal
@@ -14,174 +26,156 @@ Rectangle {
         property int spacing: 0
         property int buttonWidth: width / 5 - spacing
         property int buttonHeight: width / 8
+
+        property int selectedKeyPad: 2
+        property int keyPadSwipeTreshold: width / 4
+        property int animationDuration: 0
     }
 
-    Grid {
-        id: grid
+    Flickable {
+        id: flickable
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        columns: 5
-        spacing: internal.spacing
+        width: parent.width
+        height: container.height
+        contentWidth: container.width
+        contentHeight: container.height
+        flickableDirection: Flickable.HorizontalFlick
+        pressDelay: 50
 
-        // first row
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "sin"
-            onPressed: root.pressed("sin(")
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "cos"
-            onPressed: root.pressed("cos(")
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "π"
-            onPressed: root.pressed("pi")
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "("
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: ")"
-            onPressed: root.pressed(text)
+        Behavior on contentX { NumberAnimation { duration: internal.animationDuration; easing.type: Easing.OutQuad } }
+        Behavior on height { NumberAnimation { duration: internal.animationDuration; easing.type: Easing.OutQuad } }
+
+        onFlickStarted: {
+            // this will stop flicking and an onMovementEnded event will be generated
+            contentX = contentX
         }
 
-        // second row
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "7"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "8"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "9"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "x²"
-            onPressed: root.pressed("^2")
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "√"
-            onPressed: root.pressed("sqrt(")
-        }
-
-        // third row
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "4"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "5"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "6"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "×"
-            onPressed: root.pressed("*")
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "÷"
-            onPressed: root.pressed("/")
+        onMovementEnded: {
+            switch(internal.selectedKeyPad) {
+                case 1:
+                    if(contentX > internal.keyPadSwipeTreshold)
+                    {
+                        internal.selectedKeyPad = 2
+                        contentX = root.width
+                        contentHeight = genericPad.height
+                        container.height = genericPad.height
+                    }
+                    else
+                    {
+                        internal.selectedKeyPad = 1
+                        contentX = 0
+                    }
+                    break
+                case 2:
+                    if(contentX < root.width - internal.keyPadSwipeTreshold)
+                    {
+                        internal.selectedKeyPad = 1
+                        contentX = 0
+                        contentHeight = logicPad.height
+                        container.height = logicPad.height
+                    }
+                    else if(contentX > root.width + 50)
+                    {
+                        internal.selectedKeyPad = 3
+                        contentX = 2 * root.width
+                        contentHeight = trigPad.height
+                        container.height = trigPad.height
+                    }
+                    else
+                    {
+                        internal.selectedKeyPad = 2
+                        contentX = root.width
+                    }
+                    break
+                case 3:
+                    if(contentX < 2 * root.width - internal.keyPadSwipeTreshold)
+                    {
+                        internal.selectedKeyPad = 2
+                        contentX = root.width
+                        contentHeight = genericPad.height
+                        container.height = genericPad.height
+                    }
+                    else
+                    {
+                        internal.selectedKeyPad = 3
+                        contentX = 2 * root.width
+                    }
+                    break
+            }
         }
 
-        // fourth row
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "1"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "2"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "3"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "+"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "-"
-            onPressed: root.pressed(text)
-        }
+        Item {
+            id: container
+            width: logicPad.width + genericPad.width +trigPad.width
+            height: genericPad.height
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
 
-        // fifth row
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "0"
-            onPressed: root.pressed(text)
+            KeyPadLogic {
+                id: logicPad
+                anchors.top: parent.top
+                anchors.right: genericPad.left
+
+                spacing: internal.spacing
+                buttonWidth: internal.buttonWidth
+                buttonHeight: internal.buttonHeight
+            }
+            KeyPadGeneric {
+                id: genericPad
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                spacing: internal.spacing
+                buttonWidth: internal.buttonWidth
+                buttonHeight: internal.buttonHeight
+            }
+            KeyPadTrig {
+                id: trigPad
+                anchors.top: parent.top
+                anchors.left: genericPad.right
+
+                spacing: internal.spacing
+                buttonWidth: internal.buttonWidth
+                buttonHeight: internal.buttonHeight
+            }
         }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "."
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "10^x"
-            onPressed: root.pressed("*10^")
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "ans"
-            onPressed: root.pressed(text)
-        }
-        Button {
-            width: internal.buttonWidth
-            height: internal.buttonHeight
-            text: "="
-            textColor: "orange"
-            onPressed: root.evaluate()
+    }
+
+    Item {
+        id: activePadIndicator
+        height: 20
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        Row {
+            anchors.centerIn: parent
+            spacing: 10
+
+            Rectangle {
+                width: 10
+                height: width
+                radius: width / 2
+                color: "orange"
+                border.width: 5
+                border.color: internal.selectedKeyPad === 1 ? "orange" : "transparent"
+            }
+            Rectangle {
+                width: 10
+                height: width
+                radius: width / 2
+                color: "orange"
+                border.width: 5
+                border.color: internal.selectedKeyPad === 2 ? "orange" : "transparent"
+            }
+            Rectangle {
+                width: 10
+                height: width
+                radius: width / 2
+                color: "orange"
+                border.width: 5
+                border.color: internal.selectedKeyPad === 3 ? "orange" : "transparent"
+            }
         }
     }
 }
