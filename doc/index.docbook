@@ -23,7 +23,7 @@
 
 <legalnotice>&FDLNotice;</legalnotice>
 
-<date>2012-10-29</date>
+<date>2013-07-15</date>
 <releaseinfo>0.92</releaseinfo>
 
 <abstract>
@@ -125,7 +125,7 @@
 <sect2 id="precision">
 <title>Decimal Precision</title>
 
-<para>&abakus; supports high-precision arithmetic using Ariya Hidayat's hmath code from his excellent calculator <ulink url="http://speedcrunch.berlios.de/">SpeedCrunch</ulink>. You can change the displayed precision by using the <guilabel>View Menu</guilabel>, where you can select between <guilabel>Automatic precision</guilabel>, or some pre-defined precision levels. You can also select <guilabel>Custom precision</guilabel> to select your own precision (between 0-75 digits).</para>
+<para>&abakus; supports high-precision arithmetic using Ariya Hidayat's hmath code from his excellent calculator <ulink url="http://speedcrunch.berlios.de/">SpeedCrunch</ulink>. You can change the displayed precision by using the <guilabel>Configuration pane</guilabel> (wrench icon on the toolbar), where you can select between <guilabel>Automatic precision</guilabel>, or some pre-defined precision levels. You can also select <guilabel>Custom precision</guilabel> to select your own precision (between 0-75 digits).</para>
 </sect2>
 
 <sect2>
@@ -153,7 +153,7 @@
 </sect1>
 
 </chapter>
-
+<!--
 <chapter id="abakus-advanced">
 <title>Advanced Features</title>
 
@@ -243,7 +243,6 @@ are currently unsupported in RPN Mode.</para>
 
 </sect1>
 
-<!-- Not here now
 <sect1 id="advanced-dnd">
 <title>Drag and Drop</title>
 
@@ -264,9 +263,10 @@ into an application.</para>
 </mediaobject>
 </screenshot>
 </sect1>
--->
-</chapter>
 
+</chapter>
+-->
+<!--
 <chapter id="command-reference">
 <title>Command Reference</title>
 
@@ -430,6 +430,7 @@ results for trigonometric functions when in this mode.</para></important>
 </sect1>
 
 </chapter>
+-->
 
 <chapter id="limitations">
 <title>Limitations</title>
