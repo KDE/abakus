@@ -1,8 +1,28 @@
 [Desktop Entry]
 Type=Application
 Name=abakus
+Name[cs]=abakus
+Name[de]=Abakus
+Name[nl]=abakus
+Name[pt]=abakus
+Name[pt_BR]=abakus
+Name[sk]=abakus
+Name[sv]=abakus
+Name[tr]=abakus
+Name[uk]=abakus
+Name[x-test]=xxabakusxx
 Icon=icon-launcher-gallery
 Exec=invoker --type=j -s /opt/sdk/bin/abakus
 Comment=Calculator
+Comment[cs]=Kalkulačka
+Comment[de]=Rechner
+Comment[nl]=Rekenmachine
+Comment[pt]=Calculadora
+Comment[pt_BR]=Calculadora
+Comment[sk]=Kalkulačka
+Comment[sv]=Räknare
+Comment[tr]=Hesap Makinesi
+Comment[uk]=Калькулятор
+Comment[x-test]=xxCalculatorxx
 
 

@@ -4,6 +4,16 @@ Version=1.0
 Type=Application
 Terminal=false
 Name=abakus
+Name[cs]=abakus
+Name[de]=Abakus
+Name[nl]=abakus
+Name[pt]=abakus
+Name[pt_BR]=abakus
+Name[sk]=abakus
+Name[sv]=abakus
+Name[tr]=abakus
+Name[uk]=abakus
+Name[x-test]=xxabakusxx
 Exec=/usr/bin/invoker --splash=/opt/abakus/splash/splash-portrait.png --single-instance --type=d /opt/abakus/bin/abakus
 Icon=/usr/share/icons/hicolor/64x64/apps/hi64-app-abakus.png
 X-Window-Icon=
