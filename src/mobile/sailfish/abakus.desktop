@@ -3,6 +3,7 @@ Type=Application
 Name=abakus
 Name[cs]=abakus
 Name[de]=Abakus
+Name[fi]=abakus
 Name[nl]=abakus
 Name[pt]=abakus
 Name[pt_BR]=abakus
@@ -16,6 +17,7 @@ Exec=invoker --type=j -s /opt/sdk/bin/abakus
 Comment=Calculator
 Comment[cs]=Kalkulačka
 Comment[de]=Rechner
+Comment[fi]=Laskin
 Comment[nl]=Rekenmachine
 Comment[pt]=Calculadora
 Comment[pt_BR]=Calculadora
