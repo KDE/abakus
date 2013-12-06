@@ -321,6 +321,7 @@ FACTOR: TERM { $$ = $1; }
  * reduced to a TERM before the -TERM reduction is applied.
  */
 TERM: VALUE POWER TERM { $$ = new BinaryOperator(BinaryOperator::Exponentiation, $1, $3); }
+TERM: '(' EXP ')' POWER TERM { $$ = new BinaryOperator(BinaryOperator::Exponentiation, $2, $5); }
 TERM: '+' TERM { $$ = $2; }
 TERM: '-' TERM { $$ = new UnaryOperator(UnaryOperator::Negation, $2); }
 TERM: '(' EXP ')' { $$ = $2; }
