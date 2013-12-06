@@ -301,6 +301,11 @@ TERM: NUMBER NUMBER {
     YYABORT;
 }
 
+S: error {
+    Result::setLastResult(i18n("Sorry, I can't figure it out."));
+    YYABORT;
+}
+
 /**
  * Here be the standard calculator-parsing part.  Nothing here should be too
  * fancy.
