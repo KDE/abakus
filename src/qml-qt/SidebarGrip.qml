@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.0
 import abakus 1.0 as Abakus
 
 Item {
@@ -51,7 +51,7 @@ Item {
             interval: 1000
             running: mouseArea.containsMouse && !mouseArea.pressed && tooltip.length
             
-            property string tooltip: internal.sidebarShown ? i18n("Click to hide sidebar\nClick and drag to change sidebar width") : i18n("Click to show sidebar")
+            property string tooltip: internal.sidebarShown ? qsTr("Click to hide sidebar\nClick and drag to change sidebar width") : qsTr("Click to show sidebar")
             
             onTriggered: {
                 var position = mapToItem(null, 0, height)

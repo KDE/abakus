@@ -39,6 +39,8 @@ class ResultModel : public QAbstractListModel
     };
 
     static ResultModel* instance();
+
+    virtual QHash<int, QByteArray> roleNames() const;
     
     void addResultModelItem(ResultModelItem* item);
     

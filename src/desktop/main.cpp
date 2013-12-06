@@ -21,7 +21,7 @@
 #include "mainwindow.h"
 
 #ifdef ABAKUS_QTONLY
-    #include <QApplication>
+    #include <QGuiApplication>
 #else
     #include <KAboutData>
     #include <KApplication>
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 {
     mpfr_set_default_prec(6 * 78); // 78 digits, figure about 6 bits needed.
 #ifdef ABAKUS_QTONLY
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 #else
     KAboutData *about = new KAboutData(
         "abakus", // appName

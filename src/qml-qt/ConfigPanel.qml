@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.0
 import abakus 1.0 as Abakus
 
 Item {
@@ -15,13 +15,13 @@ Item {
     Abakus.Settings {
         id: settings
         
-        onPrecisionChanged: precisionText.text = precision < 0 ? i18n("Auto") : precision
+        onPrecisionChanged: precisionText.text = precision < 0 ? qsTr("Auto") : precision
         
         onCompactModeChanged: compactModeButton.checked = compactMode
         
         Component.onCompleted: {
-            precisionText.text = precision < 0 ? i18n("Auto") : precision
-            compactModeButton.checked = compactMode
+            precisionText.text = precision < 0 ? qsTr("Auto") : precision
+            //compactModeButton.checked = compactMode
         }
     }
     
@@ -91,7 +91,7 @@ Item {
                     id: precisionLabel
                     height: buttonHeight
                     verticalAlignment: Text.AlignVCenter
-                    text: i18n("Decimal Precision:")
+                    text: qsTr("Decimal Precision:")
                 }
                 
                 Item {
@@ -119,7 +119,7 @@ Item {
                             
                             onDoubleClicked: {
                                 precisionComboBox.editCustom = true
-                                precisionCustom.text = (precisionText.text == i18n("Auto")) ? "" : precisionText.text
+                                precisionCustom.text = (precisionText.text == qsTr("Auto")) ? "" : precisionText.text
                                 precisionCustom.forceActiveFocus()
                             }
                         }

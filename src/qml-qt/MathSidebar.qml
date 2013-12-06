@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.0
 import abakus 1.0 as Abakus
 
 Item {
@@ -81,7 +81,9 @@ Item {
 
             ListView {
                 id: numerals
-                anchors.fill: parent
+                //anchors.fill: parent
+                width: parent.width
+                height: parent.height / 2
                 clip: true
                 
                 model: numeralModel
@@ -118,7 +120,9 @@ Item {
                 
             ListView {
                 id: functions
-                anchors.fill: parent
+                //anchors.fill: parent
+                width: parent.width
+                height: parent.height / 2
                 clip: true
                 
                 model: functionModel

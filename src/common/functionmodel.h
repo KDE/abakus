@@ -39,6 +39,8 @@ class FunctionModel : public QAbstractListModel
 
     static FunctionModel *instance();
 
+    virtual QHash<int, QByteArray> roleNames() const;
+
     Function *function(const QString &name) const;
 
     bool isFunction(const QString &name);

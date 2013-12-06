@@ -37,6 +37,8 @@ class NumeralModel : public QAbstractListModel
 
     static NumeralModel *instance();
 
+    virtual QHash<int, QByteArray> roleNames() const;
+
     Abakus::Number value(const QString &name) const;
 
     bool isValueSet(const QString &name) const;

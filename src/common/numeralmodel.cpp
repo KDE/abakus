@@ -39,12 +39,9 @@ NumeralModel *NumeralModel::instance()
 
 NumeralModel::NumeralModel(QObject *parent) : QAbstractListModel(parent)
 {
-    QHash<int, QByteArray> roles;
-    roles[NameRole] = "name";
-    roles[ValueStringRole] = "valueString";
-    roles[DescriptionRole] = "description";
-    roles[TypeStringRole] = "typeString";
-    setRoleNames(roles);
+#ifndef ABAKUS_QTONLY
+    setRoleNames(roleNames());
+#endif
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_numeralModelItems << new NumeralModelItem("ans", Abakus::Number(42), NumeralModelItem::BuiltIn);
@@ -63,6 +60,18 @@ NumeralModel::~NumeralModel()
         delete m_numeralModelItems.takeFirst();
     }
     endRemoveRows();
+}
+
+QHash<int, QByteArray> NumeralModel::roleNames() const
+{
+    static QHash<int, QByteArray> roleNames;
+    if (roleNames.isEmpty()) {
+        roleNames[NameRole] = "name";
+        roleNames[ValueStringRole] = "valueString";
+        roleNames[DescriptionRole] = "description";
+        roleNames[TypeStringRole] = "typeString";
+    }
+    return roleNames;
 }
 
 int NumeralModel::numeralModelItemIndex(const QString& name) const

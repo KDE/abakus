@@ -25,15 +25,18 @@
 #include "resultmodel.h"
 #include "settings.h"
 
-#include <qdeclarative.h>
-#include <QDeclarativeContext>
-#include <QDeclarativeView>
-#include <QMenu>
-#include <QToolTip>
-
 #ifdef ABAKUS_QTONLY
+    #include <QtQml/QQmlContext>
+    #include <QtQuick/QQuickView>
+
     #define i18n tr
 #else
+    #include <qdeclarative.h>
+    #include <QDeclarativeContext>
+    #include <QDeclarativeView>
+    #include <QMenu>
+    #include <QToolTip>
+    
     #include <KAction>
     #include <KActionCollection>
     #include <KCmdLineArgs>
@@ -45,7 +48,6 @@
 #endif
 
 MainWindow::MainWindow() :
-    m_helpMenu(0),
     m_resultItemModel (ResultModel::instance()),
     m_settingscore(SettingsCore::instance()),
     m_insert(false)
@@ -64,9 +66,23 @@ MainWindow::MainWindow() :
     
     connect(m_settingscore->instance(), SIGNAL(precisionChanged()), this, SLOT(slotRedrawResults()));
     connect(m_settingscore->instance(), SIGNAL(compactModeChanged()), this, SLOT(slotUpdateSize()));
-    
+
+#ifdef ABAKUS_QTONLY    
     qmlRegisterType<Settings>("abakus", 1, 0, "Settings");
 
+    m_declarativeContext = rootContext();
+    m_declarativeContext->setContextProperty("mainWindow", this);
+    m_declarativeContext->setContextProperty("resultModel", m_resultItemModel);
+    m_declarativeContext->setContextProperty("numeralModel", NumeralModel::instance());
+    m_declarativeContext->setContextProperty("functionModel", FunctionModel::instance());
+    setResizeMode(QQuickView::SizeRootObjectToView);
+
+    setSource(QUrl::fromLocalFile("qml/main.qml"));
+    
+    //m_helpMenu = new QMenu();
+#else
+    qmlRegisterType<Settings>("abakus", 1, 0, "Settings");
+    
     m_declarativeView = new QDeclarativeView(this);
     m_declarativeContext = m_declarativeView->rootContext();
     m_declarativeContext->setContextProperty("mainWindow", this);
@@ -81,10 +97,7 @@ MainWindow::MainWindow() :
     m_declarativeView->setStyleSheet("background:transparent;");
     m_declarativeView->setAttribute(Qt::WA_TranslucentBackground);
     m_declarativeView->setWindowFlags(Qt::FramelessWindowHint);
-
-#ifdef ABAKUS_QTONLY
-    m_declarativeView->setSource(QUrl::fromLocalFile("qml/main.qml"));
-#else
+    
     // initialize kdeclarative
     KDeclarative kDeclarative;
     kDeclarative.setDeclarativeEngine(m_declarativeView->engine());
@@ -93,15 +106,9 @@ MainWindow::MainWindow() :
     
     QString filePath = KStandardDirs::locate("appdata", "qml/main.qml");
     m_declarativeView->setSource(QUrl::fromLocalFile(filePath));
-#endif   
     
-    setCentralWidget(m_declarativeView);
+    setCentralWidget( m_declarativeView);
     
-    m_declarativeView->setFocus();
-    
-#ifdef ABAKUS_QTONLY
-    m_helpMenu = new QMenu();
-#else
     KHelpMenu* helpMenu = new KHelpMenu(this, KCmdLineArgs::aboutData(), true);
     m_helpMenu = helpMenu->menu();
 #endif
@@ -118,7 +125,7 @@ bool MainWindow::queryExit()
     m_settingscore->saveSettings();
     m_resultItemModel->clear();
 #ifdef ABAKUS_QTONLY
-    return QMainWindow::close();
+    return QQuickView::close();
 #else
     return  KMainWindow::queryExit();
 #endif
@@ -201,7 +208,11 @@ QString MainWindow::getTag(const int &index)
 
 void MainWindow::showHelpMenu(int xPosition, int yPosition)
 {
+#ifdef ABAKUS_QTONLY
+    //TODO
+#else
     m_helpMenu->popup(m_declarativeView->mapToGlobal(QPoint(xPosition, yPosition)));
+#endif
 }
 
 void MainWindow::configureShortcuts()
@@ -213,12 +224,20 @@ void MainWindow::configureShortcuts()
 
 void MainWindow::showToolTip(const int xPosition, const int yPosition, const QString& toolTipText)
 {
+#ifdef ABAKUS_QTONLY
+    //TODO
+#else
     QToolTip::showText(mapToGlobal(QPoint(xPosition, yPosition)), toolTipText);
+#endif
 }
 
 void MainWindow::hideToolTip()
 {
+#ifdef ABAKUS_QTONLY
+    //TODO
+#else
     QToolTip::hideText();
+#endif
 }
 
 void MainWindow::slotSetDegrees()

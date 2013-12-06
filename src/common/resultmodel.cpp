@@ -34,18 +34,27 @@ ResultModel* ResultModel::instance()
 
 ResultModel::ResultModel(QObject *parent)
     : QAbstractListModel(parent), m_historyIndex(-1)
-{
-    QHash<int, QByteArray> roles;
-    roles[ExpressionRole] = "expression";
-    roles[ResultRole] = "result";
-    roles[TagRole] = "tag";
-    roles[IndexRole] = "index";
-    setRoleNames(roles);
+{    
+#ifndef ABAKUS_QTONLY
+    setRoleNames(roleNames());
+#endif
 }
 
 ResultModel::~ResultModel()
 {
     clear();
+}
+
+QHash<int, QByteArray> ResultModel::roleNames() const
+{
+    static QHash<int, QByteArray> roleNames;
+    if (roleNames.isEmpty()) {
+        roleNames[ExpressionRole] = "expression";
+        roleNames[ResultRole] = "result";
+        roleNames[TagRole] = "tag";
+        roleNames[IndexRole] = "index";
+    }
+    return roleNames;
 }
 
 void ResultModel::addResultModelItem(ResultModelItem* item)

@@ -23,9 +23,15 @@
 
 #include "settingscore.h"
 
-#include <QObject>
+#ifdef ABAKUS_QTONLY
+    #include <QtQuick/QQuickItem>
+#else
+    #include <QObject>
+    #define QQuickItem QObject
+#endif
 
-class Settings : public QObject
+
+class Settings : public QQuickItem
 {
 
     Q_OBJECT
@@ -38,7 +44,7 @@ class Settings : public QObject
     Q_PROPERTY(bool mathematicalSidebarVisible READ mathematicalSidebarVisible WRITE setMathematicalSidebarVisible NOTIFY mathematicalSidebarVisibleChanged)
     
 public:
-    Settings(QObject* parent = 0);
+    Settings(QQuickItem* parent = 0);
     virtual ~Settings();
     
     // just a workaround, because enums in namespaces can't be used in qml

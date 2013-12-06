@@ -18,7 +18,7 @@ DEFINES += ABAKUS_QTONLY
 # Additional import path used to resolve QML modules in Creator's code model
 #QML_IMPORT_PATH += /usr/lib/kde4/imports
 
-QT += declarative
+QT += qml quick
 
 # If your application uses the Qt Mobility libraries, uncomment the following
 # lines and add the respective components to the MOBILITY variable.
@@ -74,6 +74,8 @@ HEADERS += \
     src/common/functionmodelitem.h \
     src/common/functionmodel.h \
     src/common/function.h
+
+OTHER_FILES += src/qml-qt/*
 
 qml.path = $$DESTDIR/qml
 qml.files += src/qml-qt/*

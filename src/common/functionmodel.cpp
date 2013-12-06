@@ -73,14 +73,10 @@ FunctionModel::FunctionModel(QObject *parent) :
     QAbstractListModel(parent)
 {
     setObjectName("FunctionManager");
-    
-    QHash<int, QByteArray> roles;
-    roles[NameRole] = "name";
-    roles[VariableRole] = "variable";
-    roles[ValueRole] = "value";
-    roles[DescriptionRole] = "description";
-    roles[TypeStringRole] = "typeString";
-    setRoleNames(roles);
+     
+#ifndef ABAKUS_QTONLY
+    setRoleNames(roleNames());
+#endif
     
     addBuitInFunctions();
 }
@@ -93,6 +89,19 @@ FunctionModel::~FunctionModel()
         delete m_functionModelItems.takeFirst();
     }
     endRemoveRows();
+}
+
+QHash<int, QByteArray> FunctionModel::roleNames() const
+{
+    static QHash<int, QByteArray> roleNames;
+    if (roleNames.isEmpty()) {
+        roleNames[NameRole] = "name";
+        roleNames[VariableRole] = "variable";
+        roleNames[ValueRole] = "value";
+        roleNames[DescriptionRole] = "description";
+        roleNames[TypeStringRole] = "typeString";
+    }
+    return roleNames;
 }
 
 int FunctionModel::functionModelItemIndex(const QString& name) const

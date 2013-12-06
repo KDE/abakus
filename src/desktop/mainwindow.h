@@ -24,17 +24,19 @@
 #include "settingscore.h"
 
 #ifdef ABAKUS_QTONLY
-    #include <QMainWindow>
-    #define KMainWindow QMainWindow
+    #include <QtQuick/QQuickView>
+    #define KMainWindow QQuickView
+    
+    class QQmlContext;
 #else
     #include <KMainWindow>
+    
+    class QDeclarativeContext;
+    class QDeclarativeView;
+    class QMenu;
 #endif
 
 class ResultModel;
-
-class QDeclarativeContext;
-class QDeclarativeView;
-class QMenu;
 
 // Main window class, handles events and stuff
 class MainWindow : public KMainWindow
@@ -89,13 +91,15 @@ private:
     
     void setMathematicalSidebarVisible(const bool &visible);
 
-    QMenu* m_helpMenu;
-    ResultModel *m_resultItemModel;
-
-//    AbakusIface *m_dcopInterface;
-    
+#ifdef ABAKUS_QTONLY
+    QQmlContext *m_declarativeContext;
+#else
     QDeclarativeView* m_declarativeView;
     QDeclarativeContext *m_declarativeContext;
+    QMenu* m_helpMenu; 
+#endif
+    
+    ResultModel *m_resultItemModel;
 
     SettingsCore* m_settingscore;
 

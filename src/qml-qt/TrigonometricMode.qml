@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.0
 import abakus 1.0 as Abakus
 
 Item {
@@ -17,13 +17,13 @@ Item {
     Text {
         id: degrees
         visible: false
-        text: i18n("Degrees")
+        text: qsTr("Degrees")
     }
     
     Text {
         id: radians
         visible: false
-        text: i18n("Radians")
+        text: qsTr("Radians")
     }
     
     Item {

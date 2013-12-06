@@ -20,7 +20,7 @@
 
 #include "settings.h"
 
-Settings::Settings(QObject* parent) : QObject(parent), m_settingscore(SettingsCore::instance())
+Settings::Settings(QQuickItem* parent) : QQuickItem(parent), m_settingscore(SettingsCore::instance())
 {
     connect(m_settingscore, SIGNAL(precisionChanged()), this, SIGNAL(precisionChanged()));
     connect(m_settingscore, SIGNAL(trigModeChanged()), this, SIGNAL(trigModeChanged()));
