@@ -16,8 +16,18 @@ Rectangle {
         trigPad.pressed.connect(pressed)
         trigPad.evaluate.connect(evaluate)
 
-        flickable.contentX = root.width
-        internal.animationDuration = 250
+        delayedLoadingTimer.running = true
+    }
+
+    Timer {
+        id: delayedLoadingTimer
+        interval: 200
+        running: false
+        repeat: false
+        onTriggered: {
+            flickable.contentX = root.width
+            internal.animationDuration = 250
+        }
     }
 
     QtObject {
