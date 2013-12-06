@@ -156,7 +156,7 @@ Grid {
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "10^x"
+        text: "10ˣ"
         onPressed: root.pressed("*10^")
     }
     Button {

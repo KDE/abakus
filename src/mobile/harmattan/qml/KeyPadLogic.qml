@@ -17,31 +17,31 @@ Grid {
         width: root.buttonWidth
         height: root.buttonHeight
         text: "<<"
-        onPressed: root.pressed("<<")
+        onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
         text: ">>"
-        onPressed: root.pressed(">>")
-    }
-    Button {
-        width: root.buttonWidth
-        height: root.buttonHeight
-        text: ""
         onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: ""
-        onPressed: root.pressed(text)
+        text: "hex"
+        onPressed: root.pressed("hex(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: ""
-        onPressed: root.pressed(text)
+        text: "bin"
+        onPressed: root.pressed("bin(")
+    }
+    Button {
+        width: root.buttonWidth
+        height: root.buttonHeight
+        text: "oct"
+        onPressed: root.pressed("oct(")
     }
 
     // second row
@@ -66,13 +66,13 @@ Grid {
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "x^y"
-        onPressed: root.pressed("^")
+        text: "E"
+        onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: ""
+        text: "F"
         onPressed: root.pressed(text)
     }
 
@@ -98,14 +98,14 @@ Grid {
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "×"
-        onPressed: root.pressed("*")
+        text: "C"
+        onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "÷"
-        onPressed: root.pressed("/")
+        text: "D"
+        onPressed: root.pressed(text)
     }
 
     // fourth row
@@ -130,13 +130,13 @@ Grid {
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "+"
+        text: "A"
         onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "-"
+        text: "B"
         onPressed: root.pressed(text)
     }
 
@@ -150,19 +150,19 @@ Grid {
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: ""
+        text: "0x"
         onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "10^x"
-        onPressed: root.pressed("*10^")
+        text: "0b"
+        onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "ans"
+        text: "0o"
         onPressed: root.pressed(text)
     }
     Button {
