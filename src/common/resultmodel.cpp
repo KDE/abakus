@@ -35,7 +35,7 @@ ResultModel* ResultModel::instance()
 ResultModel::ResultModel(QObject *parent)
     : QAbstractListModel(parent), m_historyIndex(-1)
 {    
-#ifndef ABAKUS_QTONLY
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     setRoleNames(roleNames());
 #endif
 }

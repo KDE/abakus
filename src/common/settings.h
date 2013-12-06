@@ -23,11 +23,11 @@
 
 #include "settingscore.h"
 
-#ifdef ABAKUS_QTONLY
-    #include <QtQuick/QQuickItem>
-#else
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     #include <QObject>
     #define QQuickItem QObject
+#else
+    #include <QtQuick/QQuickItem>
 #endif
 
 

@@ -14,6 +14,7 @@ CONFIG(release, debug|release) {
 }
 
 DEFINES += QT_USE_FAST_CONCATENATION
+DEFINES += QT_USE_FAST_OPERATOR_PLUS
 DEFINES += ABAKUS_QTONLY
 
 # Add more folders to ship with the application, here

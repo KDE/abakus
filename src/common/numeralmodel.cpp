@@ -39,7 +39,7 @@ NumeralModel *NumeralModel::instance()
 
 NumeralModel::NumeralModel(QObject *parent) : QAbstractListModel(parent)
 {
-#ifndef ABAKUS_QTONLY
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     setRoleNames(roleNames());
 #endif
 
