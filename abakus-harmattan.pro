@@ -51,7 +51,7 @@ FLEXSOURCES = src/common/lexer.ll
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += src/mobile/harmattan/main.cpp \
-    src/mobile/harmattan/mainwindow.cpp \
+    src/mobile/harmattan/mainobject.cpp \
     src/common/settingscore.cpp \
     src/common/settings.cpp \
     src/common/resultmodelitem.cpp \
@@ -66,7 +66,7 @@ SOURCES += src/mobile/harmattan/main.cpp \
     src/common/function.cpp
 
 HEADERS += \
-    src/mobile/harmattan/mainwindow.h \
+    src/mobile/harmattan/mainobject.h \
     src/common/sharedptr.h \
     src/common/settingscore.h \
     src/common/settings.h \

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "mainwindow.h"
+#include "mainobject.h"
 
 #include "functionmodel.h"
 #include "numeralmodel.h"
@@ -33,9 +33,9 @@
 
 #define i18n tr
 
-MainWindow::MainWindow(QDeclarativeView* declarativeView) :
+MainObject::MainObject() :
     m_resultItemModel (ResultModel::instance()),
-    m_declarativeView(declarativeView),
+    m_declarativeContext(NULL),
     m_settingscore(SettingsCore::instance()),
     m_insert(false)
 {
@@ -46,22 +46,24 @@ MainWindow::MainWindow(QDeclarativeView* declarativeView) :
     connect(m_settingscore->instance(), SIGNAL(precisionChanged()), this, SLOT(slotRedrawResults()));
     
     qmlRegisterType<Settings>("abakus", 1, 0, "Settings");
+}
 
-    m_declarativeContext = m_declarativeView->rootContext();
+MainObject::~MainObject()
+{
+    m_settingscore->saveSettings();
+    m_resultItemModel->clear();
+}
+
+void MainObject::setView(QDeclarativeView* declarativeView)
+{
+    m_declarativeContext = declarativeView->rootContext();
     m_declarativeContext->setContextProperty("mainWindow", this);
     m_declarativeContext->setContextProperty("resultModel", m_resultItemModel);
     m_declarativeContext->setContextProperty("numeralModel", NumeralModel::instance());
     m_declarativeContext->setContextProperty("functionModel", FunctionModel::instance());
 }
 
-bool MainWindow::queryExit()
-{
-    m_settingscore->saveSettings();
-    m_resultItemModel->clear();
-    return true;//QMainWindow::close();
-}
-
-void MainWindow::slotEvaluate(const QString &expression)
+void MainObject::slotEvaluate(const QString &expression)
 {
     QString text = expression;
 
@@ -120,7 +122,7 @@ void MainWindow::slotEvaluate(const QString &expression)
     }
 }
 
-void MainWindow::slotTextChanged(const QString &str)
+void MainObject::slotTextChanged(const QString &str)
 {
     if(str.length() == 1 && m_insert) {
         m_insert = false;
@@ -131,52 +133,52 @@ void MainWindow::slotTextChanged(const QString &str)
     }
 }
 
-QString MainWindow::getTag(const int &index)
+QString MainObject::getTag(const int &index)
 {
     return m_resultItemModel->data(m_resultItemModel->index(index), ResultModel::TagRole).toString();
 }
 
-void MainWindow::clearHistory()
+void MainObject::clearHistory()
 {
     m_resultItemModel->clear();
 }
 
-void MainWindow::historyPrevious()
+void MainObject::historyPrevious()
 {
     emit setEditorText(m_resultItemModel->previousExpression());
 }
 
-void MainWindow::historyNext()
+void MainObject::historyNext()
 {
     emit setEditorText(m_resultItemModel->nextExpression());
 }
 
-void MainWindow::removeNumeral(const QString& name)
+void MainObject::removeNumeral(const QString& name)
 {
     NumeralModel::instance()->removeValue(name);
 }
 
-void MainWindow::removeFunction(const QString& name)
+void MainObject::removeFunction(const QString& name)
 {
     FunctionModel::instance()->removeFunction(name);
 }
 
-int MainWindow::getVisibleHistoryItemIndex(int listIndex)
+int MainObject::getVisibleHistoryItemIndex(int listIndex)
 {
     return (listIndex >= 0 && listIndex < m_visibleHistoryItemIndices.count()) ? m_visibleHistoryItemIndices[listIndex] : -1;
 }
 
-void MainWindow::addVisibleHistoryItemIndex(int itemIndex)
+void MainObject::addVisibleHistoryItemIndex(int itemIndex)
 {
     m_visibleHistoryItemIndices.append(itemIndex);
 }
 
-void MainWindow::removeVisibleHistoryItemIndex(int itemIndex)
+void MainObject::removeVisibleHistoryItemIndex(int itemIndex)
 {
     m_visibleHistoryItemIndices.removeOne(itemIndex);
 }
 
-int MainWindow::getParenthesesLevel(const QString &str)
+int MainObject::getParenthesesLevel(const QString &str)
 {
     int level = 0;
 
@@ -189,7 +191,7 @@ int MainWindow::getParenthesesLevel(const QString &str)
     return level;
 }
 
-QString MainWindow::interpolateExpression(const QString &text)
+QString MainObject::interpolateExpression(const QString &text)
 {
     QString str(text);
     QRegExp stackRE("\\$\\d+");
@@ -211,10 +213,8 @@ QString MainWindow::interpolateExpression(const QString &text)
     return str;
 }
 
-void MainWindow::slotRedrawResults()
+void MainObject::slotRedrawResults()
 {
     m_resultItemModel->slotRedrawItems();
     NumeralModel::instance()->slotRedrawItems();
 }
-
-// vim: set et ts=8 sw=4:
