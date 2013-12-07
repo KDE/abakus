@@ -1,31 +1,31 @@
-Name:    abakus
-Summary: Calculator
+Name: abakus
+Summary: abakus is a simple yet powerful calculator
 Version: 0.1
 Release: 1
-Group:   Qt/Qt
-License: LICENSE
+Group: Qt/Qt
+License: GPL
 Sources:
-    - "%{name}-%{version}.tar.bz2"
+- '%{name}-%{version}.tar.bz2'
 Description: |
-  A calculator for SailfishOS.
-# Qt Applications generally don't use configure and do use qmake
+  abakus is a simple yet powerful calculator
 Configure: none
-Builder: qmake
-# pkgconfigs we depend on to build
+Builder: qtc5
 PkgConfigBR:
-  - ""
-# Packages we depend on to build
-PkgBR:
-  - ""
-# Packages we require to run
+- sailfishapp
+- Qt5Quick
+- Qt5Qml
+- Qt5Core
 Requires:
-  - "mpfr"
+- sailfishsilica-qt5
+- mpfr
+- gmp
 Files:
-  - "/opt"
-
-
-
-# This is a spectacle file.
-# It is a yaml file that uses specify to manage the spec file used to package the application.
-# See https://wiki.merproject.org/wiki/Spectacle for more information
-
+- '%{_bindir}'
+- '%{_datadir}/%{name}/qml'
+- '%{_datadir}/applications/%{name}.desktop'
+- '%{_datadir}/icons/hicolor/90x90/apps/%{name}.png'
+- /usr/bin
+- /usr/share/abakus
+- /usr/share/applications
+- /usr/share/icons/hicolor/90x90/apps
+PkgBR: []

@@ -18,11 +18,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "mainwindow.h"
+#include "mainobject.h"
 
-#include <QApplication>
-#include <QDeclarativeView>
-#include "sailfishapplication.h"
+#include <sailfishapp.h>
+
+#include <QGuiApplication>
+#include <QQuickView>
 
 #include <mpfr.h>
 
@@ -32,16 +33,13 @@ int main(int argc, char **argv)
 {
     mpfr_set_default_prec(6 * 78); // 78 digits, figure about 6 bits needed.
 
-    QScopedPointer<QApplication> app(Sailfish::createApplication(argc, argv));
-    QScopedPointer<QDeclarativeView> view(Sailfish::createView("main.qml"));
+    QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
+    QScopedPointer<MainObject> mainObject(new MainObject());
+    QScopedPointer<QQuickView> view(SailfishApp::createView());
 
-    MainWindow mainObject(view.data());
-
-    view->setSource(QUrl::fromLocalFile(QString(DEPLOYMENT_PATH) + "main.qml"));
-
-    Sailfish::showView(view.data());
+    mainObject->setView(view.data());
+    view->setSource(SailfishApp::pathTo("qml/main.qml"));
+    view->show();
 
     return app->exec();
 }
-
-// vim: set et sw=4 ts=8:

@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.0
 import Sailfish.Silica 1.0
 import abakus 1.0 as Abakus
 
@@ -103,7 +103,6 @@ Page {
                             mainWindow.slotEvaluate(editor.text)
                             editor.selectAll()
                         }
-                        console.log(clearButton.pos.x + " - " + clearButton.pos.y)
                     }
 
                     onTextChanged: mainWindow.slotTextChanged(text)

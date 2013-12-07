@@ -1,5 +1,5 @@
-#ifndef ABAKUS_MAINWINDOW_H
-#define ABAKUS_MAINWINDOW_H
+#ifndef ABAKUS_MAINOBJECT_H
+#define ABAKUS_MAINOBJECT_H
 /*
  * mainwindow.h - part of abakus
  * Copyright (C) 2012 Mathias Kraus <k.hias@gmx.net>
@@ -23,25 +23,26 @@
 #include "numerictypes.h"
 #include "settingscore.h"
 
+#include <sailfishapp.h>
+
 #include <QObject>
 
 class ResultModel;
 
-class QDeclarativeContext;
-class QDeclarativeView;
-class QMenu;
+class QQmlContext;
 
 // Main window class, handles events and stuff
-class MainWindow : public QObject
+class MainObject : public QObject
 {
     Q_OBJECT
     
 public:
-    MainWindow(QDeclarativeView* declarativeView);
+    MainObject();
+    ~MainObject();
+
+    void setView(QQuickView* quickView);
 
 protected:
-    virtual bool queryExit();
-    
     Q_INVOKABLE void slotEvaluate(const QString &expression);
     Q_INVOKABLE void slotTextChanged(const QString &str);
     Q_INVOKABLE QString getTag(const int &index);
@@ -70,8 +71,7 @@ private:
 
     ResultModel *m_resultItemModel;
     
-    QDeclarativeView* m_declarativeView;
-    QDeclarativeContext *m_declarativeContext;
+    QQmlContext *m_declarativeContext;
 
     SettingsCore* m_settingscore;
 
@@ -81,5 +81,3 @@ private:
 };
 
 #endif
-
-// vim: set et ts=8 sw=4:

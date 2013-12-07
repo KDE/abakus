@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 Column {
@@ -66,7 +66,7 @@ Column {
             width: root.width / 5
             height: root.buttonHeight
             text: "x²"
-            onClicked: root.pressed("TODO")
+            onClicked: root.pressed("^2")
         }
         Button {
             width: root.width / 5
