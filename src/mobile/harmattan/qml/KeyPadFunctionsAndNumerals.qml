@@ -16,6 +16,38 @@ Grid {
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
+        text: "ans"
+        onPressed: root.pressed(text)
+    }
+    Button {
+        width: root.buttonWidth
+        height: root.buttonHeight
+        text: "e"
+        onPressed: root.pressed(text)
+    }
+    Button {
+        width: root.buttonWidth
+        height: root.buttonHeight
+        text: ""
+        onPressed: root.pressed(text)
+    }
+    Button {
+        width: root.buttonWidth
+        height: root.buttonHeight
+        text: ""
+        onPressed: root.pressed(text)
+    }
+    Button {
+        width: root.buttonWidth
+        height: root.buttonHeight
+        text: ""
+        onPressed: root.pressed(text)
+    }
+
+    // second row
+    Button {
+        width: root.buttonWidth
+        height: root.buttonHeight
         text: "sin"
         onPressed: root.pressed("sin(")
     }
@@ -28,147 +60,115 @@ Grid {
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "π"
-        onPressed: root.pressed("pi")
-    }
-    Button {
-        width: root.buttonWidth
-        height: root.buttonHeight
-        text: "("
-        onPressed: root.pressed(text)
-    }
-    Button {
-        width: root.buttonWidth
-        height: root.buttonHeight
-        text: ")"
-        onPressed: root.pressed(text)
-    }
-
-    // second row
-    Button {
-        width: root.buttonWidth
-        height: root.buttonHeight
         text: "tan"
         onPressed: root.pressed("tan(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "8"
+        text: ""
         onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "9"
+        text: ""
         onPressed: root.pressed(text)
-    }
-    Button {
-        width: root.buttonWidth
-        height: root.buttonHeight
-        text: "x²"
-        onPressed: root.pressed("^2")
-    }
-    Button {
-        width: root.buttonWidth
-        height: root.buttonHeight
-        text: "√"
-        onPressed: root.pressed("sqrt(")
     }
 
     // third row
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "4"
+        text: "abs"
+        onPressed: root.pressed("abs(")
+    }
+    Button {
+        width: root.buttonWidth
+        height: root.buttonHeight
+        text: ""
         onPressed: root.pressed(text)
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "5"
-        onPressed: root.pressed(text)
+        text: "ln"
+        onPressed: root.pressed("ln(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "6"
-        onPressed: root.pressed(text)
+        text: "log"
+        onPressed: root.pressed("log(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "×"
-        onPressed: root.pressed("*")
-    }
-    Button {
-        width: root.buttonWidth
-        height: root.buttonHeight
-        text: "÷"
-        onPressed: root.pressed("/")
+        text: "eˣ"
+        onPressed: root.pressed("exp(")
     }
 
     // fourth row
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "1"
-        onPressed: root.pressed(text)
+        text: "round"
+        onPressed: root.pressed("round(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "2"
-        onPressed: root.pressed(text)
+        text: "ceil"
+        onPressed: root.pressed("ceil(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "3"
-        onPressed: root.pressed(text)
+        text: "floor"
+        onPressed: root.pressed("floor(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "+"
-        onPressed: root.pressed(text)
+        text: "int"
+        onPressed: root.pressed("int(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "-"
-        onPressed: root.pressed(text)
+        text: "frac"
+        onPressed: root.pressed("frac(")
     }
 
     // fifth row
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "0"
-        onPressed: root.pressed(text)
+        text: "hex"
+        onPressed: root.pressed("hex(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "."
-        onPressed: root.pressed(text)
+        text: "bin"
+        onPressed: root.pressed("bin(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "10ˣ"
-        onPressed: root.pressed("*10^")
+        text: "dec"
+        onPressed: root.pressed("dec(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "ans"
-        onPressed: root.pressed(text)
+        text: "oct"
+        onPressed: root.pressed("oct(")
     }
     Button {
         width: root.buttonWidth
         height: root.buttonHeight
-        text: "="
+        text: ""
         textColor: "orange"
         onPressed: root.evaluate()
     }

@@ -140,7 +140,7 @@ Rectangle {
                 buttonWidth: internal.buttonWidth
                 buttonHeight: internal.buttonHeight
             }
-            KeyPadTrig {
+            KeyPadFunctionsAndNumerals {
                 id: trigPad
                 anchors.top: parent.top
                 anchors.left: genericPad.right
