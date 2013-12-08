@@ -85,7 +85,7 @@ Rectangle {
     }
 
     Text {
-        id: dummy
+        id: clearButtonText
         visible: false
         font.pointSize: root.fontPointSize
         text: "⌫"
@@ -93,8 +93,8 @@ Rectangle {
 
     Button {
         id: clearButton
-        width: dummy.width
-        height: dummy.height
+        width: clearButtonText.width
+        height: clearButtonText.height
         anchors.right: parent.right
         anchors.rightMargin: 10
         anchors.verticalCenter: parent.verticalCenter
@@ -102,7 +102,8 @@ Rectangle {
         textColorHighlight: "white"
         buttonColorHighlight: buttonColor
         fontPointSize: root.fontPointSize
-        text: "⌫"
+        text: clearButtonText.text
+        visible: editor.text.length != 0
 
         onPressed: removeText()
         onPressAndHold: editor.text = ""
