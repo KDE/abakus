@@ -50,12 +50,7 @@ HEADERS += \
     ../../common/functionmodel.h \
     ../../common/function.h
 
-OTHER_FILES += qml/abakus.qml \
-    qml/cover/CoverPage.qml \
-    qml/pages/MainPage.qml \
-    qml/pages/KeyPad.qml \
-    qml/pages/ResultViewItem.qml \
-    qml/pages/SettingsPage.qml \
+OTHER_FILES += qml/* \
     rpm/abakus.spec \
     rpm/abakus.yaml \
     abakus.desktop

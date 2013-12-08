@@ -38,6 +38,7 @@ int main(int argc, char **argv)
     QScopedPointer<QQuickView> view(SailfishApp::createView());
 
     mainObject->setView(view.data());
+    view->setResizeMode(QQuickView::SizeRootObjectToView);
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
     view->show();
 

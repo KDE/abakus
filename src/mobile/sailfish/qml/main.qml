@@ -1,8 +1,13 @@
 import QtQuick 2.0
-import Sailfish.Silica 1.0
-import "pages"
 
-ApplicationWindow
+Item
 {
-    initialPage: MainPage { }
+    id: appWindow
+
+    MainPage {
+        id: mainPage
+        width: parent.width
+        height: parent.height
+        anchors.centerIn: parent
+    }
 }
