@@ -4,6 +4,7 @@ Version=1.0
 Type=Application
 Terminal=false
 Name=abakus
+Name[bg]=abakus
 Name[cs]=abakus
 Name[de]=Abakus
 Name[es]=abakus
