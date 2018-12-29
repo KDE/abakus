@@ -2,25 +2,6 @@
 Type=Application
 X-Nemo-Application-Type=silica-qt5
 Name=abakus
-Name[bg]=abakus
-Name[bs]=abakus
-Name[cs]=abakus
-Name[de]=Abakus
-Name[es]=abakus
-Name[fi]=abakus
-Name[fr]=abakus
-Name[gl]=abakus
-Name[hu]=abakus
-Name[ko]=abakus
-Name[nl]=abakus
-Name[pl]=abakus
-Name[pt]=abakus
-Name[pt_BR]=abakus
-Name[sk]=abakus
-Name[sv]=abakus
-Name[tr]=abakus
-Name[uk]=abakus
-Name[x-test]=xxabakusxx
 Icon=/usr/share/icons/hicolor/90x90/apps/abakus.png
 Exec=abakus
 
